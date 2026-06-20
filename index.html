@@ -143,11 +143,16 @@
     }
 
     h1 {
-      max-width: 790px;
+      max-width: 760px;
       margin: 0;
-      font-size: clamp(44px, 7vw, 84px);
-      line-height: 1.03;
+      font-size: clamp(38px, 4.8vw, 62px);
+      line-height: 1.08;
       letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    h1 span {
+      display: block;
     }
 
     .lead {
@@ -320,7 +325,7 @@
 
     .rail-chip.worktree {
       top: 110px;
-      left: 205px;
+      right: 30px;
       background: var(--teal);
     }
 
@@ -548,7 +553,11 @@
       }
 
       .nav-links {
+        width: 100%;
         justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 4px;
       }
 
       .shell {
@@ -586,7 +595,11 @@
   <main class="shell">
     <section class="hero">
       <div>
-        <h1>把知识做成可以点击、复盘、分享的教程。</h1>
+        <h1>
+          <span>把知识做成教程。</span>
+          <span>能点击，能复盘，</span>
+          <span>能分享。</span>
+        </h1>
         <p class="lead">这里收纳可交互的学习页面、工具理解手册和实践笔记。每篇教程都是一个独立静态 HTML，可以用 GitHub Pages 免费托管。</p>
       </div>
       <aside class="hero-note">
