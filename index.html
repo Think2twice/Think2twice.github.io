@@ -482,6 +482,7 @@
     }
 
     .section {
+      scroll-margin-top: 96px;
       padding: 54px 0;
     }
 
@@ -788,6 +789,119 @@
       overflow: hidden;
     }
 
+    .publish-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
+      gap: 22px;
+      align-items: stretch;
+    }
+
+    .generator-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      padding: 18px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .form-grid label {
+      display: grid;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .form-grid label.wide {
+      grid-column: 1 / -1;
+    }
+
+    .form-grid input,
+    .form-grid select {
+      width: 100%;
+      min-height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--surface-strong);
+      color: var(--text);
+      outline: none;
+      padding: 0 12px;
+      font-weight: 800;
+    }
+
+    .form-grid input:focus,
+    .form-grid select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+
+    .generated-box {
+      margin-top: 16px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background: color-mix(in srgb, var(--surface-strong) 86%, var(--accent-faint));
+      overflow: hidden;
+    }
+
+    .generated-head {
+      min-height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+      padding: 0 14px;
+    }
+
+    .generated-head strong {
+      font-size: 14px;
+    }
+
+    .mini-button {
+      min-height: 34px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: var(--surface-strong);
+      color: var(--text);
+      cursor: pointer;
+      padding: 0 12px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .mini-button:hover {
+      background: var(--accent-soft);
+    }
+
+    .generated-box pre {
+      margin: 0;
+      max-height: 290px;
+      overflow: auto;
+      padding: 16px;
+      color: var(--text);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      line-height: 1.58;
+      white-space: pre-wrap;
+    }
+
+    .generated-box p {
+      margin: 0;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      padding: 11px 14px;
+      font-size: 13px;
+      font-weight: 850;
+    }
+
     .finder {
       padding: 20px;
       border-right: 1px solid var(--line);
@@ -849,6 +963,12 @@
       display: grid;
       align-content: center;
       gap: 18px;
+    }
+
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .step-grid {
@@ -937,6 +1057,7 @@
     @media (max-width: 1080px) {
       .hero,
       .explorer-shell,
+      .publish-grid,
       .workflow-panel {
         grid-template-columns: 1fr;
       }
@@ -1017,6 +1138,10 @@
         flex-direction: column;
       }
 
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
       .section {
         padding: 42px 0;
       }
@@ -1052,6 +1177,7 @@
       <div class="nav-links">
         <a class="nav-link" href="#map" aria-current="page">知识星图</a>
         <a class="nav-link" href="#guides">教程</a>
+        <a class="nav-link" href="#publish">新增</a>
         <a class="nav-link" href="./archive/">归档</a>
         <a class="nav-link" href="./about/">关于</a>
         <button class="theme-toggle" id="theme-toggle" type="button" aria-label="切换明暗模式">明暗</button>
@@ -1129,13 +1255,57 @@
       </div>
     </section>
 
-    <section class="section wrap" id="workflow">
+    <section class="section wrap" id="publish">
       <div class="section-heading">
-        <h2>以后手动新增教程，也是一套固定动作。</h2>
-        <p>它不是 WordPress 那种后台编辑器，而是更轻的静态发布方式。文件放对、数据补上、提交推送，GitHub Pages 会自动更新。</p>
+        <h2>新增教程入口。</h2>
+        <p>静态站没有后台上传，但可以把上传、登记、发布三步做成固定入口。填好信息后，把生成的记录粘进 posts.js 即可。</p>
       </div>
 
-      <div class="workflow-panel">
+      <div class="publish-grid">
+        <div class="generator-panel">
+          <div class="form-grid">
+            <label>
+              <span>教程标题</span>
+              <input id="guide-title" type="text" value="新的学习教程">
+            </label>
+            <label>
+              <span>目录 slug</span>
+              <input id="guide-slug" type="text" value="new-guide">
+            </label>
+            <label>
+              <span>知识节点</span>
+              <select id="guide-node">
+                <option value="git">Git 基础</option>
+                <option value="deploy">静态发布</option>
+                <option value="agent">工具方法</option>
+                <option value="study">长期学习</option>
+              </select>
+            </label>
+            <label>
+              <span>阅读时间</span>
+              <input id="guide-minutes" type="number" min="1" value="8">
+            </label>
+            <label class="wide">
+              <span>标签，用逗号分隔</span>
+              <input id="guide-tags" type="text" value="学习, HTML, 教程">
+            </label>
+            <label class="wide">
+              <span>一句话摘要</span>
+              <input id="guide-excerpt" type="text" value="把一个新的 HTML 教程加入学习教程库。">
+            </label>
+          </div>
+
+          <div class="generated-box">
+            <div class="generated-head">
+              <strong>生成的 posts.js 记录</strong>
+              <button class="mini-button" id="copy-record" type="button">复制记录</button>
+            </div>
+            <pre id="post-record"></pre>
+            <p id="copy-status" aria-live="polite">先复制这段，再打开 posts.js 粘贴进数组。</p>
+          </div>
+        </div>
+
+        <div class="workflow-panel">
         <div class="finder" aria-label="教程库文件结构">
           <div class="finder-title">
             <span>learning-guides</span>
@@ -1144,7 +1314,7 @@
           <div class="folder-list">
             <div class="folder-row">
               <span class="folder-icon" aria-hidden="true"></span>
-              <span>guides/new-topic/index.html</span>
+              <span id="guide-path">guides/new-guide/index.html</span>
               <span>教程页</span>
             </div>
             <div class="folder-row">
@@ -1161,6 +1331,10 @@
         </div>
 
         <div class="workflow-copy">
+          <div class="quick-actions">
+            <a class="button primary" href="https://github.com/Think2twice/Think2twice.github.io/upload/master/guides">上传 HTML</a>
+            <a class="button secondary" href="https://github.com/Think2twice/Think2twice.github.io/edit/master/assets/posts.js">编辑 posts.js</a>
+          </div>
           <div class="step-grid">
             <div class="step">
               <strong>放入教程文件</strong>
@@ -1176,6 +1350,7 @@
             </div>
           </div>
           <a class="button secondary" href="./guides/github-pages-manual/">打开手动搭建教程</a>
+        </div>
         </div>
       </div>
     </section>
@@ -1236,6 +1411,12 @@
     const getClusterCount = (id) => posts.filter((post) => id === "all" || getPostNode(post) === id).length;
     const getCluster = (id) => clusters.find((cluster) => cluster.id === id) || clusters[0];
     const normalize = (value) => String(value || "").toLowerCase();
+    const nodeNames = {
+      git: "Git",
+      deploy: "GitHub Pages",
+      agent: "工具方法",
+      study: "长期学习"
+    };
 
     function filteredPosts() {
       const q = normalize(query).trim();
@@ -1364,6 +1545,81 @@
       });
     }
 
+    function cleanSlug(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[\s_]+/g, "-")
+        .replace(/[^a-z0-9-]/g, "")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "") || "new-guide";
+    }
+
+    function tagsFromInput(value) {
+      return String(value || "")
+        .split(/[,，]/)
+        .map((tag) => tag.trim())
+        .filter(Boolean);
+    }
+
+    function renderGuideRecord() {
+      const title = document.getElementById("guide-title").value.trim() || "新的学习教程";
+      const slug = cleanSlug(document.getElementById("guide-slug").value);
+      const node = document.getElementById("guide-node").value;
+      const minutes = Math.max(1, Number(document.getElementById("guide-minutes").value || 8));
+      const tags = tagsFromInput(document.getElementById("guide-tags").value);
+      const excerpt = document.getElementById("guide-excerpt").value.trim() || "把一个新的 HTML 教程加入学习教程库。";
+      const today = new Date().toISOString().slice(0, 10);
+      const category = nodeNames[node] || "教程";
+      const record = {
+        title,
+        url: `./guides/${slug}/`,
+        archiveUrl: `../guides/${slug}/`,
+        date: today,
+        minutes,
+        category,
+        node,
+        level: "待整理",
+        tags,
+        featured: false,
+        art: node === "git" ? "rails" : "browser",
+        excerpt
+      };
+
+      document.getElementById("guide-path").textContent = `guides/${slug}/index.html`;
+      document.getElementById("post-record").textContent = JSON.stringify(record, null, 2).replace(/"([^"]+)":/g, "$1:");
+      return record;
+    }
+
+    function initGuideGenerator() {
+      const fields = ["guide-title", "guide-slug", "guide-node", "guide-minutes", "guide-tags", "guide-excerpt"];
+      fields.forEach((id) => {
+        document.getElementById(id).addEventListener("input", renderGuideRecord);
+        document.getElementById(id).addEventListener("change", renderGuideRecord);
+      });
+
+      document.getElementById("guide-title").addEventListener("blur", () => {
+        const slugInput = document.getElementById("guide-slug");
+        if (!slugInput.value.trim() || slugInput.value.trim() === "new-guide") {
+          slugInput.value = cleanSlug(document.getElementById("guide-title").value);
+        }
+        renderGuideRecord();
+      });
+
+      document.getElementById("copy-record").addEventListener("click", async () => {
+        const text = document.getElementById("post-record").textContent;
+        const status = document.getElementById("copy-status");
+        try {
+          await navigator.clipboard.writeText(text);
+          status.textContent = "已复制。现在打开 posts.js，把记录粘贴进数组即可。";
+        } catch (error) {
+          status.textContent = "复制失败。可以手动选中代码再复制。";
+        }
+      });
+
+      renderGuideRecord();
+    }
+
     document.getElementById("search-input").addEventListener("input", (event) => {
       query = event.target.value;
       if (query.trim() && activeCluster !== "all") {
@@ -1377,6 +1633,7 @@
     document.getElementById("stat-total").textContent = posts.length;
     document.getElementById("stat-clusters").textContent = clusters.length - 1;
     initTheme();
+    initGuideGenerator();
     renderMap();
     renderClusters();
     renderPosts();
