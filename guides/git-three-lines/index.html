@@ -1,0 +1,2561 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>本地 Git、Git Worktree 与 GitHub 三线理解指南</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%2311161d'/%3E%3Cpath d='M13 18h38M13 32h38M13 46h38' stroke='%23f7d36d' stroke-width='4'/%3E%3Ccircle cx='20' cy='18' r='5' fill='%23e95f4b'/%3E%3Ccircle cx='36' cy='32' r='5' fill='%234aa3a1'/%3E%3Ccircle cx='48' cy='46' r='5' fill='%238a7cf0'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #15191f;
+      --muted: #5f6875;
+      --paper: #f5f0e6;
+      --panel: #fffaf0;
+      --line: #15191f;
+      --local: #e95f4b;
+      --worktree: #4aa3a1;
+      --github: #665bd8;
+      --stage: #d79b2b;
+      --good: #3f7b4c;
+      --danger: #b64038;
+      --dark: #11161d;
+      --soft: rgba(21, 25, 31, 0.08);
+      --shadow: 8px 8px 0 rgba(21, 25, 31, 0.18);
+      --radius: 8px;
+      --max: 1200px;
+      font-family: "Songti SC", "Noto Serif CJK SC", "Source Han Serif SC", Georgia, serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% 18%, rgba(233,95,75,0.12), transparent 24%),
+        radial-gradient(circle at 82% 12%, rgba(102,91,216,0.12), transparent 24%),
+        linear-gradient(90deg, rgba(21,25,31,0.045) 1px, transparent 1px) 0 0 / 32px 32px,
+        linear-gradient(rgba(21,25,31,0.045) 1px, transparent 1px) 0 0 / 32px 32px,
+        var(--paper);
+      line-height: 1.72;
+    }
+
+    a {
+      color: var(--github);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 2px solid var(--line);
+      background: rgba(245, 240, 230, 0.92);
+      backdrop-filter: blur(12px);
+    }
+
+    .nav-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      min-height: 62px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border: 2px solid var(--line);
+      background: var(--dark);
+      box-shadow: 4px 4px 0 var(--stage);
+      position: relative;
+      transform: rotate(-4deg);
+    }
+
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      left: 7px;
+      right: 7px;
+      height: 3px;
+      background: #f7d36d;
+    }
+
+    .brand-mark::before {
+      top: 10px;
+    }
+
+    .brand-mark::after {
+      bottom: 10px;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 12px;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .nav-links a {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+    }
+
+    .nav-links a:hover {
+      border-color: var(--ink);
+    }
+
+    .hero {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      min-height: calc(100vh - 62px);
+      display: grid;
+      grid-template-columns: minmax(0, 0.98fr) minmax(360px, 1.02fr);
+      gap: 40px;
+      align-items: center;
+      padding: 56px 0 44px;
+    }
+
+    .eyebrow {
+      margin: 0 0 16px;
+      color: var(--local);
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 760px;
+      font-size: clamp(38px, 6.7vw, 82px);
+      font-weight: 950;
+    }
+
+    .lead {
+      max-width: 710px;
+      margin: 24px 0 0;
+      color: #343a43;
+      font-size: clamp(18px, 2.1vw, 23px);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      min-height: 42px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 9px 14px;
+      border: 2px solid var(--line);
+      background: var(--dark);
+      color: #fff8e8;
+      box-shadow: 5px 5px 0 var(--line);
+      text-decoration: none;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-weight: 900;
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .btn.secondary {
+      background: var(--panel);
+      color: var(--ink);
+    }
+
+    .btn:hover {
+      transform: translate(2px, 2px);
+      box-shadow: 3px 3px 0 var(--line);
+    }
+
+    .rail-card {
+      border: 3px solid var(--line);
+      background: rgba(255, 250, 240, 0.88);
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .rail-svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .train {
+      animation: travel 5.4s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+
+    .train.two {
+      animation-delay: 0.7s;
+    }
+
+    .train.three {
+      animation-delay: 1.4s;
+    }
+
+    .dash-line {
+      stroke-dasharray: 10 10;
+      animation: raildash 8s linear infinite;
+    }
+
+    section {
+      padding: 76px 0;
+    }
+
+    .section-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(280px, 0.55fr);
+      gap: 28px;
+      align-items: end;
+      margin-bottom: 32px;
+      padding-top: 24px;
+      border-top: 3px solid var(--line);
+    }
+
+    h2 {
+      font-size: clamp(30px, 4.4vw, 56px);
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .three-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .lane-card {
+      min-height: 285px;
+      border: 2px solid var(--line);
+      background: var(--panel);
+      box-shadow: 6px 6px 0 rgba(21,25,31,0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lane-card::before {
+      content: "";
+      display: block;
+      height: 9px;
+      background: var(--accent);
+    }
+
+    .lane-body {
+      padding: 20px;
+    }
+
+    .lane-kicker {
+      margin-bottom: 16px;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+
+    .lane-card h3 {
+      margin-bottom: 12px;
+      font-size: 24px;
+    }
+
+    .lane-card p {
+      margin: 0;
+      color: #3b414b;
+    }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .flow-step {
+      border: 2px solid var(--line);
+      background: #fffaf0;
+      box-shadow: 5px 5px 0 rgba(21,25,31,0.13);
+      padding: 16px;
+      min-height: 190px;
+      position: relative;
+    }
+
+    .flow-step::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -13px;
+      width: 18px;
+      height: 18px;
+      border-top: 3px solid var(--line);
+      border-right: 3px solid var(--line);
+      transform: translateY(-50%) rotate(45deg);
+      background: var(--paper);
+      z-index: 2;
+    }
+
+    .flow-step:last-child::after {
+      display: none;
+    }
+
+    .flow-step strong {
+      display: block;
+      margin-bottom: 10px;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      color: var(--accent);
+      font-size: 14px;
+      text-transform: uppercase;
+    }
+
+    .flow-step h3 {
+      margin-bottom: 9px;
+      font-size: 21px;
+    }
+
+    .flow-step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      border: 2px solid var(--line);
+      background: var(--panel);
+      box-shadow: 6px 6px 0 rgba(21,25,31,0.14);
+      padding: 22px;
+    }
+
+    .panel h3 {
+      margin-bottom: 12px;
+      font-size: 25px;
+    }
+
+    .panel p {
+      margin: 0 0 14px;
+      color: #363d48;
+    }
+
+    .panel p:last-child {
+      margin-bottom: 0;
+    }
+
+    .terminal {
+      border: 2px solid var(--line);
+      background: var(--dark);
+      color: #f8eedb;
+      box-shadow: 6px 6px 0 rgba(21,25,31,0.18);
+      overflow: hidden;
+    }
+
+    .terminal-head {
+      display: flex;
+      gap: 7px;
+      padding: 11px 14px;
+      border-bottom: 2px solid #303846;
+      background: #1a202a;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--local);
+    }
+
+    .dot:nth-child(2) {
+      background: var(--stage);
+    }
+
+    .dot:nth-child(3) {
+      background: var(--worktree);
+    }
+
+    pre {
+      margin: 0;
+      padding: 18px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, monospace;
+      background: rgba(21,25,31,0.08);
+      padding: 0.12em 0.32em;
+      border-radius: 4px;
+    }
+
+    .simulator {
+      margin-top: 34px;
+      border: 3px solid var(--line);
+      background: rgba(255, 250, 240, 0.9);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .sim-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      padding: 22px;
+      border-bottom: 3px solid var(--line);
+      background:
+        linear-gradient(135deg, rgba(233,95,75,0.12), transparent 34%),
+        linear-gradient(315deg, rgba(102,91,216,0.12), transparent 36%),
+        #fff4df;
+    }
+
+    .sim-header h3 {
+      font-size: clamp(25px, 3vw, 36px);
+      margin-bottom: 8px;
+    }
+
+    .sim-header p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .sim-reset {
+      min-height: 40px;
+      border: 2px solid var(--line);
+      background: #fffaf0;
+      color: var(--ink);
+      box-shadow: 4px 4px 0 var(--line);
+      padding: 8px 13px;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .sim-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      border-bottom: 3px solid var(--line);
+    }
+
+    .sim-tab {
+      min-height: 54px;
+      border: 0;
+      border-right: 2px solid var(--line);
+      background: #f5ead8;
+      color: var(--ink);
+      cursor: pointer;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .sim-tab:last-child {
+      border-right: 0;
+    }
+
+    .sim-tab[aria-selected="true"] {
+      background: var(--dark);
+      color: #fff8e8;
+    }
+
+    .sim-body {
+      display: grid;
+      grid-template-columns: minmax(320px, 0.85fr) minmax(0, 1.15fr);
+      gap: 0;
+      min-height: 640px;
+    }
+
+    .sim-left {
+      border-right: 3px solid var(--line);
+      background: #101720;
+      color: #f8eedb;
+      display: grid;
+      grid-template-rows: auto auto minmax(0, 1fr);
+    }
+
+    .sim-project {
+      padding: 18px;
+      border-bottom: 2px solid #303846;
+    }
+
+    .sim-project-title {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-weight: 900;
+    }
+
+    .sim-branch {
+      padding: 4px 8px;
+      border: 2px solid #f8eedb;
+      color: #f8eedb;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .file-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .file-tab {
+      border: 2px solid #303846;
+      background: #182434;
+      color: #f8eedb;
+      padding: 5px 9px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .file-tab[aria-selected="true"] {
+      border-color: #f7d36d;
+      background: #26374f;
+    }
+
+    .file-view {
+      min-height: 230px;
+      border: 2px solid #303846;
+      background: #0b1018;
+      color: #d9e2ef;
+      overflow: auto;
+    }
+
+    .file-view pre {
+      padding: 14px;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .sim-terminal {
+      padding: 18px;
+      border-bottom: 2px solid #303846;
+    }
+
+    .command-label {
+      margin-bottom: 9px;
+      color: #8fb4dd;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .command-line {
+      min-height: 54px;
+      border: 2px solid #3b4758;
+      background: #080d14;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      color: #fff8e8;
+      overflow-x: auto;
+    }
+
+    .prompt {
+      color: #4aa3a1;
+      font-weight: 900;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 9px;
+      height: 18px;
+      background: #f7d36d;
+      animation: blink 1s step-end infinite;
+      flex: 0 0 auto;
+    }
+
+    .sim-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .sim-enter,
+    .sim-back,
+    .choice-btn {
+      min-height: 40px;
+      border: 2px solid #f8eedb;
+      background: #f7d36d;
+      color: #11161d;
+      padding: 8px 12px;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-weight: 900;
+      cursor: pointer;
+    }
+
+    .sim-back {
+      background: #fff8e8;
+      color: #11161d;
+    }
+
+    .sim-enter:disabled,
+    .sim-back:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .choice-btn {
+      background: #4aa3a1;
+      color: #fff8e8;
+    }
+
+    .sim-output {
+      padding: 18px;
+      overflow: auto;
+    }
+
+    .sim-output pre {
+      padding: 0;
+      color: #d9e2ef;
+      font-size: 13px;
+    }
+
+    .sim-right {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      background: #fffaf0;
+    }
+
+    .sim-lesson {
+      padding: 18px 20px;
+      border-bottom: 3px solid var(--line);
+      background: #fff2c8;
+    }
+
+    .sim-lesson strong {
+      display: block;
+      margin-bottom: 5px;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-size: 13px;
+      color: var(--danger);
+      text-transform: uppercase;
+    }
+
+    .sim-lesson p {
+      margin: 0;
+      color: #343a43;
+    }
+
+    .sim-spaces {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+      align-content: start;
+    }
+
+    .space-card {
+      min-height: 150px;
+      border: 2px solid var(--line);
+      background: #fffef9;
+      box-shadow: 4px 4px 0 rgba(21,25,31,0.12);
+      overflow: hidden;
+    }
+
+    .space-title {
+      padding: 9px 12px;
+      border-bottom: 2px solid var(--line);
+      background: var(--accent);
+      color: #fff8e8;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-weight: 900;
+    }
+
+    .space-body {
+      padding: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .token {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      border: 2px solid var(--line);
+      background: var(--accent);
+      color: #fff8e8;
+      padding: 4px 8px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      font-weight: 800;
+      animation: bob 2.3s ease-in-out infinite;
+    }
+
+    .commit-token {
+      background: var(--dark);
+    }
+
+    .sim-progress {
+      grid-column: 1 / -1;
+      border: 2px solid var(--line);
+      background: #fffef9;
+      padding: 12px;
+    }
+
+    .progress-track {
+      height: 13px;
+      border: 2px solid var(--line);
+      background: #eadfcf;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--local), var(--stage), var(--github));
+      width: 0%;
+      transition: width 240ms ease;
+    }
+
+    .habit-board {
+      border: 3px solid var(--line);
+      background: #fffaf0;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .habit-grid {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.55fr) minmax(0, 1fr);
+    }
+
+    .habit-menu {
+      border-right: 3px solid var(--line);
+      background: #f5ead8;
+    }
+
+    .habit-button {
+      width: 100%;
+      min-height: 62px;
+      border: 0;
+      border-bottom: 2px solid var(--line);
+      background: transparent;
+      color: var(--ink);
+      padding: 13px 16px;
+      cursor: pointer;
+      text-align: left;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .habit-button:last-child {
+      border-bottom: 0;
+    }
+
+    .habit-button[aria-selected="true"] {
+      background: var(--dark);
+      color: #fff8e8;
+    }
+
+    .habit-detail {
+      padding: 22px;
+      background:
+        linear-gradient(135deg, rgba(74,163,161,0.12), transparent 34%),
+        #fffaf0;
+    }
+
+    .habit-kicker {
+      margin-bottom: 9px;
+      color: var(--github);
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .habit-detail h3 {
+      margin-bottom: 10px;
+      font-size: clamp(24px, 3vw, 34px);
+    }
+
+    .habit-detail p {
+      margin: 0;
+      color: #343a43;
+    }
+
+    .habit-detail-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .habit-note {
+      border: 2px solid var(--line);
+      background: #fffef9;
+      box-shadow: 4px 4px 0 rgba(21,25,31,0.12);
+      padding: 14px;
+      min-height: 134px;
+    }
+
+    .habit-note span {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--local);
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-size: 12px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .habit-checks {
+      margin-top: 22px;
+      border: 3px solid var(--line);
+      background: #fff2c8;
+      padding: 18px;
+      box-shadow: 6px 6px 0 rgba(21,25,31,0.14);
+    }
+
+    .habit-check-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .habit-check-head h3 {
+      font-size: 24px;
+    }
+
+    .habit-meter {
+      min-width: 180px;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-weight: 900;
+      text-align: right;
+    }
+
+    .habit-meter-track {
+      height: 12px;
+      margin-top: 6px;
+      border: 2px solid var(--line);
+      background: #fffaf0;
+      overflow: hidden;
+    }
+
+    .habit-meter-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--local), var(--worktree), var(--github));
+      transition: width 200ms ease;
+    }
+
+    .habit-check-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .habit-check {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      min-height: 54px;
+      border: 2px solid var(--line);
+      background: #fffaf0;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .habit-check input {
+      margin-top: 4px;
+      accent-color: var(--worktree);
+    }
+
+    .stash-demo {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 110px minmax(0, 1fr);
+      gap: 16px;
+      align-items: center;
+      margin-top: 18px;
+    }
+
+    .stash-box,
+    .work-box {
+      min-height: 168px;
+      border: 2px solid var(--line);
+      background: #fffaf0;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stash-box::before,
+    .work-box::before {
+      content: attr(data-label);
+      display: block;
+      margin-bottom: 12px;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-weight: 900;
+      color: var(--accent);
+    }
+
+    .change-chip {
+      display: inline-block;
+      margin: 5px 5px 0 0;
+      padding: 5px 9px;
+      border: 2px solid var(--line);
+      background: var(--accent);
+      color: #fffaf0;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-size: 13px;
+      font-weight: 800;
+      animation: bob 2.4s ease-in-out infinite;
+    }
+
+    .stash-arrow {
+      height: 4px;
+      background: var(--line);
+      position: relative;
+    }
+
+    .stash-arrow::after {
+      content: "";
+      position: absolute;
+      right: -2px;
+      top: 50%;
+      width: 14px;
+      height: 14px;
+      border-top: 4px solid var(--line);
+      border-right: 4px solid var(--line);
+      transform: translateY(-50%) rotate(45deg);
+    }
+
+    .conflict {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .conflict-file {
+      border: 2px solid var(--line);
+      background: #fffaf0;
+      box-shadow: 5px 5px 0 rgba(21,25,31,0.13);
+      overflow: hidden;
+    }
+
+    .conflict-title {
+      padding: 10px 14px;
+      border-bottom: 2px solid var(--line);
+      background: var(--accent);
+      color: #fffaf0;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-weight: 900;
+    }
+
+    .conflict-code {
+      padding: 15px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      line-height: 1.8;
+      font-size: 13px;
+    }
+
+    .mark {
+      color: var(--danger);
+      font-weight: 900;
+    }
+
+    .resolved {
+      color: var(--good);
+      font-weight: 900;
+    }
+
+    .matrix {
+      overflow-x: auto;
+      border: 2px solid var(--line);
+      background: #fffaf0;
+      box-shadow: 6px 6px 0 rgba(21,25,31,0.14);
+    }
+
+    table {
+      width: 100%;
+      min-width: 860px;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 14px 15px;
+      border-bottom: 1px solid rgba(21,25,31,0.16);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #ece2d2;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .callout {
+      border: 2px solid var(--line);
+      background: #fff2c8;
+      box-shadow: 6px 6px 0 rgba(21,25,31,0.14);
+      padding: 20px;
+      font-size: 18px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .mini-card {
+      border: 2px solid var(--line);
+      background: var(--panel);
+      padding: 18px;
+      min-height: 170px;
+      box-shadow: 5px 5px 0 rgba(21,25,31,0.13);
+    }
+
+    .mini-card h3 {
+      margin-bottom: 10px;
+      font-size: 21px;
+    }
+
+    .mini-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .source-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .source {
+      border: 2px solid var(--line);
+      background: var(--panel);
+      padding: 16px;
+      min-height: 150px;
+      box-shadow: 5px 5px 0 rgba(21,25,31,0.12);
+    }
+
+    .source strong {
+      display: block;
+      margin-bottom: 8px;
+      font-family: "Avenir Next", "Gill Sans", sans-serif;
+    }
+
+    .footer {
+      padding: 40px 0 56px;
+      border-top: 3px solid var(--line);
+      background: var(--dark);
+      color: #fff8e8;
+    }
+
+    .footer .section-inner {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .footer p {
+      margin: 0;
+      max-width: 760px;
+      color: #eadfcf;
+    }
+
+    .footer a {
+      color: #f7d36d;
+    }
+
+    @keyframes raildash {
+      to {
+        stroke-dashoffset: -160;
+      }
+    }
+
+    @keyframes travel {
+      0%, 100% {
+        transform: translateX(0);
+      }
+      50% {
+        transform: translateX(22px);
+      }
+    }
+
+    @keyframes bob {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-4px);
+      }
+    }
+
+    @keyframes blink {
+      0%, 45% {
+        opacity: 1;
+      }
+      46%, 100% {
+        opacity: 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .train,
+      .dash-line,
+      .change-chip {
+        animation: none;
+      }
+
+      .btn {
+        transition: none;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .section-head,
+      .split {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: auto;
+      }
+
+      .three-grid,
+      .flow,
+      .source-list,
+      .cards,
+      .habit-detail-grid,
+      .habit-check-list,
+      .sim-tabs,
+      .sim-spaces {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .flow-step::after {
+        display: none;
+      }
+
+      .sim-body,
+      .sim-header,
+      .habit-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sim-left {
+        border-right: 0;
+        border-bottom: 3px solid var(--line);
+      }
+
+      .habit-menu {
+        border-right: 0;
+        border-bottom: 3px solid var(--line);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 0;
+      }
+
+      .nav-links {
+        justify-content: flex-start;
+      }
+
+      section {
+        padding: 56px 0;
+      }
+
+      .three-grid,
+      .flow,
+      .source-list,
+      .cards,
+      .conflict,
+      .habit-detail-grid,
+      .habit-check-list,
+      .stash-demo,
+      .sim-tabs,
+      .sim-spaces {
+        grid-template-columns: 1fr;
+      }
+
+      .habit-check-head {
+        display: block;
+      }
+
+      .habit-meter {
+        margin-top: 12px;
+        text-align: left;
+      }
+
+      .stash-arrow {
+        width: 4px;
+        height: 42px;
+        margin: 0 auto;
+      }
+
+      .stash-arrow::after {
+        right: auto;
+        left: 50%;
+        top: auto;
+        bottom: -1px;
+        transform: translateX(-50%) rotate(135deg);
+      }
+    }
+  </style>
+</head>
+<body id="top">
+  <nav class="nav" aria-label="页面导航">
+    <div class="nav-inner">
+      <div class="brand"><span class="brand-mark"></span><span>Git 三线地图</span></div>
+      <div class="nav-links">
+        <a href="#three-lines">三条线</a>
+        <a href="#flow">基础流程</a>
+        <a href="#git-simulator">操作沙盘</a>
+        <a href="#stash">stash</a>
+        <a href="#merge">merge 冲突</a>
+        <a href="#worktree">Git worktree</a>
+        <a href="#habits">好习惯</a>
+        <a href="#cheatsheet">速查</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <p class="eyebrow">本地 Git / Git Worktree / GitHub 复读手册</p>
+      <h1>把 Git 看成三条轨道，就不容易忘。</h1>
+      <p class="lead">本地 Git 管你电脑上的版本，Git worktree 管并行任务文件夹，GitHub 管云端分支和 PR。commit、stash、merge、push 都只是这三条轨道上的动作。</p>
+      <div class="hero-actions">
+        <a class="btn" href="#three-lines">先看三条线</a>
+        <a class="btn secondary" href="#git-simulator">打开操作沙盘</a>
+      </div>
+    </div>
+
+    <div class="rail-card" aria-label="Git 三条轨道动画">
+      <svg class="rail-svg" viewBox="0 0 650 470" role="img" aria-labelledby="railTitle railDesc">
+        <title id="railTitle">本地 Git、Git worktree、GitHub remote 三条轨道</title>
+        <desc id="railDesc">三条水平轨道分别表示本地 Git、Git worktree 和 GitHub remote。commit 在本地保存，push 上传到 GitHub，worktree 让不同任务并行处理多个分支。</desc>
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#15191f"></path>
+          </marker>
+        </defs>
+        <rect x="28" y="26" width="594" height="414" rx="8" fill="#fffaf0" stroke="#15191f" stroke-width="3"></rect>
+        <text x="54" y="76" font-family="Avenir Next, sans-serif" font-size="20" font-weight="900" fill="#e95f4b">Local Git</text>
+        <text x="54" y="214" font-family="Avenir Next, sans-serif" font-size="20" font-weight="900" fill="#4aa3a1">Git Worktree</text>
+        <text x="54" y="352" font-family="Avenir Next, sans-serif" font-size="20" font-weight="900" fill="#665bd8">GitHub Remote</text>
+
+        <path class="dash-line" d="M58 102 H590" stroke="#15191f" stroke-width="4" fill="none"></path>
+        <path class="dash-line" d="M58 240 H590" stroke="#15191f" stroke-width="4" fill="none"></path>
+        <path class="dash-line" d="M58 378 H590" stroke="#15191f" stroke-width="4" fill="none"></path>
+
+        <g class="train">
+          <rect x="154" y="78" width="92" height="48" rx="8" fill="#e95f4b" stroke="#15191f" stroke-width="3"></rect>
+          <text x="200" y="108" text-anchor="middle" font-family="Avenir Next, sans-serif" font-size="17" font-weight="900" fill="#fffaf0">commit</text>
+        </g>
+        <g class="train two">
+          <rect x="284" y="216" width="104" height="48" rx="8" fill="#4aa3a1" stroke="#15191f" stroke-width="3"></rect>
+          <text x="336" y="246" text-anchor="middle" font-family="Avenir Next, sans-serif" font-size="17" font-weight="900" fill="#fffaf0">worktree</text>
+        </g>
+        <g class="train three">
+          <rect x="430" y="354" width="76" height="48" rx="8" fill="#665bd8" stroke="#15191f" stroke-width="3"></rect>
+          <text x="468" y="384" text-anchor="middle" font-family="Avenir Next, sans-serif" font-size="17" font-weight="900" fill="#fffaf0">PR</text>
+        </g>
+
+        <path d="M246 102 C330 116 350 320 430 364" fill="none" stroke="#15191f" stroke-width="3" marker-end="url(#arrow)"></path>
+        <text x="330" y="168" font-family="Songti SC, serif" font-size="17" fill="#15191f">push 才到 GitHub</text>
+
+        <path d="M388 240 C450 224 470 160 518 112" fill="none" stroke="#15191f" stroke-width="3" marker-end="url(#arrow)"></path>
+        <text x="426" y="205" font-family="Songti SC, serif" font-size="17" fill="#15191f">并行任务互不污染</text>
+      </svg>
+    </div>
+  </header>
+
+  <main>
+    <section id="three-lines">
+      <div class="section-inner">
+        <div class="section-head">
+          <h2>第一件事：分清三条线</h2>
+          <p>你看到的“分支”可能在本地，可能在 GitHub，也可能只是某个 Git worktree 当前 checkout 的分支。</p>
+        </div>
+        <div class="three-grid">
+          <article class="lane-card" style="--accent: var(--local)">
+            <div class="lane-body">
+              <div class="lane-kicker">Line 1</div>
+              <h3>本地 Git</h3>
+              <p>你电脑上的项目文件夹和隐藏的 `.git/` 历史。`commit` 只是把改动保存到本地历史，还没有上传。</p>
+            </div>
+          </article>
+          <article class="lane-card" style="--accent: var(--worktree)">
+            <div class="lane-body">
+              <div class="lane-kicker">Line 2</div>
+              <h3>Git worktree</h3>
+              <p>同一个仓库历史开出多个本地工作区。一个任务一个文件夹，常见分支名像 `feature/phase4-email-autosync`。</p>
+            </div>
+          </article>
+          <article class="lane-card" style="--accent: var(--github)">
+            <div class="lane-body">
+              <div class="lane-kicker">Line 3</div>
+              <h3>GitHub remote</h3>
+              <p>云端仓库、远程分支、Pull Request。只有 `push` 后，GitHub 才能看到你的本地 commit。</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="flow">
+      <div class="section-inner">
+        <div class="section-head">
+          <h2>基础流程：从改文件到 GitHub</h2>
+          <p>把 Git 想成四个空间：工作区、暂存区、本地仓库、远程仓库。</p>
+        </div>
+        <div class="flow">
+          <article class="flow-step" style="--accent: var(--local)">
+            <strong>01 edit</strong>
+            <h3>改文件</h3>
+            <p>你正在编辑的是 working tree。这里的内容还没有进入 Git 历史。</p>
+          </article>
+          <article class="flow-step" style="--accent: var(--stage)">
+            <strong>02 add</strong>
+            <h3>暂存</h3>
+            <p>`git add` 表示“下一次 commit 要包含这些改动”。</p>
+          </article>
+          <article class="flow-step" style="--accent: var(--local)">
+            <strong>03 commit</strong>
+            <h3>本地存档</h3>
+            <p>`git commit` 在本地创建一个版本点。它不等于上传。</p>
+          </article>
+          <article class="flow-step" style="--accent: var(--github)">
+            <strong>04 push</strong>
+            <h3>上传远端</h3>
+            <p>`git push` 才把本地 commit 发到 GitHub 的远程分支。</p>
+          </article>
+          <article class="flow-step" style="--accent: var(--github)">
+            <strong>05 PR</strong>
+            <h3>请求合并</h3>
+            <p>PR 是 GitHub 页面，用来请求把 head branch 合进 base branch。</p>
+          </article>
+        </div>
+        <div class="split" style="margin-top: 24px">
+          <div class="panel">
+            <h3>你最该记住的一句</h3>
+            <p><strong>commit 是本地保存，push 才到 GitHub。</strong></p>
+            <p>所以截图里显示某个 `feature/...` 分支，不代表 GitHub 上一定已经有它。看有没有远程分支，要查 `git branch -a` 或 GitHub 页面。</p>
+          </div>
+          <div class="terminal">
+            <div class="terminal-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+            <pre>git status
+git add docs/example.md
+git commit -m "docs: explain git basics"
+git push -u origin feature/git-guide</pre>
+          </div>
+        </div>
+
+        <div class="simulator" id="git-simulator" aria-label="交互式 Git 操作沙盘">
+          <div class="sim-header">
+            <div>
+              <h3>Git 操作沙盘：按 Enter 推进一遍</h3>
+              <p>这是一个模拟项目，不会真的改你的文件。每按一次 Enter，就执行下一条模拟命令，并同步更新工作区、暂存区、本地提交、GitHub 远端和 stash。</p>
+            </div>
+            <button class="sim-reset" type="button" id="sim-reset">重置路线</button>
+          </div>
+
+          <div class="sim-tabs" role="tablist" aria-label="选择模拟路线">
+            <button class="sim-tab" type="button" data-scenario="basic" aria-selected="true">基础：提交并 push</button>
+            <button class="sim-tab" type="button" data-scenario="branch" aria-selected="false">分支：新功能到 PR</button>
+            <button class="sim-tab" type="button" data-scenario="stash" aria-selected="false">stash：临时抽屉</button>
+            <button class="sim-tab" type="button" data-scenario="merge" aria-selected="false">merge：冲突处理</button>
+          </div>
+
+          <div class="sim-body">
+            <div class="sim-left">
+              <div class="sim-project">
+                <div class="sim-project-title">
+                  <span id="sim-project-title">mini-site</span>
+                  <span class="sim-branch" id="sim-branch">main</span>
+                </div>
+                <div class="file-tabs" id="sim-file-tabs" aria-label="模拟项目文件"></div>
+                <div class="file-view" aria-live="polite">
+                  <pre id="sim-file-view"></pre>
+                </div>
+              </div>
+
+              <div class="sim-terminal">
+                <div class="command-label">下一条命令 / 动作</div>
+                <div class="command-line">
+                  <span class="prompt">$</span>
+                  <span id="sim-command">准备开始</span>
+                  <span class="cursor" aria-hidden="true"></span>
+                </div>
+                <div class="sim-actions">
+                  <button class="sim-enter" type="button" id="sim-enter">Enter 执行下一步</button>
+                  <button class="sim-back" type="button" id="sim-back">返回上一步</button>
+                  <span id="sim-choice-actions"></span>
+                </div>
+              </div>
+
+              <div class="sim-output" aria-live="polite">
+                <div class="command-label">终端输出</div>
+                <pre id="sim-output"></pre>
+              </div>
+            </div>
+
+            <div class="sim-right">
+              <div class="sim-lesson">
+                <strong id="sim-step-label">Step 0</strong>
+                <p id="sim-explain">选择一条路线，然后按 Enter。先看状态怎么变，不需要背命令。</p>
+              </div>
+
+              <div class="sim-spaces">
+                <div class="space-card" style="--accent: var(--local)">
+                  <div class="space-title">Working tree 工作区</div>
+                  <div class="space-body" id="sim-working"></div>
+                </div>
+                <div class="space-card" style="--accent: var(--stage)">
+                  <div class="space-title">Staging area 暂存区</div>
+                  <div class="space-body" id="sim-staged"></div>
+                </div>
+                <div class="space-card" style="--accent: var(--local)">
+                  <div class="space-title">Local commits 本地历史</div>
+                  <div class="space-body" id="sim-local"></div>
+                </div>
+                <div class="space-card" style="--accent: var(--github)">
+                  <div class="space-title">GitHub remote 远端</div>
+                  <div class="space-body" id="sim-remote"></div>
+                </div>
+                <div class="space-card" style="--accent: var(--worktree)">
+                  <div class="space-title">Stash 临时抽屉</div>
+                  <div class="space-body" id="sim-stash"></div>
+                </div>
+                <div class="space-card" style="--accent: var(--github)">
+                  <div class="space-title">PR / Merge 状态</div>
+                  <div class="space-body" id="sim-pr"></div>
+                </div>
+                <div class="sim-progress">
+                  <strong id="sim-progress-text">进度 0 / 0</strong>
+                  <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="sim-progress-fill"></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="worktree">
+      <div class="section-inner">
+        <div class="section-head">
+          <h2>Git worktree：并行桌面</h2>
+          <p>worktree 不是 GitHub 分支。它是本地文件夹，但它可以 checkout 到不同分支。</p>
+        </div>
+        <div class="split">
+          <div class="panel">
+            <h3>普通切分支</h3>
+            <p>一个项目文件夹里切来切去。切到 `main`，这个文件夹显示 main 的文件；切到 `phase4`，同一个文件夹显示 phase4 的文件。</p>
+            <div class="terminal">
+              <div class="terminal-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+              <pre>git switch main
+git switch feature/phase4-email-autosync</pre>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>常见 worktree</h3>
+            <p>多个文件夹并行存在。phase3 和 phase4 可以同时打开，各自有自己的未提交改动，互相不挤占桌面。</p>
+            <div class="terminal">
+              <div class="terminal-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+              <pre>git worktree list
+
+/project-main    [main]
+/project-phase3  [feature/phase3]
+/project-phase4  [feature/phase4]</pre>
+            </div>
+          </div>
+        </div>
+        <div class="callout" style="margin-top: 22px">
+          你的当前总控项目实况：当前分支是 <code>master</code>，没有配置 <code>origin</code> 远程地址，当前只看到一个 worktree。所以这份页面讲的是通用模型，不会假设这个项目已经连上 GitHub。
+        </div>
+      </div>
+    </section>
+
+    <section id="stash">
+      <div class="section-inner">
+        <div class="section-head">
+          <h2>stash：临时抽屉</h2>
+          <p>stash 保存的是还没 commit 的改动。它不是分支，也不是 GitHub 备份。</p>
+        </div>
+        <div class="split">
+          <div class="panel">
+            <h3>什么时候用</h3>
+            <p>你写到一半，还不想 commit，但需要切分支、pull、或者让工作区先变干净。</p>
+            <p>这时用 stash 把未完成改动塞进临时抽屉。之后可以拿回来。</p>
+            <div class="terminal">
+              <div class="terminal-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+              <pre>git stash push -m "WIP: 正在写 Git 教程"
+git stash list
+git stash apply
+git stash pop</pre>
+            </div>
+          </div>
+          <div class="panel">
+            <h3>apply 和 pop</h3>
+            <p><code>apply</code> 是拿出来，但抽屉里还留一份。适合你怕拿出来失败，想保留备份。</p>
+            <p><code>pop</code> 是拿出来，并删除抽屉里的那份。适合你很确定这次恢复成功。</p>
+            <div class="stash-demo">
+              <div class="work-box" data-label="Working tree" style="--accent: var(--local)">
+                <span class="change-chip" style="--accent: var(--local)">未提交修改</span>
+                <span class="change-chip" style="--accent: var(--stage)">已暂存修改</span>
+              </div>
+              <div class="stash-arrow"></div>
+              <div class="stash-box" data-label="Stash drawer" style="--accent: var(--github)">
+                <span class="change-chip" style="--accent: var(--github)">stash@{0}</span>
+                <span class="change-chip" style="--accent: var(--github)">stash@{1}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="callout" style="margin-top: 22px">
+          默认 stash 通常不保存新建但还没有被 Git 跟踪的文件。要一起保存新文件，用 <code>git stash push -u -m "message"</code>。
+        </div>
+      </div>
+    </section>
+
+    <section id="merge">
+      <div class="section-inner">
+        <div class="section-head">
+          <h2>merge：把别的版本线合进当前版本线</h2>
+          <p>merge 最容易忘的点是“当前分支”。你站在哪条分支上，merge 就会改哪条分支。</p>
+        </div>
+        <div class="split">
+          <div class="panel">
+            <h3>安全理解</h3>
+            <p>如果你想把 <code>feature/git-guide</code> 合进 <code>master</code>，你要先站到 <code>master</code> 上。</p>
+            <div class="terminal">
+              <div class="terminal-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+              <pre>git switch master
+git merge feature/git-guide</pre>
+            </div>
+            <p>这句话的意思是：把 <code>feature/git-guide</code> 的改动拿过来，合进我当前所在的 <code>master</code>。</p>
+          </div>
+          <div class="panel">
+            <h3>冲突是什么</h3>
+            <p>两条分支都改了同一个地方，Git 不知道该保留哪边，就会停下来让你决定。</p>
+            <p>这不是错误，而是 Git 在请你做选择。</p>
+          </div>
+        </div>
+
+        <div class="conflict" style="margin-top: 24px">
+          <div class="conflict-file" style="--accent: var(--danger)">
+            <div class="conflict-title">冲突中的文件</div>
+            <div class="conflict-code">
+              <div class="mark">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</div>
+              <div>教程是本地学习页面。</div>
+              <div class="mark">=======</div>
+              <div>教程是交互式学习页面。</div>
+              <div class="mark">&gt;&gt;&gt;&gt;&gt;&gt;&gt; feature/git-guide</div>
+            </div>
+          </div>
+          <div class="conflict-file" style="--accent: var(--good)">
+            <div class="conflict-title">手工解决后</div>
+            <div class="conflict-code">
+              <div class="resolved">教程是交互式本地学习页面。</div>
+              <br>
+              <div>删除所有冲突标记。</div>
+              <div>保存文件。</div>
+              <div>然后运行 <code>git add</code> 和 <code>git commit</code>。</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="terminal" style="margin-top: 24px">
+          <div class="terminal-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <pre>git status
+# 打开冲突文件，手工解决
+git add 冲突文件
+git commit
+
+# 如果发现合错了，而且还没完成 merge
+git merge --abort</pre>
+        </div>
+      </div>
+    </section>
+
+    <section id="habits">
+      <div class="section-inner">
+        <div class="section-head">
+          <h2>优秀使用者的 Git 习惯</h2>
+          <p>高手不是背了更多命令，而是每次操作前都知道：我站在哪、我要改哪一层状态、如果错了怎么退回来。</p>
+        </div>
+
+        <div class="habit-board" aria-label="优秀 Git 使用习惯交互卡片">
+          <div class="habit-grid">
+            <div class="habit-menu" role="tablist" aria-label="选择 Git 使用习惯">
+              <button class="habit-button" type="button" data-habit="0" aria-selected="true">01 先看状态</button>
+              <button class="habit-button" type="button" data-habit="1" aria-selected="false">02 小步 commit</button>
+              <button class="habit-button" type="button" data-habit="2" aria-selected="false">03 分支装任务</button>
+              <button class="habit-button" type="button" data-habit="3" aria-selected="false">04 先看 diff</button>
+              <button class="habit-button" type="button" data-habit="4" aria-selected="false">05 保持干净</button>
+              <button class="habit-button" type="button" data-habit="5" aria-selected="false">06 stash 不当仓库</button>
+              <button class="habit-button" type="button" data-habit="6" aria-selected="false">07 冲突看含义</button>
+              <button class="habit-button" type="button" data-habit="7" aria-selected="false">08 PR 早沟通</button>
+            </div>
+
+            <div class="habit-detail" aria-live="polite">
+              <div class="habit-kicker" id="habit-kicker">Habit 01</div>
+              <h3 id="habit-title">先看状态，再下命令</h3>
+              <p id="habit-summary">在敲会改变状态的命令前，先确认当前分支、工作区、暂存区和远端关系。优秀使用者很少靠猜。</p>
+
+              <div class="habit-detail-grid">
+                <article class="habit-note">
+                  <span>他们会问</span>
+                  <p id="habit-question">我现在站在哪条分支？工作区有没有没保存进 commit 的东西？</p>
+                </article>
+                <article class="habit-note">
+                  <span>常见失误</span>
+                  <p id="habit-risk">直接 merge、pull、switch，结果才发现自己站错分支或带着脏工作区。</p>
+                </article>
+                <article class="habit-note">
+                  <span>好习惯</span>
+                  <p id="habit-action">先跑只读命令，再决定下一步。看清楚再动手，Git 就不吓人。</p>
+                </article>
+              </div>
+
+              <div class="terminal">
+                <div class="terminal-head"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+                <pre id="habit-commands">git status
+git branch --show-current
+git log --oneline --decorate -5</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="habit-checks">
+          <div class="habit-check-head">
+            <div>
+              <h3>按 Enter 前的 6 秒自检</h3>
+              <p>把这几项养成肌肉记忆，比背十条命令更有用。</p>
+            </div>
+            <div class="habit-meter">
+              <span id="habit-meter-text">已检查 0 / 6</span>
+              <div class="habit-meter-track" aria-hidden="true"><div class="habit-meter-fill" id="habit-meter-fill"></div></div>
+            </div>
+          </div>
+          <div class="habit-check-list">
+            <label class="habit-check"><input type="checkbox" data-habit-check>我知道当前分支是哪条</label>
+            <label class="habit-check"><input type="checkbox" data-habit-check>我看过 <code>git status</code></label>
+            <label class="habit-check"><input type="checkbox" data-habit-check>我知道哪些改动在 working tree</label>
+            <label class="habit-check"><input type="checkbox" data-habit-check>我知道哪些改动在 staging area</label>
+            <label class="habit-check"><input type="checkbox" data-habit-check>我看过这次 commit/PR 的 diff</label>
+            <label class="habit-check"><input type="checkbox" data-habit-check>我知道错了该 reset、stash、abort 还是回退 commit</label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cheatsheet">
+      <div class="section-inner">
+        <div class="section-head">
+          <h2>你以后先看这张表</h2>
+          <p>忘了没关系。先判断你要操作的是工作区、本地历史、worktree，还是 GitHub 远端。</p>
+        </div>
+        <div class="matrix">
+          <table>
+            <thead>
+              <tr>
+                <th>你想知道什么</th>
+                <th>命令</th>
+                <th>它会不会改文件</th>
+                <th>怎么理解</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>现在改了什么</td>
+                <td><code>git status</code></td>
+                <td>不会</td>
+                <td>安全检查第一步。</td>
+              </tr>
+              <tr>
+                <td>当前在哪个分支</td>
+                <td><code>git branch --show-current</code></td>
+                <td>不会</td>
+                <td>先确认你站在哪条版本线。</td>
+              </tr>
+              <tr>
+                <td>有没有 GitHub 远端</td>
+                <td><code>git remote -v</code></td>
+                <td>不会</td>
+                <td>没有 origin，就还没连上 GitHub 仓库。</td>
+              </tr>
+              <tr>
+                <td>Git 开了哪些 worktree</td>
+                <td><code>git worktree list</code></td>
+                <td>不会</td>
+                <td>看本地有哪些并行文件夹。</td>
+              </tr>
+              <tr>
+                <td>保存本地版本</td>
+                <td><code>git add</code> + <code>git commit</code></td>
+                <td>会写入本地历史</td>
+                <td>还没有上传 GitHub。</td>
+              </tr>
+              <tr>
+                <td>上传到 GitHub</td>
+                <td><code>git push</code></td>
+                <td>不会改本地文件</td>
+                <td>把本地 commit 发到远程分支。</td>
+              </tr>
+              <tr>
+                <td>临时收起改动</td>
+                <td><code>git stash push -m "message"</code></td>
+                <td>会让工作区变干净</td>
+                <td>把未提交改动放进临时抽屉。</td>
+              </tr>
+              <tr>
+                <td>合并分支</td>
+                <td><code>git merge 分支名</code></td>
+                <td>会改当前分支</td>
+                <td>把对方分支合进你当前站着的分支。</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="cards" style="margin-top: 24px">
+          <article class="mini-card">
+            <h3>先不要随便用</h3>
+            <p><code>git reset --hard</code>、<code>git clean -fd</code>、<code>git push --force</code> 都有丢数据风险。不确定时先让工具或同伴检查。</p>
+          </article>
+          <article class="mini-card">
+            <h3>记忆口诀</h3>
+            <p>commit 本地存档，push 上传远端；stash 临时抽屉，merge 合进当前；worktree 是多个本地桌面，PR 是 GitHub 的合并请求。</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-inner">
+        <div class="section-head">
+          <h2>官方参考</h2>
+          <p>这些链接是这份教程用来校准概念的主要来源。</p>
+        </div>
+        <div class="source-list">
+          <article class="source">
+            <strong>Git stash</strong>
+            <a href="https://git-scm.com/docs/git-stash">git-scm.com/docs/git-stash</a>
+          </article>
+          <article class="source">
+            <strong>Git merge</strong>
+            <a href="https://git-scm.com/docs/git-merge">git-scm.com/docs/git-merge</a>
+          </article>
+          <article class="source">
+            <strong>Git worktree</strong>
+            <a href="https://git-scm.com/docs/git-worktree">git-scm.com/docs/git-worktree</a>
+          </article>
+          <article class="source">
+            <strong>Git branching</strong>
+            <a href="https://git-scm.com/book/en/v2/Git-Branching-Basic-Branching-and-Merging">Pro Git: Branching and Merging</a>
+          </article>
+          <article class="source">
+            <strong>GitHub PR</strong>
+            <a href="https://docs.github.com/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/about-pull-requests">GitHub: About pull requests</a>
+          </article>
+          <article class="source">
+            <strong>Merge conflicts</strong>
+            <a href="https://docs.github.com/pull-requests/collaborating-with-pull-requests/addressing-merge-conflicts/about-merge-conflicts">GitHub: About merge conflicts</a>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="section-inner">
+      <p>给未来的你：忘命令时不要硬背。先问自己：我现在要动的是本地文件、本地 commit、Git worktree，还是 GitHub 远端？定位到轨道，命令就会自己排队。</p>
+      <a href="#top">回到顶部</a>
+    </div>
+  </footer>
+  <script>
+    (() => {
+      const baseFiles = {
+        "src/app.js": `export function renderHome() {
+  return "Hello learner";
+}
+
+console.log(renderHome());`,
+        "README.md": `# mini-site
+
+一个用来学习 Git 的极小项目。`
+      };
+
+      const changedApp = `export function renderHome() {
+  return "Hello learner, start learning Git";
+}
+
+console.log(renderHome());`;
+
+      const mainBranchApp = `export function renderHome() {
+  return "Hello from main";
+}
+
+console.log(renderHome());`;
+
+      const sidebarFile = `# Sidebar Notes
+
+- 记录每天的学习入口
+- 放常用 Git 命令
+- 遇到冲突先看 git status`;
+
+      const conflictFile = `export function renderHome() {
+<<<<<<< HEAD
+  return "Hello from main";
+=======
+  return "Hello learner, start learning Git";
+>>>>>>> feature/title-change
+}
+
+console.log(renderHome());`;
+
+      const resolvedFile = `export function renderHome() {
+  return "Hello from main, start learning Git";
+}
+
+console.log(renderHome());`;
+
+      const baseState = {
+        branch: "main",
+        files: baseFiles,
+        working: [],
+        staged: [],
+        local: ["a1b2c3d init mini-site"],
+        remote: ["a1b2c3d init mini-site"],
+        stash: [],
+        pr: []
+      };
+
+      const scenarioData = {
+        basic: {
+          name: "基础：提交并 push",
+          steps: [
+            {
+              label: "Step 0",
+              explain: "初始状态：本地和 GitHub 都只有一个初始 commit。文件还没有变化。",
+              output: "mini-site 已准备好。按 Enter 模拟第一次修改文件。",
+              state: baseState
+            },
+            {
+              command: "手动修改 src/app.js",
+              label: "Step 1",
+              explain: "你在编辑器里改了文件。Git 能看到工作区有改动，但还没进入暂存区。",
+              output: "已把首页文案改成：Hello learner, start learning Git",
+              state: {
+                ...baseState,
+                files: { ...baseFiles, "src/app.js": changedApp },
+                working: ["M src/app.js"]
+              }
+            },
+            {
+              command: "git status",
+              label: "Step 2",
+              explain: "status 是安全检查。它只告诉你发生了什么，不会改文件。",
+              output: `On branch main
+Changes not staged for commit:
+  modified: src/app.js
+
+no changes added to commit`,
+              state: {
+                ...baseState,
+                files: { ...baseFiles, "src/app.js": changedApp },
+                working: ["M src/app.js"]
+              }
+            },
+            {
+              command: "git add src/app.js",
+              label: "Step 3",
+              explain: "git add 把改动放进暂存区。意思是：下一次 commit 要包含这个文件。",
+              output: "src/app.js 已进入 staging area。",
+              state: {
+                ...baseState,
+                files: { ...baseFiles, "src/app.js": changedApp },
+                staged: ["M src/app.js"]
+              }
+            },
+            {
+              command: "git commit -m \"feat: improve homepage copy\"",
+              label: "Step 4",
+              explain: "commit 在本地历史里创建一个新版本点。注意：它还没有上传到 GitHub。",
+              output: `[main b7c9e21] feat: improve homepage copy
+ 1 file changed, 1 insertion(+), 1 deletion(-)`,
+              state: {
+                ...baseState,
+                files: { ...baseFiles, "src/app.js": changedApp },
+                local: ["b7c9e21 feat: improve homepage copy", "a1b2c3d init mini-site"]
+              }
+            },
+            {
+              command: "git push origin main",
+              label: "Step 5",
+              explain: "push 才把本地 commit 上传到 GitHub。现在远端也能看到 b7c9e21。",
+              output: `To github.com:your-name/mini-site.git
+   a1b2c3d..b7c9e21  main -> main`,
+              state: {
+                ...baseState,
+                files: { ...baseFiles, "src/app.js": changedApp },
+                local: ["b7c9e21 feat: improve homepage copy", "a1b2c3d init mini-site"],
+                remote: ["b7c9e21 feat: improve homepage copy", "a1b2c3d init mini-site"],
+                pr: ["main 已同步到 GitHub"]
+              }
+            }
+          ]
+        },
+        branch: {
+          name: "分支：新功能到 PR",
+          steps: [
+            {
+              label: "Step 0",
+              explain: "从 main 开始。main 是稳定主线，新功能通常先开新分支。",
+              output: "准备从 main 创建一个功能分支。",
+              state: baseState
+            },
+            {
+              command: "git switch -c feature/sidebar-notes",
+              label: "Step 1",
+              explain: "新分支是从当前 commit 分出来的一条版本线。分支不是文件夹，只是一个指向 commit 的名字。",
+              output: "Switched to a new branch 'feature/sidebar-notes'",
+              state: { ...baseState, branch: "feature/sidebar-notes" }
+            },
+            {
+              command: "手动创建 docs/sidebar.md",
+              label: "Step 2",
+              explain: "新文件刚创建但还没 git add 时，Git 会标成 ??。A 是 added，表示已经进入暂存区。",
+              output: "created docs/sidebar.md; git status shows it as untracked: ?? docs/sidebar.md",
+              state: {
+                ...baseState,
+                branch: "feature/sidebar-notes",
+                files: { ...baseFiles, "docs/sidebar.md": sidebarFile },
+                working: ["?? docs/sidebar.md"]
+              }
+            },
+            {
+              command: "git add docs/sidebar.md",
+              label: "Step 3",
+              explain: "git add 之后，新文件才从 ?? 变成 A。A 表示这次 commit 准备新增这个文件。",
+              output: "docs/sidebar.md staged",
+              state: {
+                ...baseState,
+                branch: "feature/sidebar-notes",
+                files: { ...baseFiles, "docs/sidebar.md": sidebarFile },
+                staged: ["A docs/sidebar.md"]
+              }
+            },
+            {
+              command: "git commit -m \"docs: add sidebar notes\"",
+              label: "Step 4",
+              explain: "本地分支现在比 main 多一个 commit，但 GitHub 还不知道。",
+              output: `[feature/sidebar-notes c31a9f0] docs: add sidebar notes
+ 1 file changed, 5 insertions(+)`,
+              state: {
+                ...baseState,
+                branch: "feature/sidebar-notes",
+                files: { ...baseFiles, "docs/sidebar.md": sidebarFile },
+                local: ["c31a9f0 docs: add sidebar notes", "a1b2c3d init mini-site"]
+              }
+            },
+            {
+              command: "git push -u origin feature/sidebar-notes",
+              label: "Step 5",
+              explain: "第一次 push 新分支常用 -u，让本地分支记住对应的远端分支。",
+              output: `remote: Create a pull request for 'feature/sidebar-notes'
+To github.com:your-name/mini-site.git
+ * [new branch] feature/sidebar-notes -> feature/sidebar-notes`,
+              state: {
+                ...baseState,
+                branch: "feature/sidebar-notes",
+                files: { ...baseFiles, "docs/sidebar.md": sidebarFile },
+                local: ["c31a9f0 docs: add sidebar notes", "a1b2c3d init mini-site"],
+                remote: ["origin/feature/sidebar-notes: c31a9f0", "origin/main: a1b2c3d"],
+                pr: ["可创建 PR: feature/sidebar-notes -> main"]
+              }
+            },
+            {
+              command: "在 GitHub 上创建 Pull Request",
+              label: "Step 6",
+              explain: "PR 是 GitHub 页面。它请求把 head branch 合进 base branch，不是本地分支本身。",
+              output: "Pull Request opened: feature/sidebar-notes -> main",
+              state: {
+                ...baseState,
+                branch: "feature/sidebar-notes",
+                files: { ...baseFiles, "docs/sidebar.md": sidebarFile },
+                local: ["c31a9f0 docs: add sidebar notes", "a1b2c3d init mini-site"],
+                remote: ["origin/feature/sidebar-notes: c31a9f0", "origin/main: a1b2c3d"],
+                pr: ["PR #12 open", "base: main", "head: feature/sidebar-notes"]
+              }
+            }
+          ]
+        },
+        stash: {
+          name: "stash：临时抽屉",
+          steps: [
+            {
+              label: "Step 0",
+              explain: "stash 适合写到一半但暂时不想 commit 的场景。",
+              output: "准备模拟：写到一半，需要临时切走。",
+              state: baseState
+            },
+            {
+              command: "手动修改 src/app.js，并新建 docs/todo.md",
+              label: "Step 1",
+              explain: "M 表示已跟踪文件被修改。?? 表示新文件还没被 Git 跟踪；它不是 A，只有 git add 之后才会变成 A。",
+              output: "working tree now has one modified file and one untracked file: ?? docs/todo.md",
+              state: {
+                ...baseState,
+                files: {
+                  ...baseFiles,
+                  "src/app.js": changedApp,
+                  "docs/todo.md": "# TODO\n\n- 继续写侧边栏\n- 之后再 commit"
+                },
+                working: ["M src/app.js", "?? docs/todo.md"]
+              }
+            },
+            {
+              command: "git stash push -u -m \"WIP: sidebar experiment\"",
+              label: "Step 2",
+              explain: "-u 表示连未跟踪的新文件也一起放进 stash。现在工作区变干净了。",
+              output: "Saved working directory and index state WIP: sidebar experiment",
+              state: {
+                ...baseState,
+                stash: ["stash@{0} WIP: sidebar experiment"]
+              },
+              choices: [
+                { label: "执行 git stash apply", target: 3 },
+                { label: "执行 git stash pop", target: 4 }
+              ]
+            },
+            {
+              command: "git stash apply stash@{0}",
+              label: "Step 3A",
+              explain: "apply 把改动拿回工作区，但 stash 抽屉里还保留一份，像复制出来。",
+              output: "Applied stash@{0}. The stash entry is kept.",
+              state: {
+                ...baseState,
+                files: {
+                  ...baseFiles,
+                  "src/app.js": changedApp,
+                  "docs/todo.md": "# TODO\n\n- 继续写侧边栏\n- 之后再 commit"
+                },
+                working: ["M src/app.js", "?? docs/todo.md"],
+                stash: ["stash@{0} WIP: sidebar experiment"]
+              }
+            },
+            {
+              command: "git stash pop stash@{0}",
+              label: "Step 3B",
+              explain: "pop 把改动拿回工作区，并删除 stash 抽屉里的那份，像取出来。",
+              output: "Dropped refs/stash@{0}. Working changes restored.",
+              state: {
+                ...baseState,
+                files: {
+                  ...baseFiles,
+                  "src/app.js": changedApp,
+                  "docs/todo.md": "# TODO\n\n- 继续写侧边栏\n- 之后再 commit"
+                },
+                working: ["M src/app.js", "?? docs/todo.md"]
+              }
+            }
+          ]
+        },
+        merge: {
+          name: "merge：冲突处理",
+          steps: [
+            {
+              label: "Step 0",
+              explain: "现在有两条版本线：main 和 feature/title-change。它们都改了 src/app.js 的同一行。",
+              output: "准备把 feature/title-change 合进 main。",
+              state: {
+                ...baseState,
+                files: { ...baseFiles, "src/app.js": mainBranchApp },
+                pr: ["main: return \"Hello from main\"", "feature/title-change: return \"Hello learner, start learning Git\""]
+              }
+            },
+            {
+              command: "git switch main",
+              label: "Step 1",
+              explain: "merge 会改当前分支，所以先站到你想合入的分支上。",
+              output: "Switched to branch 'main'",
+              state: {
+                ...baseState,
+                files: { ...baseFiles, "src/app.js": mainBranchApp },
+                pr: ["当前分支：main"]
+              }
+            },
+            {
+              command: "git merge feature/title-change",
+              label: "Step 2",
+              explain: "两边改了同一行，Git 无法自动判断，于是把冲突标记写进文件，等你决定。",
+              output: `Auto-merging src/app.js
+CONFLICT (content): Merge conflict in src/app.js
+Automatic merge failed; fix conflicts and then commit the result.`,
+              state: {
+                ...baseState,
+                files: { ...baseFiles, "src/app.js": conflictFile },
+                working: ["UU src/app.js"],
+                pr: ["MERGE CONFLICT"]
+              },
+              choices: [
+                { label: "手工合成两边意思", target: 3 }
+              ]
+            },
+            {
+              command: "手工解决 src/app.js 冲突",
+              label: "Step 3A",
+              explain: "最常见的好选择：删掉冲突标记，把两边有用的意思合成一个新版本。",
+              output: "conflict markers removed; combined version saved",
+              state: {
+                ...baseState,
+                files: { ...baseFiles, "src/app.js": resolvedFile },
+                working: ["M src/app.js"],
+                pr: ["冲突已手工解决，等待 git add"]
+              }
+            },
+            {
+              command: "git add src/app.js",
+              label: "Step 4",
+              explain: "git add 在冲突场景里表示：这个冲突文件我已经解决好了。",
+              output: "src/app.js marked as resolved",
+              state: {
+                ...baseState,
+                files: { ...baseFiles, "src/app.js": resolvedFile },
+                staged: ["M src/app.js"],
+                pr: ["resolved"]
+              }
+            },
+            {
+              command: "git commit",
+              label: "Step 5",
+              explain: "完成 merge commit。现在 main 吸收了对方分支的改动。",
+              output: `[main e52d7aa] Merge branch 'feature/title-change'
+ 1 file changed`,
+              state: {
+                ...baseState,
+                files: { ...baseFiles, "src/app.js": resolvedFile },
+                local: ["e52d7aa Merge branch feature/title-change", "a1b2c3d init mini-site"],
+                pr: ["merge complete"]
+              }
+            },
+          ]
+        }
+      };
+
+      const els = {
+        tabs: Array.from(document.querySelectorAll(".sim-tab")),
+        reset: document.getElementById("sim-reset"),
+        enter: document.getElementById("sim-enter"),
+        back: document.getElementById("sim-back"),
+        command: document.getElementById("sim-command"),
+        output: document.getElementById("sim-output"),
+        explain: document.getElementById("sim-explain"),
+        label: document.getElementById("sim-step-label"),
+        branch: document.getElementById("sim-branch"),
+        fileTabs: document.getElementById("sim-file-tabs"),
+        fileView: document.getElementById("sim-file-view"),
+        choices: document.getElementById("sim-choice-actions"),
+        working: document.getElementById("sim-working"),
+        staged: document.getElementById("sim-staged"),
+        local: document.getElementById("sim-local"),
+        remote: document.getElementById("sim-remote"),
+        stash: document.getElementById("sim-stash"),
+        pr: document.getElementById("sim-pr"),
+        progressText: document.getElementById("sim-progress-text"),
+        progressFill: document.getElementById("sim-progress-fill")
+      };
+
+      let scenarioId = "basic";
+      let current = 0;
+      let currentFile = "src/app.js";
+      let history = [];
+
+      function scenario() {
+        return scenarioData[scenarioId];
+      }
+
+      function step() {
+        return scenario().steps[current];
+      }
+
+      function nextIndex() {
+        const active = step();
+        if (typeof active.nextOverride === "number") return active.nextOverride;
+        return current + 1;
+      }
+
+      function nextStep() {
+        return scenario().steps[nextIndex()];
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      function renderList(target, items, accent, commitMode = false) {
+        target.innerHTML = "";
+        if (!items || items.length === 0) {
+          const empty = document.createElement("span");
+          empty.className = "empty";
+          empty.textContent = "空";
+          target.appendChild(empty);
+          return;
+        }
+        items.forEach((item) => {
+          const token = document.createElement("span");
+          token.className = commitMode ? "token commit-token" : "token";
+          token.style.setProperty("--accent", accent);
+          token.textContent = item;
+          target.appendChild(token);
+        });
+      }
+
+      function renderFiles(files) {
+        const names = Object.keys(files);
+        if (!names.includes(currentFile)) currentFile = names[0];
+        els.fileTabs.innerHTML = "";
+        names.forEach((name) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "file-tab";
+          button.textContent = name;
+          button.setAttribute("aria-selected", name === currentFile ? "true" : "false");
+          button.addEventListener("click", () => {
+            currentFile = name;
+            render();
+          });
+          els.fileTabs.appendChild(button);
+        });
+        els.fileView.innerHTML = escapeHtml(files[currentFile] || "");
+      }
+
+      function renderChoices(active) {
+        els.choices.innerHTML = "";
+        if (!active.choices) return;
+        active.choices.forEach((choice) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "choice-btn";
+          button.textContent = choice.label;
+          button.addEventListener("click", () => {
+            history.push(current);
+            current = choice.target;
+            render();
+          });
+          els.choices.appendChild(button);
+        });
+      }
+
+      function render() {
+        const active = step();
+        const state = active.state;
+        const upcoming = active.choices ? null : nextStep();
+        const total = scenario().steps.length - 1;
+        const done = !upcoming && !active.choices;
+
+        els.tabs.forEach((tab) => {
+          tab.setAttribute("aria-selected", tab.dataset.scenario === scenarioId ? "true" : "false");
+        });
+        els.branch.textContent = state.branch;
+        els.label.textContent = active.label;
+        els.explain.textContent = active.explain;
+        els.output.textContent = active.output;
+        els.command.textContent = active.choices
+          ? "请选择一个解决动作"
+          : upcoming
+            ? upcoming.command
+            : "路线完成";
+        els.enter.disabled = Boolean(active.choices || done);
+        els.enter.textContent = done ? "已完成" : "Enter 执行下一步";
+        els.back.disabled = history.length === 0;
+        els.progressText.textContent = `进度 ${Math.min(current, total)} / ${total}`;
+        els.progressFill.style.width = total === 0 ? "100%" : `${Math.min(100, (current / total) * 100)}%`;
+
+        renderFiles(state.files);
+        renderChoices(active);
+        renderList(els.working, state.working, "var(--local)");
+        renderList(els.staged, state.staged, "var(--stage)");
+        renderList(els.local, state.local, "var(--local)", true);
+        renderList(els.remote, state.remote, "var(--github)", true);
+        renderList(els.stash, state.stash, "var(--worktree)");
+        renderList(els.pr, state.pr, "var(--github)");
+      }
+
+      function advance() {
+        const active = step();
+        if (active.choices) return;
+        const target = nextIndex();
+        if (target < scenario().steps.length) {
+          history.push(current);
+          current = target;
+          render();
+        }
+      }
+
+      function goBack() {
+        if (history.length === 0) return;
+        current = history.pop();
+        render();
+      }
+
+      function reset(id = scenarioId) {
+        scenarioId = id;
+        current = 0;
+        currentFile = "src/app.js";
+        history = [];
+        render();
+      }
+
+      els.tabs.forEach((tab) => {
+        tab.addEventListener("click", () => reset(tab.dataset.scenario));
+      });
+      els.reset.addEventListener("click", () => reset());
+      els.enter.addEventListener("click", advance);
+      els.back.addEventListener("click", goBack);
+      document.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter") return;
+        const tag = document.activeElement && document.activeElement.tagName;
+        if (tag === "BUTTON" || tag === "A") return;
+        const simulator = document.getElementById("git-simulator");
+        const rect = simulator.getBoundingClientRect();
+        const visible = rect.top < window.innerHeight && rect.bottom > 0;
+        if (visible) {
+          event.preventDefault();
+          advance();
+        }
+      });
+
+      const habitData = [
+        {
+          kicker: "Habit 01",
+          title: "先看状态，再下命令",
+          summary: "在敲会改变状态的命令前，先确认当前分支、工作区、暂存区和远端关系。优秀使用者很少靠猜。",
+          question: "我现在站在哪条分支？工作区有没有没保存进 commit 的东西？",
+          risk: "直接 merge、pull、switch，结果才发现自己站错分支或带着脏工作区。",
+          action: "先跑只读命令，再决定下一步。看清楚再动手，Git 就不吓人。",
+          commands: `git status
+git branch --show-current
+git log --oneline --decorate -5`
+        },
+        {
+          kicker: "Habit 02",
+          title: "一个 commit 只讲一件事",
+          summary: "好的 commit 像一个清楚的小存档：它能被理解、被回退、被 review。不要把无关修改揉成一大团。",
+          question: "这次 commit 的主题能不能用一句话说清楚？",
+          risk: "把格式化、功能、修 bug、改文案混在一起，之后排查问题很痛苦。",
+          action: "小步提交。必要时用分批 add，把一个大改动拆成几个可解释的 commit。",
+          commands: `git diff
+git add -p
+git commit -m "feat: add sidebar notes"`
+        },
+        {
+          kicker: "Habit 03",
+          title: "分支是任务容器，不是收藏夹",
+          summary: "优秀使用者通常让一个分支服务一个明确任务：一个 bug、一个功能、一次文档改进。",
+          question: "这个分支要解决什么问题？完成后能不能合回主线？",
+          risk: "长期在一个大分支里堆很多目标，最后冲突多、review 难、自己也忘了改过什么。",
+          action: "从干净主线开分支，名字写出任务含义，任务结束后及时 PR 或删除。",
+          commands: `git switch main
+git switch -c feature/git-habits-guide
+git branch --show-current`
+        },
+        {
+          kicker: "Habit 04",
+          title: "commit 前和 PR 前都看 diff",
+          summary: "diff 是 Git 里最重要的自检画面。高手提交前会先看自己到底改了什么，而不是相信记忆。",
+          question: "这次提交里有没有误改、调试代码、无关文件或秘密信息？",
+          risk: "把临时日志、测试文件、错误格式化、甚至敏感信息一起提交。",
+          action: "先看未暂存 diff，再看已暂存 diff。PR 前再从整体视角看一遍。",
+          commands: `git diff
+git diff --staged
+git log --oneline --graph --decorate -8`
+        },
+        {
+          kicker: "Habit 05",
+          title: "切分支、merge、pull 前保持工作区干净",
+          summary: "不是永远不能有未提交改动，而是要知道它们在哪。脏工作区会让很多操作变难判断。",
+          question: "我现在的未完成改动应该 commit、stash，还是先丢掉？",
+          risk: "带着半成品去切分支或合并，最后不知道某个变化到底来自哪里。",
+          action: "操作前先 status。如果要临时离开，用有名字的 stash；如果完成了，就 commit。",
+          commands: `git status
+git stash push -u -m "WIP: before switching task"
+git stash list`
+        },
+        {
+          kicker: "Habit 06",
+          title: "stash 是临时抽屉，不是长期仓库",
+          summary: "stash 适合短暂停放。真正重要的进度应该进入 commit 或远端分支。",
+          question: "这个 stash 我准备什么时候拿回来？名字能不能说明它是什么？",
+          risk: "stash 列表越堆越多，几天后不知道每个 stash 里是什么，甚至以为它等于备份。",
+          action: "stash 要写 message，拿回后及时 drop。长期内容改成 commit 或开草稿 PR。",
+          commands: `git stash push -u -m "WIP: sidebar experiment"
+git stash show --stat stash@{0}
+git stash pop stash@{0}`
+        },
+        {
+          kicker: "Habit 07",
+          title: "解决冲突时看含义，不盲选左右",
+          summary: "冲突不是考试选择题。它是在问：最终文件应该表达什么含义？",
+          question: "这两边各自想保留什么意图？最终代码应该同时满足哪些约束？",
+          risk: "看到冲突就 Accept Current 或 Accept Incoming，把另一边有价值的修改整段抹掉。",
+          action: "读两边语义，手工合成最终版本，删掉冲突标记，再用测试或页面验证。",
+          commands: `git status
+# 编辑冲突文件，合成最终版本
+git add src/app.js
+git commit`
+        },
+        {
+          kicker: "Habit 08",
+          title: "早 push，早 PR，把 PR 当沟通面板",
+          summary: "GitHub 不是只在最后上传成品。好的 PR 可以当作备份、讨论区、review 面板和进度记录。",
+          question: "别人或未来的我，能不能从 PR 标题、描述、commit 看懂这条线？",
+          risk: "本地分支写很久不 push，丢失协作机会，也增加本机环境出问题时的风险。",
+          action: "分支有基本形状后就 push。没完成可以开 Draft PR，把剩余事项写清楚。",
+          commands: `git push -u origin feature/git-habits-guide
+# GitHub 上创建 Draft PR
+# 写清楚：做了什么、为什么、怎么验证`
+        }
+      ];
+
+      const habitEls = {
+        buttons: Array.from(document.querySelectorAll(".habit-button")),
+        kicker: document.getElementById("habit-kicker"),
+        title: document.getElementById("habit-title"),
+        summary: document.getElementById("habit-summary"),
+        question: document.getElementById("habit-question"),
+        risk: document.getElementById("habit-risk"),
+        action: document.getElementById("habit-action"),
+        commands: document.getElementById("habit-commands"),
+        checks: Array.from(document.querySelectorAll("[data-habit-check]")),
+        meterText: document.getElementById("habit-meter-text"),
+        meterFill: document.getElementById("habit-meter-fill")
+      };
+
+      function renderHabit(index) {
+        const item = habitData[index] || habitData[0];
+        habitEls.buttons.forEach((button) => {
+          button.setAttribute("aria-selected", button.dataset.habit === String(index) ? "true" : "false");
+        });
+        habitEls.kicker.textContent = item.kicker;
+        habitEls.title.textContent = item.title;
+        habitEls.summary.textContent = item.summary;
+        habitEls.question.textContent = item.question;
+        habitEls.risk.textContent = item.risk;
+        habitEls.action.textContent = item.action;
+        habitEls.commands.textContent = item.commands;
+      }
+
+      function updateHabitMeter() {
+        const total = habitEls.checks.length;
+        const checked = habitEls.checks.filter((input) => input.checked).length;
+        habitEls.meterText.textContent = `已检查 ${checked} / ${total}`;
+        habitEls.meterFill.style.width = total === 0 ? "0%" : `${(checked / total) * 100}%`;
+      }
+
+      habitEls.buttons.forEach((button) => {
+        button.addEventListener("click", () => renderHabit(Number(button.dataset.habit)));
+      });
+      habitEls.checks.forEach((input) => {
+        input.addEventListener("change", updateHabitMeter);
+      });
+
+      render();
+      renderHabit(0);
+      updateHabitMeter();
+    })();
+  </script>
+</body>
+</html>

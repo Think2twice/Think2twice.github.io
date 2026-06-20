@@ -1,294 +1,761 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8">
-  
-  
-  <title>Hexo</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/index.html">
-<meta property="og:site_name" content="Hexo">
-<meta property="og:locale" content="en_US">
-<meta property="article:author" content="John Doe">
-<meta name="twitter:card" content="summary">
-  
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
-  
-  
-    <link rel="shortcut icon" href="/favicon.png">
-  
-  
-    
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>学习教程库</title>
+  <meta name="description" content="可交互的学习教程、实践笔记与静态网页手册。">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #15191f;
+      --muted: #66717f;
+      --paper: #fbfaf6;
+      --panel: #ffffff;
+      --line: #e3ded5;
+      --line-strong: #1d2128;
+      --coral: #ee5c48;
+      --teal: #3a9b99;
+      --blue: #5867d8;
+      --amber: #e6a529;
+      --soft: rgba(21, 25, 31, 0.06);
+      --shadow: 0 18px 45px rgba(21, 25, 31, 0.08);
+      --radius: 10px;
+      --max: 1180px;
+      font-family: "Inter", "Avenir Next", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    }
 
-  
-  
-<link rel="stylesheet" href="/css/style.css">
+    * {
+      box-sizing: border-box;
+    }
 
-  
-    
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+    html {
+      scroll-behavior: smooth;
+    }
 
-  
-<meta name="generator" content="Hexo 5.3.0"></head>
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(21,25,31,0.035) 1px, transparent 1px) 0 0 / 34px 34px,
+        linear-gradient(rgba(21,25,31,0.035) 1px, transparent 1px) 0 0 / 34px 34px,
+        radial-gradient(circle at 18% 8%, rgba(238, 92, 72, 0.10), transparent 28%),
+        radial-gradient(circle at 82% 2%, rgba(58, 155, 153, 0.12), transparent 26%),
+        var(--paper);
+      line-height: 1.72;
+    }
 
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: rgba(251, 250, 246, 0.88);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav {
+      width: min(var(--max), calc(100% - 32px));
+      min-height: 70px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 38px;
+      border: 2px solid var(--line-strong);
+      background: #11161d;
+      box-shadow: 4px 4px 0 var(--amber);
+      position: relative;
+      transform: rotate(-3deg);
+    }
+
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      height: 3px;
+      background: #f7d36d;
+    }
+
+    .brand-mark::before {
+      top: 12px;
+    }
+
+    .brand-mark::after {
+      top: 21px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 18px;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .nav-links a {
+      padding: 8px 0;
+      border-bottom: 2px solid transparent;
+    }
+
+    .nav-links a:hover,
+    .nav-links a[aria-current="page"] {
+      color: var(--coral);
+      border-bottom-color: var(--coral);
+    }
+
+    .shell {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 48px 0 56px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 0.45fr);
+      gap: 28px;
+      align-items: end;
+      padding: 30px 0 36px;
+    }
+
+    h1 {
+      max-width: 790px;
+      margin: 0;
+      font-size: clamp(44px, 7vw, 84px);
+      line-height: 1.03;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 690px;
+      margin: 20px 0 0;
+      color: #343b45;
+      font-size: clamp(17px, 2vw, 22px);
+    }
+
+    .hero-note {
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.72);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      border-radius: var(--radius);
+    }
+
+    .hero-note strong {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--coral);
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    .hero-note p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 330px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    .section-title {
+      margin: 0 0 18px;
+      font-size: 30px;
+      line-height: 1.2;
+    }
+
+    .category-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .category-btn {
+      min-height: 36px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.82);
+      color: var(--ink);
+      border-radius: 999px;
+      padding: 7px 13px;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 800;
+      font-size: 13px;
+    }
+
+    .category-btn[aria-pressed="true"] {
+      border-color: var(--line-strong);
+      background: var(--ink);
+      color: #fffaf0;
+    }
+
+    .posts {
+      display: grid;
+      gap: 20px;
+    }
+
+    .post-card {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.56fr) minmax(0, 1fr);
+      gap: 20px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.86);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      transition: transform 160ms ease, box-shadow 160ms ease;
+    }
+
+    .post-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 22px 52px rgba(21, 25, 31, 0.11);
+    }
+
+    .post-art {
+      min-height: 220px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffaf0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .art-grid {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(21,25,31,0.06) 1px, transparent 1px) 0 0 / 24px 24px,
+        linear-gradient(rgba(21,25,31,0.06) 1px, transparent 1px) 0 0 / 24px 24px;
+    }
+
+    .rail-line {
+      position: absolute;
+      left: 26px;
+      right: 26px;
+      height: 0;
+      border-top: 4px dashed #15191f;
+    }
+
+    .rail-line.one {
+      top: 70px;
+    }
+
+    .rail-line.two {
+      top: 128px;
+    }
+
+    .rail-line.three {
+      top: 186px;
+    }
+
+    .rail-label {
+      position: absolute;
+      left: 28px;
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .rail-label.one {
+      top: 38px;
+      color: var(--coral);
+    }
+
+    .rail-label.two {
+      top: 96px;
+      color: var(--teal);
+    }
+
+    .rail-label.three {
+      top: 154px;
+      color: var(--blue);
+    }
+
+    .rail-chip {
+      position: absolute;
+      display: grid;
+      place-items: center;
+      min-width: 76px;
+      min-height: 38px;
+      border: 2px solid var(--line-strong);
+      border-radius: 8px;
+      color: #fffaf0;
+      font-weight: 900;
+      box-shadow: 4px 4px 0 rgba(21,25,31,0.12);
+    }
+
+    .rail-chip.commit {
+      top: 51px;
+      left: 150px;
+      background: var(--coral);
+    }
+
+    .rail-chip.worktree {
+      top: 110px;
+      left: 205px;
+      background: var(--teal);
+    }
+
+    .rail-chip.pr {
+      top: 168px;
+      right: 48px;
+      background: var(--blue);
+    }
+
+    .browser-art {
+      position: absolute;
+      inset: 22px;
+      border: 2px solid var(--line-strong);
+      border-radius: 9px;
+      background: #f5f7fb;
+      box-shadow: 7px 7px 0 rgba(21,25,31,0.12);
+    }
+
+    .browser-top {
+      height: 34px;
+      border-bottom: 2px solid var(--line-strong);
+      background: #15191f;
+    }
+
+    .browser-top::before {
+      content: "";
+      display: block;
+      width: 9px;
+      height: 9px;
+      margin: 12px 0 0 14px;
+      border-radius: 50%;
+      background: var(--coral);
+      box-shadow: 16px 0 0 var(--amber), 32px 0 0 var(--teal);
+    }
+
+    .browser-body {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 0.62fr;
+      gap: 16px;
+    }
+
+    .mock-line {
+      height: 12px;
+      margin-bottom: 11px;
+      border-radius: 99px;
+      background: #b8c7dc;
+    }
+
+    .mock-line.short {
+      width: 70%;
+    }
+
+    .mock-panel {
+      height: 92px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #6ba9d8, #dbe9f6);
+    }
+
+    .post-body {
+      padding: 10px 4px;
+    }
+
+    .pin {
+      display: inline-flex;
+      margin-bottom: 8px;
+      color: var(--coral);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .post-card h2 {
+      margin: 0;
+      font-size: clamp(25px, 3vw, 36px);
+      line-height: 1.18;
+    }
+
+    .post-card p {
+      margin: 14px 0 18px;
+      color: var(--muted);
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .tag {
+      border-radius: 999px;
+      background: #f4f6fb;
+      color: var(--blue);
+      padding: 5px 10px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .tag:nth-child(2n) {
+      color: var(--teal);
+      background: #edf7f6;
+    }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .read-link {
+      color: var(--coral);
+      font-weight: 900;
+    }
+
+    .sidebar {
+      display: grid;
+      gap: 18px;
+      position: sticky;
+      top: 92px;
+    }
+
+    .side-card {
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.86);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .side-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 14px;
+      font-size: 21px;
+    }
+
+    .side-card h3::before {
+      content: "";
+      width: 4px;
+      height: 22px;
+      background: var(--coral);
+      border-radius: 99px;
+    }
+
+    .side-list {
+      display: grid;
+      gap: 0;
+    }
+
+    .side-link {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--line);
+      color: #24708f;
+      font-weight: 750;
+    }
+
+    .side-link:last-child {
+      border-bottom: 0;
+    }
+
+    .side-link span:last-child {
+      color: #8b929c;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .quick-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--line);
+      color: #424a55;
+      font-weight: 750;
+    }
+
+    .quick-link:last-child {
+      border-bottom: 0;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      background: rgba(255,255,255,0.72);
+      padding: 28px 0;
+    }
+
+    .footer-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+      }
+
+      .post-card {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 14px 0;
+      }
+
+      .nav-links {
+        justify-content: flex-start;
+      }
+
+      .shell {
+        padding-top: 30px;
+      }
+
+      .post-art {
+        min-height: 210px;
+      }
+
+      .meta-row {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
 <body>
-  <div id="container">
-    <div id="wrap">
-      <header id="header">
-  <div id="banner"></div>
-  <div id="header-outer" class="outer">
-    <div id="header-title" class="inner">
-      <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
-      </h1>
-      
-    </div>
-    <div id="header-inner" class="inner">
-      <nav id="main-nav">
-        <a id="main-nav-toggle" class="nav-icon"></a>
-        
-          <a class="main-nav-link" href="/">Home</a>
-        
-          <a class="main-nav-link" href="/archives">Archives</a>
-        
-      </nav>
-      <nav id="sub-nav">
-        
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
-        
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
-      </nav>
-      <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+  <header class="site-header">
+    <nav class="nav" aria-label="站点导航">
+      <a class="brand" href="./" aria-label="学习教程库首页">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>学习教程库</span>
+      </a>
+      <div class="nav-links">
+        <a href="./" aria-current="page">教程</a>
+        <a href="./archive/">归档</a>
+        <a href="./guides/github-pages-manual/">GitHub Pages</a>
+        <a href="./about/">关于</a>
       </div>
-    </div>
-  </div>
-</header>
+    </nav>
+  </header>
 
-      <div class="outer">
-        <section id="main">
-  
-    <article id="post-firstPage-md" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2021/01/22/firstPage-md/" class="article-date">
-  <time class="dt-published" datetime="2021-01-22T11:29:41.000Z" itemprop="datePublished">2021-01-22</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2021/01/22/firstPage-md/">firstPage.md</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/22/firstPage-md/" data-id="ckk87envu0001rfngghe52aj9" data-title="firstPage.md" class="article-share-link">Share</a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-hello-world" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2021/01/22/hello-world/" class="article-date">
-  <time class="dt-published" datetime="2021-01-22T11:21:58.399Z" itemprop="datePublished">2021-01-22</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2021/01/22/hello-world/">Hello World</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/22/hello-world/" data-id="ckk872jj50000ksng41di0nmd" data-title="Hello World" class="article-share-link">Share</a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-    <article id="post-在mac下安装git的方法" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2021/01/22/%E5%9C%A8mac%E4%B8%8B%E5%AE%89%E8%A3%85git%E7%9A%84%E6%96%B9%E6%B3%95/" class="article-date">
-  <time class="dt-published" datetime="2021-01-22T07:48:17.516Z" itemprop="datePublished">2021-01-22</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <hr>
-<h2 id="title-在mac下安装git的方法"><a href="#title-在mac下安装git的方法" class="headerlink" title="title:在mac下安装git的方法"></a>title:在mac下安装git的方法</h2><h1 id="在mac下安装git的方法"><a href="#在mac下安装git的方法" class="headerlink" title="# 在mac下安装git的方法"></a># 在mac下安装git的方法</h1><h2 id="一-首先安装homebrew（homebrew是什么具体可以上网搜，这里可以粗略地理解为Mac-App-Store）"><a href="#一-首先安装homebrew（homebrew是什么具体可以上网搜，这里可以粗略地理解为Mac-App-Store）" class="headerlink" title="一.首先安装homebrew（homebrew是什么具体可以上网搜，这里可以粗略地理解为Mac App Store）"></a>一.首先安装homebrew（homebrew是什么具体可以上网搜，这里可以粗略地理解为Mac App Store）</h2><p>::homebrew官网给的下载命令速度很慢，这里给出国内的镜像::</p>
-<p><code>/bin/bash -c &quot;$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)&quot;</code><br>查看homebrew是否安装成功<br><code>brew -v</code><br>安装好homebrew 以后安装<br><code>brew install git</code><br>::在输入以上命令之前换一下源::</p>
-<h3 id="1-换源"><a href="#1-换源" class="headerlink" title="1.换源"></a>1.换源</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 替换brew.git</span><br><span class="line">cd &quot;$(brew --repo)&quot;</span><br><span class="line">git remote set-url origin https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;git&#x2F;homebrew&#x2F;brew.git</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F; 替换homebrew-core.git</span><br><span class="line">cd &quot;$(brew --repo)&#x2F;Library&#x2F;Taps&#x2F;homebrew&#x2F;homebrew-core&quot;</span><br><span class="line">git remote set-url origin https:&#x2F;&#x2F;mirrors.tuna.tsinghua.edu.cn&#x2F;git&#x2F;homebrew&#x2F;brew.git</span><br></pre></td></tr></table></figure>
-<h3 id="2-更新-bash-profile"><a href="#2-更新-bash-profile" class="headerlink" title="2.更新.bash_profile"></a>2.更新.bash_profile</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F; 如果home目录下没找到.bash_profile文件直接创建即可</span><br><span class="line">echo &#39;export HOMEBREW_BOTTLE_DOMAIN&#x3D;https:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;homebrew-bottles&#39; &gt;&gt; ~&#x2F;.bash_profile</span><br><span class="line"></span><br><span class="line">source ~&#x2F;.bash_profile</span><br></pre></td></tr></table></figure>
-<h3 id="3-有的可能是zsh"><a href="#3-有的可能是zsh" class="headerlink" title="3.有的可能是zsh"></a>3.有的可能是zsh</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">echo &#39;export HOMEBREW_BOTTLE_DOMAIN&#x3D;https:&#x2F;&#x2F;mirrors.ustc.edu.cn&#x2F;homebrew-bottles&#39; &gt;&gt; ~&#x2F;.zsh_profile</span><br><span class="line"></span><br><span class="line">source ~&#x2F;.zsh_profile</span><br></pre></td></tr></table></figure>
-<p>查看安装是否成功<br><code>git —version</code><br>安装成功后便可以在GitHub上进行连接啦😀</p>
-<h2 id="二-注册GitHub的账号"><a href="#二-注册GitHub的账号" class="headerlink" title="二.注册GitHub的账号"></a>二.注册GitHub的账号</h2><p>创建repository（仓库）</p>
-<h2 id="三-在终端上与GitHub进行连接（第一次需要，以后初始化就可）基本信息设置"><a href="#三-在终端上与GitHub进行连接（第一次需要，以后初始化就可）基本信息设置" class="headerlink" title="三.在终端上与GitHub进行连接（第一次需要，以后初始化就可）基本信息设置"></a>三.在终端上与GitHub进行连接（第一次需要，以后初始化就可）基本信息设置</h2><p><code>git config -—global user.name  “你GitHub上的用户名”</code><br><code>git config —-global user.email “你GitHub登陆的邮箱”</code></p>
-<h2 id="四-仓库中添加文件"><a href="#四-仓库中添加文件" class="headerlink" title="四.仓库中添加文件"></a>四.仓库中添加文件</h2><h3 id="1-在-工作区-（working-directory）添加文件"><a href="#1-在-工作区-（working-directory）添加文件" class="headerlink" title="1.在 工作区 （working directory）添加文件"></a>1.在 <del>工作区</del> （working directory）添加文件</h3><p><code>cd Document</code><br><code>mkdir test</code><br><code>git init</code><br>::<code>touch 文件名</code>::<br><code>git status  //可以看到你还没有提交到暂存区，文件名是红色的</code></p>
-<h3 id="2-将工作区中的文件放到-暂存区-（staging-area）"><a href="#2-将工作区中的文件放到-暂存区-（staging-area）" class="headerlink" title="2.将工作区中的文件放到 暂存区 （staging area）"></a>2.将工作区中的文件放到 <del>暂存区</del> （staging area）</h3><p>::<code>git add 你刚才创建的文件</code>::<br><code>git status</code></p>
-<h3 id="3-将文件从暂存区提交到-本地仓库-中（git-repository）"><a href="#3-将文件从暂存区提交到-本地仓库-中（git-repository）" class="headerlink" title="3.将文件从暂存区提交到 本地仓库 中（git repository）"></a>3.将文件从暂存区提交到 <del>本地仓库</del> 中（git repository）</h3><p>::<code>git commit -m &#39;你的描述whatever&#39;</code>::</p>
-<h3 id="4-修改仓库文件"><a href="#4-修改仓库文件" class="headerlink" title="4.修改仓库文件"></a>4.修改仓库文件</h3><p><code>vim 文件.txt</code><br>在这一步会看到modified ‘你修改的文件’<br><code>git add &#39;文件.txt&#39;</code><br><code>git status</code><br><code>git commit -m &#39;通过git修改文件并提交到仓库</code></p>
-<h3 id="5-删除仓库文件"><a href="#5-删除仓库文件" class="headerlink" title="5.删除仓库文件"></a>5.删除仓库文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rm -rf wenjian.txt</span><br><span class="line">git rm wenjian.txt</span><br><span class="line">git commit -m &#39;删除文件&#39;</span><br></pre></td></tr></table></figure>
-<h2 id="五-Git管理远程仓库（协同工作）"><a href="#五-Git管理远程仓库（协同工作）" class="headerlink" title="五.Git管理远程仓库（协同工作）"></a>五.Git管理远程仓库（协同工作）</h2><p><code>git clone “你clone下来的项目”</code><br>再在你clone的项目下面来创建你要添加的内容，或者要对内容进行的修改<br>1.将本地仓库同步到git远程仓库中</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --list</span><br><span class="line">git remote -v</span><br></pre></td></tr></table></figure>
-<h2 id="六-提交到远程仓库"><a href="#六-提交到远程仓库" class="headerlink" title="六.提交到远程仓库"></a>六.提交到远程仓库</h2><p><code>git push</code></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/22/%E5%9C%A8mac%E4%B8%8B%E5%AE%89%E8%A3%85git%E7%9A%84%E6%96%B9%E6%B3%95/" data-id="ckk8881yz0000zyng4zomehr1" data-title="" class="article-share-link">Share</a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
-
-
-</section>
-        
-          <aside id="sidebar">
-  
-    
-
-  
-    
-
-  
-    
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
-    <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/01/">January 2021</a></li></ul>
-    </div>
-  </div>
-
-
-  
-    
-  <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
-    <div class="widget">
-      <ul>
-        
-          <li>
-            <a href="/2021/01/22/firstPage-md/">firstPage.md</a>
-          </li>
-        
-          <li>
-            <a href="/2021/01/22/hello-world/">Hello World</a>
-          </li>
-        
-          <li>
-            <a href="/2021/01/22/%E5%9C%A8mac%E4%B8%8B%E5%AE%89%E8%A3%85git%E7%9A%84%E6%96%B9%E6%B3%95/">在Mac安装git的方法</a>
-          </li>
-        
-      </ul>
-    </div>
-  </div>
-
-  
-</aside>
-        
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <h1>把知识做成可以点击、复盘、分享的教程。</h1>
+        <p class="lead">这里收纳可交互的学习页面、工具理解手册和实践笔记。每篇教程都是一个独立静态 HTML，可以用 GitHub Pages 免费托管。</p>
       </div>
-      <footer id="footer">
-  
-  <div class="outer">
-    <div id="footer-info" class="inner">
-      
-      &copy; 2021 John Doe<br>
-      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+      <aside class="hero-note">
+        <strong>本站结构</strong>
+        <p>首页根据文章元数据自动生成分类、Recent Posts 和归档。新增教程时，只要添加一个目录和一条文章记录即可。</p>
+      </aside>
+    </section>
+
+    <section class="layout">
+      <div>
+        <h2 class="section-title">最新教程</h2>
+        <div class="category-row" id="category-row" aria-label="教程分类筛选"></div>
+        <div class="posts" id="post-list"></div>
+      </div>
+
+      <aside class="sidebar">
+        <section class="side-card">
+          <h3>Recent Posts</h3>
+          <div class="side-list" id="recent-posts"></div>
+        </section>
+        <section class="side-card">
+          <h3>Archives</h3>
+          <div class="side-list" id="archives"></div>
+        </section>
+        <section class="side-card">
+          <h3>Quick Links</h3>
+          <a class="quick-link" href="https://github.com/Think2twice/Think2twice.github.io"><span>GitHub 仓库</span><span>→</span></a>
+          <a class="quick-link" href="./guides/github-pages-manual/"><span>手动搭建教程</span><span>→</span></a>
+          <a class="quick-link" href="./guides/git-three-lines/"><span>Git 三线地图</span><span>→</span></a>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span>© 2026 学习教程库</span>
+      <span>Built with GitHub Pages · Static HTML</span>
     </div>
-  </div>
-</footer>
+  </footer>
 
-    </div>
-    <nav id="mobile-nav">
-  
-    <a href="/" class="mobile-nav-link">Home</a>
-  
-    <a href="/archives" class="mobile-nav-link">Archives</a>
-  
-</nav>
-    
+  <script>
+    const posts = [
+      {
+        title: "Git 三线地图：把 Git 看成三条轨道",
+        url: "./guides/git-three-lines/",
+        date: "2026-06-20",
+        minutes: 12,
+        category: "Git",
+        tags: ["Git", "worktree", "GitHub"],
+        featured: true,
+        art: "rails",
+        excerpt: "用可交互沙盘理解本地 Git、Git worktree、GitHub remote、stash、merge 和 PR。"
+      },
+      {
+        title: "GitHub Pages 运作方式：从源码到在线站点",
+        url: "./guides/github-pages-manual/",
+        date: "2026-06-20",
+        minutes: 10,
+        category: "GitHub Pages",
+        tags: ["GitHub Pages", "部署", "静态站点"],
+        featured: false,
+        art: "browser",
+        excerpt: "手动搭建一个 GitHub Pages 静态站点，理解根路径、项目路径、CNAME、提交和发布。"
+      }
+    ];
 
+    const categoryRow = document.getElementById("category-row");
+    const postList = document.getElementById("post-list");
+    const recentPosts = document.getElementById("recent-posts");
+    const archives = document.getElementById("archives");
+    let activeCategory = "全部";
 
-<script src="/js/jquery-3.4.1.min.js"></script>
+    function formatDate(value) {
+      const date = new Date(`${value}T00:00:00`);
+      return `${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    }
 
+    function archiveLabel(value) {
+      const date = new Date(`${value}T00:00:00`);
+      return `${date.getFullYear()} 年 ${date.getMonth() + 1} 月`;
+    }
 
+    function artTemplate(type) {
+      if (type === "browser") {
+        return `<div class="post-art" aria-hidden="true">
+          <div class="browser-art">
+            <div class="browser-top"></div>
+            <div class="browser-body">
+              <div>
+                <div class="mock-panel"></div>
+                <div class="mock-line" style="margin-top: 18px"></div>
+                <div class="mock-line short"></div>
+              </div>
+              <div>
+                <div class="mock-line"></div>
+                <div class="mock-line"></div>
+                <div class="mock-line short"></div>
+                <div class="mock-line" style="margin-top: 25px"></div>
+                <div class="mock-line short"></div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      }
+      return `<div class="post-art" aria-hidden="true">
+        <div class="art-grid"></div>
+        <span class="rail-label one">Local Git</span>
+        <span class="rail-label two">Git Worktree</span>
+        <span class="rail-label three">GitHub Remote</span>
+        <span class="rail-line one"></span>
+        <span class="rail-line two"></span>
+        <span class="rail-line three"></span>
+        <span class="rail-chip commit">commit</span>
+        <span class="rail-chip worktree">worktree</span>
+        <span class="rail-chip pr">PR</span>
+      </div>`;
+    }
 
-  
-<script src="/fancybox/jquery.fancybox.min.js"></script>
+    function renderCategories() {
+      const categories = ["全部", ...new Set(posts.map((post) => post.category))];
+      categoryRow.innerHTML = categories.map((category) =>
+        `<button class="category-btn" type="button" aria-pressed="${category === activeCategory}" data-category="${category}">${category}</button>`
+      ).join("");
+      categoryRow.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => {
+          activeCategory = button.dataset.category;
+          render();
+        });
+      });
+    }
 
+    function renderPosts() {
+      const visible = activeCategory === "全部" ? posts : posts.filter((post) => post.category === activeCategory);
+      postList.innerHTML = visible.map((post) => `<a class="post-card" href="${post.url}">
+        ${artTemplate(post.art)}
+        <article class="post-body">
+          ${post.featured ? '<span class="pin">置顶</span>' : ""}
+          <h2>${post.title}</h2>
+          <p>${post.excerpt}</p>
+          <div class="tags">${post.tags.map((tag) => `<span class="tag">${tag}</span>`).join("")}</div>
+          <div class="meta-row">
+            <span>${formatDate(post.date)} · ${post.minutes} 分钟</span>
+            <span class="read-link">阅读全文 →</span>
+          </div>
+        </article>
+      </a>`).join("");
+    }
 
+    function renderSidebar() {
+      recentPosts.innerHTML = posts.slice(0, 5).map((post) =>
+        `<a class="side-link" href="${post.url}"><span>${post.title}</span><span>${formatDate(post.date)}</span></a>`
+      ).join("");
 
+      const groups = posts.reduce((map, post) => {
+        const label = archiveLabel(post.date);
+        map.set(label, (map.get(label) || 0) + 1);
+        return map;
+      }, new Map());
+      archives.innerHTML = [...groups.entries()].map(([label, count]) =>
+        `<a class="side-link" href="./archive/"><span>${label}</span><span>(${count})</span></a>`
+      ).join("");
+    }
 
-<script src="/js/script.js"></script>
+    function render() {
+      renderCategories();
+      renderPosts();
+      renderSidebar();
+    }
 
-
-
-
-
-  </div>
+    render();
+  </script>
 </body>
 </html>

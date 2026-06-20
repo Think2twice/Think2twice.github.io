@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>关于 · 学习教程库</title>
+  <style>
+    :root { color-scheme: light; font-family: "Inter", "Avenir Next", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; color: #15191f; background: #fbfaf6; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: linear-gradient(90deg, rgba(21,25,31,.035) 1px, transparent 1px) 0 0 / 34px 34px, linear-gradient(rgba(21,25,31,.035) 1px, transparent 1px) 0 0 / 34px 34px, #fbfaf6; line-height: 1.72; }
+    a { color: inherit; }
+    header { border-bottom: 1px solid #e3ded5; background: rgba(251,250,246,.9); }
+    nav { width: min(980px, calc(100% - 32px)); min-height: 68px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+    nav a { text-decoration: none; font-weight: 900; }
+    .links { display: flex; gap: 18px; flex-wrap: wrap; font-size: 14px; }
+    main { width: min(840px, calc(100% - 32px)); margin: 0 auto; padding: 70px 0; }
+    h1 { margin: 0 0 20px; font-size: clamp(42px, 7vw, 76px); line-height: 1.05; }
+    p { color: #4b5562; font-size: 19px; }
+    .panel { margin-top: 28px; border: 1px solid #e3ded5; background: #fff; border-radius: 10px; box-shadow: 0 18px 45px rgba(21,25,31,.08); padding: 24px; }
+    .panel h2 { margin: 0 0 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <a href="../">学习教程库</a>
+      <div class="links">
+        <a href="../">教程</a>
+        <a href="../archive/">归档</a>
+        <a href="../guides/github-pages-manual/">GitHub Pages</a>
+      </div>
+    </nav>
+  </header>
+  <main>
+    <h1>关于这个教程库</h1>
+    <p>这里用于收纳可交互的学习页面、工具理解手册和实践笔记。站点是纯静态 HTML，通过 GitHub Pages 免费托管。</p>
+    <section class="panel">
+      <h2>维护方式</h2>
+      <p>每篇教程放在一个独立目录，例如 <code>guides/git-three-lines/index.html</code>。首页读取文章元数据，自动生成分类、Recent Posts 和归档入口。</p>
+    </section>
+  </main>
+</body>
+</html>
