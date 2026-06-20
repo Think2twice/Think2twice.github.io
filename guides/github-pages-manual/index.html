@@ -439,6 +439,155 @@
       accent-color: var(--teal);
     }
 
+    .finder {
+      display: grid;
+      grid-template-columns: minmax(310px, 0.72fr) minmax(0, 1fr);
+      border: 2px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: #fffaf0;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .finder-sidebar {
+      border-right: 2px solid var(--line-strong);
+      background: #f2eadc;
+    }
+
+    .finder-top {
+      min-height: 44px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 0 14px;
+      border-bottom: 2px solid var(--line-strong);
+      background: #15191f;
+    }
+
+    .finder-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--coral);
+    }
+
+    .finder-dot:nth-child(2) {
+      background: var(--amber);
+    }
+
+    .finder-dot:nth-child(3) {
+      background: var(--teal);
+    }
+
+    .file-tree {
+      padding: 14px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 14px;
+    }
+
+    .file-row {
+      width: 100%;
+      min-height: 34px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: var(--ink);
+      padding: 6px 8px;
+      cursor: pointer;
+      text-align: left;
+      font: inherit;
+    }
+
+    .file-row:hover,
+    .file-row[aria-selected="true"] {
+      background: #fffaf0;
+      box-shadow: inset 0 0 0 2px var(--line-strong);
+    }
+
+    .indent-1 {
+      padding-left: 28px;
+    }
+
+    .indent-2 {
+      padding-left: 48px;
+    }
+
+    .finder-detail {
+      padding: 22px;
+      background: #ffffff;
+    }
+
+    .finder-detail strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--coral);
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    .finder-detail h3 {
+      margin-bottom: 12px;
+      font-size: 29px;
+    }
+
+    .finder-detail p {
+      margin: 0 0 16px;
+      color: #46505d;
+    }
+
+    .code-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #101720;
+      color: #f8eedb;
+      padding: 16px;
+      overflow: auto;
+    }
+
+    .workflow-list {
+      display: grid;
+      gap: 14px;
+      counter-reset: step;
+    }
+
+    .workflow-item {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr);
+      gap: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.88);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      counter-increment: step;
+    }
+
+    .workflow-item::before {
+      content: counter(step);
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--line-strong);
+      border-radius: 8px;
+      background: var(--coral);
+      color: #fffaf0;
+      font-weight: 900;
+    }
+
+    .workflow-item h3 {
+      margin-bottom: 7px;
+      font-size: 22px;
+    }
+
+    .workflow-item p {
+      margin: 0 0 12px;
+      color: var(--muted);
+    }
+
     .callout {
       border: 2px solid var(--line-strong);
       border-radius: var(--radius);
@@ -474,6 +623,15 @@
       .spaces {
         grid-template-columns: 1fr 1fr;
       }
+
+      .finder {
+        grid-template-columns: 1fr;
+      }
+
+      .finder-sidebar {
+        border-right: 0;
+        border-bottom: 2px solid var(--line-strong);
+      }
     }
 
     @media (max-width: 640px) {
@@ -486,6 +644,10 @@
       .cards,
       .spaces,
       .checks {
+        grid-template-columns: 1fr;
+      }
+
+      .workflow-item {
         grid-template-columns: 1fr;
       }
 
@@ -621,6 +783,133 @@
 
     <section class="section">
       <div class="section-head">
+        <h2>像 Finder 一样看这个博客</h2>
+        <p>这个站点没有数据库，也没有后台登录。它就是一组文件夹和 HTML 文件。GitHub Pages 负责把这些文件夹公开成网址。</p>
+      </div>
+      <div class="finder">
+        <div class="finder-sidebar">
+          <div class="finder-top" aria-hidden="true">
+            <span class="finder-dot"></span>
+            <span class="finder-dot"></span>
+            <span class="finder-dot"></span>
+          </div>
+          <div class="file-tree" role="tree" aria-label="教程库文件结构">
+            <button class="file-row" type="button" data-file="root" aria-selected="true">📁 Think2twice.github.io/</button>
+            <button class="file-row indent-1" type="button" data-file="home">📄 index.html</button>
+            <button class="file-row indent-1" type="button" data-file="posts">📄 assets/posts.js</button>
+            <button class="file-row indent-1" type="button" data-file="guides">📁 guides/</button>
+            <button class="file-row indent-2" type="button" data-file="git-guide">📁 git-three-lines/index.html</button>
+            <button class="file-row indent-2" type="button" data-file="pages-guide">📁 github-pages-manual/index.html</button>
+            <button class="file-row indent-2" type="button" data-file="new-guide">📁 your-new-guide/index.html</button>
+            <button class="file-row indent-1" type="button" data-file="archive">📁 archive/index.html</button>
+            <button class="file-row indent-1" type="button" data-file="about">📁 about/index.html</button>
+          </div>
+        </div>
+        <div class="finder-detail" aria-live="polite">
+          <strong id="finder-kicker">Repository</strong>
+          <h3 id="finder-title">整个博客就是一个文件夹</h3>
+          <p id="finder-desc">GitHub Pages 会把这个仓库里的静态文件发布到 https://think2twice.github.io/。浏览器访问目录时，会默认找这个目录里的 index.html。</p>
+          <div class="code-card">
+            <pre id="finder-code">Think2twice.github.io/
+├── index.html
+├── assets/posts.js
+├── guides/
+├── archive/
+└── about/</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>以后手动新增一篇 HTML 教程</h2>
+        <p>最小动作只有两个：把 HTML 放到一个新目录里，再把这篇文章登记到 <code>assets/posts.js</code>。</p>
+      </div>
+      <div class="workflow-list">
+        <article class="workflow-item">
+          <div>
+            <h3>在本地准备新教程文件夹</h3>
+            <p>每篇教程一个目录，入口文件固定叫 <code>index.html</code>。这样网址会很干净。</p>
+            <div class="code-card"><pre>guides/my-new-guide/
+└── index.html</pre></div>
+          </div>
+        </article>
+        <article class="workflow-item">
+          <div>
+            <h3>把你的 HTML 放进去</h3>
+            <p>如果你已经有一个完整 HTML，就把它改名或复制成这个目录里的 <code>index.html</code>。</p>
+            <div class="code-card"><pre>cp ~/Desktop/my-guide.html guides/my-new-guide/index.html</pre></div>
+          </div>
+        </article>
+        <article class="workflow-item">
+          <div>
+            <h3>登记到文章列表</h3>
+            <p>打开 <code>assets/posts.js</code>，在数组里加一条记录。首页、Recent Posts、分类和归档都会读这里。</p>
+            <div class="code-card"><pre>{
+  title: "我的新教程",
+  url: "./guides/my-new-guide/",
+  archiveUrl: "../guides/my-new-guide/",
+  date: "2026-06-20",
+  minutes: 8,
+  category: "Git",
+  tags: ["Git", "教程"],
+  featured: false,
+  art: "browser",
+  excerpt: "一句话说明这篇教程解决什么问题。"
+}</pre></div>
+          </div>
+        </article>
+        <article class="workflow-item">
+          <div>
+            <h3>本地预览</h3>
+            <p>在仓库根目录起一个静态服务器，打开浏览器检查首页和新教程。</p>
+            <div class="code-card"><pre>python3 -m http.server 8765
+# 浏览器打开 http://127.0.0.1:8765/</pre></div>
+          </div>
+        </article>
+        <article class="workflow-item">
+          <div>
+            <h3>提交并发布</h3>
+            <p>GitHub Pages 会监听仓库更新。push 之后等一两分钟，线上站点就会更新。</p>
+            <div class="code-card"><pre>git status
+git add guides/my-new-guide/index.html assets/posts.js
+git commit -m "add my new guide"
+git push</pre></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>以后想改模板怎么办</h2>
+        <p>这不是 WordPress 那种登录后台点按钮换主题。它是静态站，模板就是 HTML/CSS/JS 文件本身。</p>
+      </div>
+      <div class="cards">
+        <article class="card">
+          <strong>首页模板</strong>
+          <h3><code>index.html</code></h3>
+          <p>改首页布局、Recent Posts、分类按钮、侧栏样式，就改根目录的 <code>index.html</code>。</p>
+        </article>
+        <article class="card">
+          <strong>文章数据</strong>
+          <h3><code>assets/posts.js</code></h3>
+          <p>新增、删除、改标题、分类、标签、摘要，都优先改这里。它相当于一个轻量文章数据库。</p>
+        </article>
+        <article class="card">
+          <strong>单篇教程</strong>
+          <h3><code>guides/.../index.html</code></h3>
+          <p>每篇教程可以有自己的完整 HTML、CSS 和交互。它们不一定要长得一模一样。</p>
+        </article>
+      </div>
+      <div class="callout" style="margin-top: 20px">
+        如果你想要 WordPress 那种“登录后台、新建文章、在线编辑 Markdown”的体验，可以换成更完整的静态站方案，比如 Astro / VitePress / Docusaurus + GitHub Pages，或者接一个 CMS。但当前这个纯 HTML 方案优点是最简单、免费、快、不需要服务器。
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
         <h2>根站和项目站怎么选</h2>
         <p>你现在看到的旧博客在根路径，是用户主页仓库。新的教程也可以直接放根站里，做成一个统一的学习博客。</p>
       </div>
@@ -659,6 +948,107 @@
   </footer>
 
   <script>
+    const finderData = {
+      root: {
+        kicker: "Repository",
+        title: "整个博客就是一个文件夹",
+        desc: "GitHub Pages 会把这个仓库里的静态文件发布到 https://think2twice.github.io/。浏览器访问目录时，会默认找这个目录里的 index.html。",
+        code: `Think2twice.github.io/
+├── index.html
+├── assets/posts.js
+├── guides/
+├── archive/
+└── about/`
+      },
+      home: {
+        kicker: "Homepage",
+        title: "首页模板：index.html",
+        desc: "首页负责展示教程卡片、分类、Recent Posts、Archives 和 Quick Links。想改首页长相，主要改这个文件的 HTML/CSS。",
+        code: `index.html
+// 控制首页布局
+// 读取 assets/posts.js
+// 自动渲染文章列表和侧栏`
+      },
+      posts: {
+        kicker: "Metadata",
+        title: "文章登记表：assets/posts.js",
+        desc: "它像一个很轻量的数据库。新增教程时，只要在这个数组里加一条记录，首页和归档就能知道有新文章。",
+        code: `window.LEARNING_POSTS = [
+  {
+    title: "我的新教程",
+    url: "./guides/my-new-guide/",
+    category: "Git"
+  }
+];`
+      },
+      guides: {
+        kicker: "Guides",
+        title: "所有教程都放在 guides/",
+        desc: "每篇教程一个文件夹。这样 URL 清楚，文件也不乱。以后教程很多时，也可以按分类再分层。",
+        code: `guides/
+├── git-three-lines/
+├── github-pages-manual/
+└── my-new-guide/`
+      },
+      "git-guide": {
+        kicker: "Existing Guide",
+        title: "Git 三线地图",
+        desc: "这是已经放进来的交互教程。它的线上地址是 /guides/git-three-lines/。",
+        code: `guides/git-three-lines/
+└── index.html`
+      },
+      "pages-guide": {
+        kicker: "Current Guide",
+        title: "GitHub Pages 手动教程",
+        desc: "你正在看的这一篇。它也是一个普通 HTML 文件，只是里面包含了模拟器和说明。",
+        code: `guides/github-pages-manual/
+└── index.html`
+      },
+      "new-guide": {
+        kicker: "New Guide",
+        title: "以后新增教程就照这个格式",
+        desc: "把你的 HTML 文件放进新目录，并命名为 index.html。然后去 assets/posts.js 添加文章记录。",
+        code: `guides/your-new-guide/
+└── index.html`
+      },
+      archive: {
+        kicker: "Archive",
+        title: "归档页",
+        desc: "归档页也读取同一份 posts.js，所以不用重复维护文章列表。",
+        code: `archive/index.html
+<script src="../assets/posts.js"></script>`
+      },
+      about: {
+        kicker: "About",
+        title: "关于页",
+        desc: "说明这个教程库是什么，以及以后如何维护。",
+        code: `about/index.html`
+      }
+    };
+
+    const finderEls = {
+      rows: Array.from(document.querySelectorAll(".file-row")),
+      kicker: document.getElementById("finder-kicker"),
+      title: document.getElementById("finder-title"),
+      desc: document.getElementById("finder-desc"),
+      code: document.getElementById("finder-code")
+    };
+
+    function renderFinder(key) {
+      const item = finderData[key] || finderData.root;
+      finderEls.rows.forEach((row) => {
+        row.setAttribute("aria-selected", row.dataset.file === key ? "true" : "false");
+      });
+      finderEls.kicker.textContent = item.kicker;
+      finderEls.title.textContent = item.title;
+      finderEls.desc.textContent = item.desc;
+      finderEls.code.textContent = item.code;
+    }
+
+    finderEls.rows.forEach((row) => {
+      row.addEventListener("click", () => renderFinder(row.dataset.file));
+    });
+
     const steps = [
       {
         label: "Step 0",
