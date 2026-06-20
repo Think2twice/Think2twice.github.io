@@ -36,18 +36,18 @@
   </header>
   <main>
     <h1>归档</h1>
-    <div class="archive">
-      <a class="item" href="../guides/git-three-lines/">
-        <span class="date">2026-06-20</span>
-        <span class="title">Git 三线地图：把 Git 看成三条轨道</span>
-        <span class="tag">Git</span>
-      </a>
-      <a class="item" href="../guides/github-pages-manual/">
-        <span class="date">2026-06-20</span>
-        <span class="title">GitHub Pages 运作方式：从源码到在线站点</span>
-        <span class="tag">GitHub Pages</span>
-      </a>
-    </div>
+    <div class="archive" id="archive-list"></div>
   </main>
+  <script src="../assets/posts.js"></script>
+  <script>
+    const posts = window.LEARNING_POSTS || [];
+    document.getElementById("archive-list").innerHTML = posts.map((post) => `
+      <a class="item" href="${post.archiveUrl}">
+        <span class="date">${post.date}</span>
+        <span class="title">${post.title}</span>
+        <span class="tag">${post.category}</span>
+      </a>
+    `).join("");
+  </script>
 </body>
 </html>
