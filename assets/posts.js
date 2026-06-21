@@ -1,5 +1,19 @@
 window.LEARNING_POSTS = [
   {
+    title: "Sub2API 终端式部署手册：从 Docker 到域名 HTTPS",
+    url: "./guides/sub2api-terminal-deploy/",
+    archiveUrl: "../guides/sub2api-terminal-deploy/",
+    date: "2026-06-21",
+    minutes: 18,
+    category: "部署",
+    node: "server-deploy",
+    level: "Docker 到公网入口",
+    tags: ["Sub2API", "Docker", "Cloudflare", "Nginx", "HTTPS"],
+    featured: true,
+    art: "browser",
+    excerpt: "脱敏版 Sub2API 部署与调试手册：菜单式终端脚本、手动 Docker Compose、Cloudflare DNS、宝塔 Nginx、证书和端口收口。"
+  },
+  {
     title: "2026-06-21 每日全景复盘",
     url: "./daily-digests/2026-06-21/",
     archiveUrl: "../daily-digests/2026-06-21/",
