@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>每日复盘发布系统 · 2026-06-21</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%2311161d'/%3E%3Cpath d='M16 18h32v6H16zm0 12h32v6H16zm0 12h20v6H16z' fill='%23f7d36d'/%3E%3C/svg%3E">
+  <style>
+    :root { color-scheme: light; --ink:#161b22; --muted:#63707d; --paper:#fbfaf6; --line:#ddd6ca; --coral:#e95d4e; --teal:#298b84; --blue:#5067c8; --amber:#d79a20; --shadow:0 16px 42px rgba(22,27,34,.08); font-family:"Avenir Next","PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:linear-gradient(90deg,rgba(22,27,34,.035) 1px,transparent 1px) 0 0/34px 34px,linear-gradient(rgba(22,27,34,.035) 1px,transparent 1px) 0 0/34px 34px,var(--paper); line-height:1.72; }
+    a { color:inherit; }
+    header { border-bottom:1px solid var(--line); background:rgba(251,250,246,.92); }
+    nav { width:min(1040px,calc(100% - 32px)); min-height:64px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; gap:18px; font-weight:900; }
+    nav div { display:flex; flex-wrap:wrap; gap:14px; font-size:14px; }
+    main { width:min(1040px,calc(100% - 32px)); margin:0 auto; padding:46px 0 64px; }
+    h1 { margin:0; font-size:clamp(34px,5vw,62px); line-height:1.08; }
+    .lead { max-width:780px; color:#303842; font-size:19px; }
+    .map { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; margin:26px 0; }
+    .node { min-height:118px; border:1px solid var(--line); background:#fff; border-radius:8px; box-shadow:var(--shadow); padding:14px; }
+    .node b { display:block; margin-bottom:8px; }
+    .node span { color:var(--muted); font-size:14px; }
+    .section { margin-top:28px; border:1px solid var(--line); background:rgba(255,255,255,.9); border-radius:8px; box-shadow:var(--shadow); padding:20px; }
+    h2 { margin:0 0 10px; font-size:28px; }
+    ul { margin:0; padding-left:20px; color:var(--muted); }
+    li + li { margin-top:8px; }
+    code { background:rgba(22,27,34,.06); padding:2px 5px; border-radius:4px; }
+    @media (max-width:860px){ .map{grid-template-columns:1fr;} nav{align-items:flex-start; flex-direction:column; padding:12px 0;} }
+  </style>
+</head>
+<body>
+  <header><nav><a href="../../">2026-06-21 复盘</a><div><a href="../../../../">首页</a><a href="../../topics/github-pages-flow/">发布流程</a></div></nav></header>
+  <main>
+    <h1>每日复盘发布系统</h1>
+    <p class="lead">今天的核心变化：复盘页不再是“漂亮总结”，而是一个正式的信息处理流程。先完整留痕，再从留痕里筛出主题、专题、规则和认知变化。</p>
+    <section class="map" aria-label="阶段地图">
+      <article class="node"><b>零散 chat</b><span>问题、修复、项目推进散在不同线程里。</span></article>
+      <article class="node"><b>流水总账</b><span>所有可访问记录先脱敏入账。</span></article>
+      <article class="node"><b>散沙合集</b><span>小问答按主题聚合，不强行开页。</span></article>
+      <article class="node"><b>大石头专题</b><span>复杂流程和长期项目单独成页。</span></article>
+      <article class="node"><b>认知系统</b><span>以后再自然演化到标签、PARA、GTD 或知识图谱。</span></article>
+    </section>
+    <section class="section">
+      <h2>正式版原则</h2>
+      <ul>
+        <li>小问题也要进入总账；它们是否单独成页，要看复用性和重复频率。</li>
+        <li>不能访问的来源必须写清楚，不能补剧情。</li>
+        <li>不搬私密原话、账号、密钥、口令、联系方式或具体教材正文。</li>
+        <li>全景图要判断阶段和下一步，不只是罗列昨天做了什么。</li>
+        <li>认知替换表要写“旧认知、新认知、旧行为、新行为、触发证据、下一步验证”。</li>
+      </ul>
+    </section>
+    <section class="section">
+      <h2>今天已经落地的资产</h2>
+      <ul>
+        <li><code>docs/CODEX_DAILY_CHAT_DIGEST_AUTOMATION.md</code>：每日复盘自动化的正式规则。</li>
+        <li><code>daily-github-pages-publisher/AGENTS.md</code>：专门发布项目的执行边界。</li>
+        <li><code>daily-digests/2026-06-21/</code>：第一版正式每日全景复盘页面。</li>
+        <li><code>assets/posts.js</code>：把复盘页接入 GitHub Pages 首页和归档。</li>
+      </ul>
+    </section>
+    <section class="section">
+      <h2>下一步</h2>
+      <ul>
+        <li>明天先复查今天标记为“进行中/待处理”的条目：数据结构 1.1、麦克风卡顿。</li>
+        <li>把“每日复盘先总账再抽象”写成更短的 worker 检查清单。</li>
+        <li>当同类主题重复出现三次，再把散沙合集升级成稳定 docs 或 Skill。</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

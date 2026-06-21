@@ -1,5 +1,19 @@
 window.LEARNING_POSTS = [
   {
+    title: "2026-06-21 每日全景复盘",
+    url: "./daily-digests/2026-06-21/",
+    archiveUrl: "../daily-digests/2026-06-21/",
+    date: "2026-06-21",
+    minutes: 14,
+    category: "每日复盘",
+    node: "daily-review",
+    level: "流水总账到知识库",
+    tags: ["Codex", "GitHub Pages", "每日复盘", "自动化"],
+    featured: true,
+    art: "browser",
+    excerpt: "正式整理 2026-06-21 可访问 Codex 线程：流水总账、散沙合集、大石头专题、全景图和认知替换表。"
+  },
+  {
     title: "Git 三线地图：把 Git 看成三条轨道",
     url: "./guides/git-three-lines/",
     archiveUrl: "../guides/git-three-lines/",

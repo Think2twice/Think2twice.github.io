@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>数据结构教材自动化 · 2026-06-21</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%2311161d'/%3E%3Cpath d='M16 18h32v6H16zm0 12h32v6H16zm0 12h20v6H16z' fill='%23f7d36d'/%3E%3C/svg%3E">
+  <style>
+    :root { color-scheme: light; --ink:#161b22; --muted:#63707d; --paper:#fbfaf6; --line:#ddd6ca; --coral:#e95d4e; --green:#3f7c4d; --blue:#5067c8; --amber:#d79a20; --shadow:0 16px 42px rgba(22,27,34,.08); font-family:"Avenir Next","PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:linear-gradient(90deg,rgba(22,27,34,.035) 1px,transparent 1px) 0 0/34px 34px,linear-gradient(rgba(22,27,34,.035) 1px,transparent 1px) 0 0/34px 34px,var(--paper); line-height:1.72; }
+    a { color:inherit; }
+    header { border-bottom:1px solid var(--line); background:rgba(251,250,246,.92); }
+    nav { width:min(1060px,calc(100% - 32px)); min-height:64px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; gap:18px; font-weight:900; }
+    nav div { display:flex; flex-wrap:wrap; gap:14px; font-size:14px; }
+    main { width:min(1060px,calc(100% - 32px)); margin:0 auto; padding:46px 0 64px; }
+    h1 { margin:0; font-size:clamp(34px,5vw,62px); line-height:1.08; }
+    .lead { max-width:800px; color:#303842; font-size:19px; }
+    .timeline { display:grid; gap:12px; margin-top:26px; }
+    .row { display:grid; grid-template-columns:150px 1fr 160px; gap:14px; border:1px solid var(--line); background:rgba(255,255,255,.9); border-radius:8px; box-shadow:var(--shadow); padding:16px; }
+    .time { color:var(--muted); font-weight:900; font-size:13px; }
+    h2 { margin:0 0 8px; font-size:19px; }
+    p { margin:0; color:var(--muted); }
+    .status { justify-self:start; align-self:start; border:1px solid var(--line); background:#fff; border-radius:999px; padding:3px 9px; font-size:12px; font-weight:900; }
+    .done { color:var(--green); }
+    .warn { color:var(--amber); }
+    .open { color:var(--blue); }
+    .note { margin-top:24px; border:1px solid var(--line); background:#fff; border-radius:8px; box-shadow:var(--shadow); padding:18px; }
+    @media (max-width:760px){ nav{align-items:flex-start; flex-direction:column; padding:12px 0;} .row{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <header><nav><a href="../../">2026-06-21 复盘</a><div><a href="../../../../">首页</a><a href="../../projects/daily-review-system/">复盘系统</a></div></nav></header>
+  <main>
+    <h1>数据结构教材自动化</h1>
+    <p class="lead">这条线今天的价值不是某个具体知识点，而是一个自动化教材 worker 如何在锁、切片、题库、动画、专题和关联图谱之间形成闭环。</p>
+    <section class="timeline" aria-label="数据结构自动化时间线">
+      <article class="row"><div class="time">凌晨</div><div><h2>质量规则补强</h2><p>动态过程优先 SVG/HTML 动画，动画必须可上一步、下一步、暂停；重难点要有专题，不再只写 README 摘要。</p></div><span class="status done">规则完成</span></article>
+      <article class="row"><div class="time">上午</div><div><h2>第 7 章并发冲突暴露锁边界</h2><p>7.1 在失锁前已有部分写入；7.2 在写入前遇到锁校验不一致后停止，未越权继续。</p></div><span class="status warn">正确止损</span></article>
+      <article class="row"><div class="time">中午前后</div><div><h2>第 7/8 章问题接力补救</h2><p>补上“章内位置 / 问题接力”和闭卷验收，把小节从孤立讲义变成一条学习链。</p></div><span class="status done">补救完成</span></article>
+      <article class="row"><div class="time">下午</div><div><h2>第 8 章排序连续推进</h2><p>可访问日志显示多节排序内容完成，产物包括 README、题库、SVG、HTML 动画、专题和 diagnostics。</p></div><span class="status done">主线推进</span></article>
+      <article class="row"><div class="time">傍晚</div><div><h2>章级关联与总图谱</h2><p>第 7 章、第 8 章关联整理，以及第 7-8 章总图谱整理完成；链接、JSON、动画控件等被校验。</p></div><span class="status done">闭环完成</span></article>
+      <article class="row"><div class="time">晚上</div><div><h2>从第 1 章重新启动</h2><p>用户要求按同样节奏从第 1 章开始。读取时可见已启动 1.1，但尚未看到最终交付记录。</p></div><span class="status open">进行中</span></article>
+    </section>
+    <section class="note">
+      <h2>沉淀规则</h2>
+      <p>教材自动化的完成标准不只是文件写入，而是“锁安全 + 主讲义 + 图示 + 可控动画 + 题库链接 + diagnostics + 关联阅读 + 队列推进”。明天复盘应补查 1.1 是否按这套标准完成。</p>
+    </section>
+  </main>
+</body>
+</html>

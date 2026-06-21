@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GitHub Pages 发布流程 · 2026-06-21</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%2311161d'/%3E%3Cpath d='M16 18h32v6H16zm0 12h32v6H16zm0 12h20v6H16z' fill='%23f7d36d'/%3E%3C/svg%3E">
+  <style>
+    :root { color-scheme: light; --ink:#161b22; --muted:#63707d; --paper:#fbfaf6; --line:#ddd6ca; --coral:#e95d4e; --teal:#298b84; --blue:#5067c8; --amber:#d79a20; --shadow:0 16px 42px rgba(22,27,34,.08); font-family:"Avenir Next","PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin:0; color:var(--ink); background:linear-gradient(90deg,rgba(22,27,34,.035) 1px,transparent 1px) 0 0/34px 34px,linear-gradient(rgba(22,27,34,.035) 1px,transparent 1px) 0 0/34px 34px,var(--paper); line-height:1.72; }
+    a { color:inherit; }
+    header { border-bottom:1px solid var(--line); background:rgba(251,250,246,.92); }
+    nav { width:min(980px,calc(100% - 32px)); min-height:64px; margin:0 auto; display:flex; align-items:center; justify-content:space-between; gap:18px; font-weight:900; }
+    nav div { display:flex; flex-wrap:wrap; gap:14px; font-size:14px; }
+    main { width:min(980px,calc(100% - 32px)); margin:0 auto; padding:46px 0 64px; }
+    h1 { margin:0; font-size:clamp(34px,5vw,62px); line-height:1.08; }
+    .lead { max-width:760px; color:#303842; font-size:19px; }
+    .grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; margin-top:24px; }
+    .card, .step, .note { border:1px solid var(--line); background:rgba(255,255,255,.9); border-radius:8px; box-shadow:var(--shadow); padding:18px; }
+    .card b, .step b { display:block; margin-bottom:8px; font-size:18px; }
+    .card span, .step span, .note { color:var(--muted); }
+    .steps { display:grid; gap:12px; margin-top:20px; counter-reset:step; }
+    .step { display:grid; grid-template-columns:60px 1fr; gap:14px; align-items:start; }
+    .step::before { counter-increment:step; content:counter(step); width:44px; height:44px; display:grid; place-items:center; background:#11161d; color:#fffaf0; font-weight:900; box-shadow:4px 4px 0 var(--amber); }
+    code { background:rgba(22,27,34,.06); padding:2px 5px; border-radius:4px; }
+    @media (max-width:760px){ .grid,.step{grid-template-columns:1fr;} nav{align-items:flex-start; flex-direction:column; padding:12px 0;} }
+  </style>
+</head>
+<body>
+  <header><nav><a href="../../">2026-06-21 复盘</a><div><a href="../../../../">首页</a><a href="../../projects/daily-review-system/">复盘系统</a></div></nav></header>
+  <main>
+    <h1>GitHub Pages 发布流程</h1>
+    <p class="lead">今天把每日复盘从本地页面变成正式发布页，关键不在“写一个 HTML”，而在把发布链路变成可重复、可验证、可停止的流程。</p>
+    <section class="grid">
+      <article class="card"><b>触发</b><span>用户明确要求每日复盘发布到个人 GitHub Pages，并要求首页 Recent Posts 可见。</span></article>
+      <article class="card"><b>边界</b><span>发布仓库必须先检查干净；如果有无关脏改动，停止并汇报。</span></article>
+      <article class="card"><b>产物</b><span>总账页、主题页、专题页，以及 <code>assets/posts.js</code> 文章索引。</span></article>
+    </section>
+    <section class="steps" aria-label="发布步骤">
+      <article class="step"><div><b>确认仓库</b><span>目标仓库是 <code>Think2twice.github.io</code>，当前分支是 <code>master</code>，远端是 GitHub Pages 仓库。</span></div></article>
+      <article class="step"><div><b>检查状态</b><span>运行 <code>git status --short --branch</code>。本次发布仓库干净，可以继续。</span></div></article>
+      <article class="step"><div><b>写入页面</b><span>每日总账在 <code>daily-digests/2026-06-21/</code>，主题/专题在同日子目录下。</span></div></article>
+      <article class="step"><div><b>更新索引</b><span>在 <code>assets/posts.js</code> 新增正式复盘文章，让首页和归档能发现。</span></div></article>
+      <article class="step"><div><b>本地验证</b><span>检查 HTML 存在、JS 语法可解析、敏感信息扫描无明显命中、Git 只暂存本次文件。</span></div></article>
+      <article class="step"><div><b>提交推送</b><span>提交到 <code>origin master</code> 后，再打开线上 URL 做访问验证。</span></div></article>
+    </section>
+    <p class="note"><strong>规则候选：</strong>每日复盘发布以后不应该只检查“页面文件存在”，还要检查 posts.js、首页可见性、归档可见性、敏感信息、线上 URL。</p>
+  </main>
+</body>
+</html>
