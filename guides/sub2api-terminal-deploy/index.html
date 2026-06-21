@@ -3,157 +3,175 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Sub2API 终端式部署手册：从 Docker 到域名 HTTPS</title>
-  <meta name="description" content="脱敏版 Sub2API 手动部署、菜单式终端流程、Cloudflare DNS、宝塔 Nginx、HTTPS 证书和排错清单。">
+  <title>Sub2API 手动部署与调试沙盒</title>
+  <meta name="description" content="脱敏版 Sub2API 手动部署教程，包含 Docker Compose、Cloudflare DNS、宝塔 Nginx、HTTPS、Base URL 和排错沙盒。">
   <style>
     :root {
       color-scheme: light;
-      --ink: #171a1f;
-      --muted: #626c78;
-      --paper: #f7f3ea;
-      --panel: #fffdf7;
-      --panel-2: #f0f6f2;
-      --terminal: #0d1412;
-      --terminal-2: #15211d;
-      --line: #d9d1c2;
-      --strong: #11161d;
-      --green: #3f8d61;
-      --mint: #70d69c;
-      --amber: #d79828;
-      --red: #d45a49;
-      --blue: #4667c8;
-      --violet: #6e5ccf;
-      --shadow: 0 18px 42px rgba(17, 22, 29, 0.09);
-      --radius: 8px;
+      --ink: #15191f;
+      --muted: #65707d;
+      --paper: #fbfaf6;
+      --panel: #ffffff;
+      --panel-warm: #fffaf0;
+      --line: #dfd9cf;
+      --line-strong: #15191f;
+      --coral: #ee5c48;
+      --teal: #3a9b99;
+      --blue: #5867d8;
+      --amber: #e6a529;
+      --green: #3c7d4a;
+      --dark: #101720;
+      --shadow: 0 18px 45px rgba(21,25,31,0.08);
+      --radius: 10px;
       --max: 1180px;
       font-family: "Avenir Next", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
     }
 
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
       color: var(--ink);
       background:
-        linear-gradient(90deg, rgba(17,22,29,0.04) 1px, transparent 1px) 0 0 / 34px 34px,
-        linear-gradient(rgba(17,22,29,0.04) 1px, transparent 1px) 0 0 / 34px 34px,
-        radial-gradient(circle at 14% 8%, rgba(63,141,97,0.16), transparent 30%),
-        radial-gradient(circle at 88% 4%, rgba(70,103,200,0.12), transparent 28%),
+        linear-gradient(90deg, rgba(21,25,31,0.035) 1px, transparent 1px) 0 0 / 34px 34px,
+        linear-gradient(rgba(21,25,31,0.035) 1px, transparent 1px) 0 0 / 34px 34px,
         var(--paper);
       line-height: 1.72;
     }
 
-    a { color: inherit; text-decoration: none; }
+    a {
+      color: inherit;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+    }
 
     .topbar {
       position: sticky;
       top: 0;
       z-index: 20;
       border-bottom: 1px solid var(--line);
-      background: rgba(247, 243, 234, 0.92);
-      backdrop-filter: blur(14px);
+      background: rgba(251,250,246,0.92);
+      backdrop-filter: blur(16px);
     }
 
     .nav {
       width: min(var(--max), calc(100% - 32px));
-      min-height: 66px;
+      min-height: 68px;
       margin: 0 auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 18px;
+      gap: 20px;
     }
 
     .brand {
       display: inline-flex;
       align-items: center;
       gap: 12px;
+      color: var(--ink);
+      text-decoration: none;
       font-weight: 900;
     }
 
     .brand-mark {
-      width: 32px;
-      height: 36px;
-      border: 2px solid var(--strong);
-      background: var(--terminal);
-      box-shadow: 4px 4px 0 var(--green);
+      width: 34px;
+      height: 38px;
+      border: 2px solid var(--line-strong);
+      background: var(--dark);
+      box-shadow: 4px 4px 0 var(--amber);
       position: relative;
-      transform: rotate(-2deg);
+      transform: rotate(-3deg);
+    }
+
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      height: 3px;
+      background: #f7d36d;
     }
 
     .brand-mark::before {
-      content: ">";
-      position: absolute;
-      left: 7px;
-      top: 4px;
-      color: var(--mint);
-      font: 900 18px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      top: 12px;
+    }
+
+    .brand-mark::after {
+      top: 21px;
     }
 
     .nav-links {
       display: flex;
-      gap: 18px;
       flex-wrap: wrap;
+      gap: 18px;
+      font-weight: 800;
       font-size: 14px;
-      font-weight: 850;
     }
 
     .nav-links a {
-      padding: 7px 0;
+      color: var(--ink);
+      text-decoration: none;
       border-bottom: 2px solid transparent;
+      padding: 8px 0;
     }
 
-    .nav-links a:hover {
-      color: var(--green);
-      border-bottom-color: var(--green);
+    .nav-links a:hover,
+    .nav-links a[aria-current="page"] {
+      color: var(--coral);
+      border-color: var(--coral);
     }
 
-    .shell {
+    .wrap {
       width: min(var(--max), calc(100% - 32px));
       margin: 0 auto;
-      padding: 46px 0 70px;
+      padding: 54px 0 70px;
     }
 
     .hero {
       display: grid;
-      grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.62fr);
-      gap: 30px;
-      align-items: stretch;
-      padding: 24px 0 34px;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.72fr);
+      gap: 32px;
+      align-items: center;
+      margin-bottom: 34px;
     }
 
     .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0 0 14px;
-      color: var(--green);
+      margin: 0 0 16px;
+      color: var(--coral);
       font-size: 13px;
       font-weight: 900;
       letter-spacing: 0.08em;
       text-transform: uppercase;
     }
 
-    .eyebrow::before {
-      content: "";
-      width: 32px;
-      height: 3px;
-      background: var(--green);
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.14;
+      letter-spacing: 0;
     }
 
     h1 {
-      max-width: 780px;
-      margin: 0;
-      font-size: clamp(40px, 5.5vw, 72px);
-      line-height: 1.04;
-      letter-spacing: 0;
-      text-wrap: balance;
+      max-width: 800px;
+      font-size: clamp(42px, 6.4vw, 72px);
+    }
+
+    h1 span {
+      display: block;
     }
 
     .lead {
-      max-width: 710px;
-      margin: 20px 0 0;
-      color: #303840;
+      max-width: 760px;
+      margin: 22px 0 0;
+      color: #343b45;
       font-size: clamp(17px, 2vw, 22px);
     }
 
@@ -161,111 +179,123 @@
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
-      margin-top: 24px;
+      margin-top: 28px;
     }
 
-    .button {
-      display: inline-flex;
-      align-items: center;
+    .btn,
+    button {
       min-height: 42px;
-      border: 2px solid var(--strong);
-      border-radius: var(--radius);
-      background: var(--strong);
-      color: #fffdf7;
-      padding: 8px 14px;
-      font-weight: 900;
-      box-shadow: 4px 4px 0 rgba(17, 22, 29, 0.18);
-    }
-
-    .button.secondary {
-      background: var(--panel);
-      color: var(--strong);
-    }
-
-    .terminal {
-      overflow: hidden;
-      border: 2px solid var(--strong);
-      border-radius: var(--radius);
-      background: var(--terminal);
-      color: #d7f7df;
-      box-shadow: 10px 10px 0 rgba(17, 22, 29, 0.16);
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    }
-
-    .terminal-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.12);
-      background: var(--terminal-2);
-      color: #b8c7bd;
-      font-size: 12px;
-    }
-
-    .dots {
       display: inline-flex;
-      gap: 6px;
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--red);
-    }
-
-    .dot:nth-child(2) { background: var(--amber); }
-    .dot:nth-child(3) { background: var(--green); }
-
-    pre {
-      margin: 0;
-      white-space: pre-wrap;
-      word-break: break-word;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--line-strong);
+      border-radius: 8px;
+      background: var(--dark);
+      color: #fffaf0;
+      padding: 9px 14px;
       font: inherit;
+      font-weight: 900;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 4px 4px 0 rgba(21,25,31,0.18);
     }
 
-    .terminal pre {
+    .btn.secondary,
+    button.secondary {
+      background: var(--panel-warm);
+      color: var(--ink);
+    }
+
+    button:disabled {
+      opacity: 0.46;
+      cursor: not-allowed;
+    }
+
+    .route-card {
+      min-width: 0;
+      border: 2px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.88);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .route-head {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 18px;
+      border-bottom: 2px solid var(--line-strong);
+      background: #fff2c8;
+      font-weight: 900;
+    }
+
+    .route-stack {
       padding: 18px;
-      font-size: 13px;
-      line-height: 1.62;
+      display: grid;
+      gap: 12px;
     }
 
-    .prompt { color: var(--mint); }
-    .comment { color: #93a69a; }
-    .danger { color: #ff9386; }
-    .ok { color: #8cf4af; }
-    .warn { color: #ffd27c; }
-    .cyan { color: #8fe7ff; }
+    .route-node {
+      min-width: 0;
+      display: grid;
+      grid-template-columns: 104px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-warm);
+      padding: 12px;
+    }
+
+    .route-node strong {
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .route-node p {
+      margin: 0;
+      color: #39414b;
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
 
     .privacy-strip {
       display: grid;
-      grid-template-columns: 180px 1fr;
+      grid-template-columns: 190px 1fr;
       gap: 18px;
       align-items: center;
-      margin: 22px 0 36px;
-      border: 2px solid var(--strong);
+      margin: 0 0 40px;
+      border: 2px solid var(--line-strong);
       border-radius: var(--radius);
-      background: #fff7e4;
-      padding: 16px;
+      background: #fff2c8;
+      padding: 16px 18px;
       box-shadow: var(--shadow);
     }
 
     .privacy-strip strong {
-      font-size: 18px;
+      font-size: 19px;
     }
 
     .privacy-strip p {
       margin: 0;
-      color: #4b4d43;
+      color: #42454b;
     }
 
     .layout {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 320px;
-      gap: 28px;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 30px;
       align-items: start;
+    }
+
+    article,
+    .layout > * {
+      min-width: 0;
     }
 
     .toc {
@@ -273,75 +303,93 @@
       top: 88px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: rgba(255,253,247,0.88);
+      background: rgba(255,255,255,0.88);
       box-shadow: var(--shadow);
       padding: 18px;
     }
 
     .toc h2 {
-      margin: 0 0 12px;
-      font-size: 16px;
+      margin-bottom: 12px;
+      font-size: 17px;
     }
 
     .toc a {
       display: block;
       color: var(--muted);
+      text-decoration: none;
       padding: 7px 0;
-      border-bottom: 1px solid rgba(217,209,194,0.72);
+      border-bottom: 1px solid rgba(223,217,207,0.8);
       font-weight: 800;
       font-size: 14px;
     }
 
-    .toc a:hover { color: var(--green); }
-
-    section {
-      margin: 0 0 24px;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: rgba(255,253,247,0.92);
-      box-shadow: var(--shadow);
-      overflow: hidden;
+    .toc a:hover {
+      color: var(--coral);
     }
 
-    section > header {
-      padding: 22px 24px 12px;
-      border-bottom: 1px solid var(--line);
-      background: linear-gradient(90deg, rgba(63,141,97,0.08), rgba(70,103,200,0.05));
+    .section {
+      margin-top: 42px;
     }
 
-    h2 {
-      margin: 0;
-      font-size: clamp(25px, 3vw, 36px);
-      line-height: 1.15;
-      letter-spacing: 0;
+    .section:first-child {
+      margin-top: 0;
     }
 
-    .section-lead {
-      margin: 10px 0 0;
-      color: var(--muted);
-      max-width: 760px;
-    }
-
-    .body {
-      padding: 22px 24px 26px;
-    }
-
-    .grid {
+    .section-head {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: minmax(0, 0.92fr) minmax(260px, 0.56fr);
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 20px;
+      padding-top: 28px;
+      border-top: 2px solid var(--line-strong);
+    }
+
+    .section:first-child .section-head {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    .section-head h2 {
+      font-size: clamp(30px, 4vw, 50px);
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 16px;
+    }
+
+    .cards.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .card {
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #ffffff;
-      padding: 16px;
+      background: rgba(255,255,255,0.88);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .card strong,
+    .label {
+      display: inline-flex;
+      margin-bottom: 12px;
+      color: var(--coral);
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
     }
 
     .card h3 {
-      margin: 0 0 8px;
-      font-size: 18px;
+      margin-bottom: 10px;
+      font-size: 22px;
     }
 
     .card p,
@@ -353,104 +401,277 @@
 
     ul,
     ol {
-      padding-left: 1.25em;
+      padding-left: 1.22em;
     }
 
-    li + li { margin-top: 7px; }
+    li + li {
+      margin-top: 7px;
+    }
 
     code {
-      border: 1px solid rgba(17,22,29,0.12);
+      border: 1px solid rgba(21,25,31,0.12);
       border-radius: 6px;
       background: #f4efe5;
-      padding: 2px 5px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      padding: 0.12em 0.34em;
+      font-family: "SFMono-Regular", Consolas, monospace;
       font-size: 0.92em;
+      overflow-wrap: anywhere;
+      word-break: break-word;
     }
 
-    .codeblock {
-      border: 1px solid rgba(17,22,29,0.18);
+    pre {
+      margin: 0;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      line-height: 1.66;
+      font-size: 14px;
+    }
+
+    .code-card {
+      border: 1px solid rgba(21,25,31,0.18);
       border-radius: var(--radius);
-      background: #11161d;
-      color: #eaf7ee;
+      background: var(--dark);
+      color: #f8eedb;
       overflow: auto;
       margin: 14px 0;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     }
 
-    .codeblock pre {
+    .code-card pre {
       padding: 16px;
-      font-size: 13px;
-      line-height: 1.65;
     }
 
-    .timeline {
-      counter-reset: step;
-      display: grid;
-      gap: 14px;
-    }
-
-    .step {
-      position: relative;
-      display: grid;
-      grid-template-columns: 54px 1fr;
-      gap: 14px;
-      align-items: start;
+    .table-wrap {
+      max-width: 100%;
+      overflow-x: auto;
       border: 1px solid var(--line);
       border-radius: var(--radius);
-      background: #fff;
-      padding: 14px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
     }
 
-    .step::before {
-      counter-increment: step;
-      content: counter(step);
-      display: grid;
-      place-items: center;
-      width: 42px;
-      height: 42px;
-      border: 2px solid var(--strong);
-      border-radius: 50%;
-      background: var(--green);
-      color: #fff;
-      font-weight: 950;
-      box-shadow: 3px 3px 0 rgba(17,22,29,0.18);
-    }
-
-    .step h3 {
-      margin: 0 0 6px;
-      font-size: 18px;
-    }
-
-    .step p {
-      margin: 0;
-      color: var(--muted);
-    }
-
-    .table {
+    table {
       width: 100%;
       border-collapse: collapse;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background: #fff;
+      min-width: 700px;
     }
 
-    .table th,
-    .table td {
+    th,
+    td {
       border-bottom: 1px solid var(--line);
-      padding: 12px;
+      padding: 13px 14px;
       text-align: left;
       vertical-align: top;
     }
 
-    .table th {
-      background: #f3eadc;
+    th {
+      background: #fff2c8;
       font-size: 13px;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
     }
 
-    .table tr:last-child td { border-bottom: 0; }
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .callout {
+      border: 2px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: #fff2c8;
+      padding: 18px;
+      color: #393d43;
+      box-shadow: var(--shadow);
+    }
+
+    .callout p {
+      margin: 0;
+    }
+
+    .simulator {
+      border: 2px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--panel-warm);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .sim-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      padding: 18px;
+      border-bottom: 2px solid var(--line-strong);
+      background: #fff2c8;
+    }
+
+    .sim-top h3 {
+      font-size: 24px;
+    }
+
+    .sim-controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .sim-grid {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.86fr) minmax(0, 1fr);
+    }
+
+    .sim-panel {
+      padding: 20px;
+      background: var(--dark);
+      color: #f8eedb;
+    }
+
+    .sim-panel.light {
+      background: var(--panel);
+      color: var(--ink);
+      border-left: 2px solid var(--line-strong);
+    }
+
+    .sim-label {
+      margin-bottom: 10px;
+      color: #9fc8e8;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .sim-panel.light .sim-label {
+      color: var(--coral);
+    }
+
+    .output-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel-warm);
+      padding: 14px;
+      margin-top: 14px;
+    }
+
+    .output-card h4 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .output-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .spaces {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .space {
+      min-height: 132px;
+      border: 2px solid var(--line-strong);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fffef9;
+    }
+
+    .space-title {
+      padding: 9px 11px;
+      background: var(--color);
+      color: #fffaf0;
+      font-weight: 900;
+      font-size: 14px;
+    }
+
+    .space-body {
+      padding: 11px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .token {
+      display: inline-flex;
+      min-height: 28px;
+      align-items: center;
+      border: 2px solid var(--line-strong);
+      background: var(--color);
+      color: #fffaf0;
+      padding: 4px 8px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .empty {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .choice-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .choice {
+      border: 2px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--panel-warm);
+      color: var(--ink);
+      box-shadow: none;
+      min-height: 56px;
+    }
+
+    .choice[aria-pressed="true"] {
+      background: var(--dark);
+      color: #fffaf0;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 14px;
+      counter-reset: step;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 52px minmax(0, 1fr);
+      gap: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,0.88);
+      box-shadow: var(--shadow);
+      padding: 18px;
+      counter-increment: step;
+    }
+
+    .step::before {
+      content: counter(step);
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--line-strong);
+      border-radius: 8px;
+      background: var(--coral);
+      color: #fffaf0;
+      font-weight: 900;
+    }
+
+    .step h3 {
+      margin-bottom: 7px;
+      font-size: 21px;
+    }
+
+    .step p {
+      margin: 0 0 12px;
+      color: var(--muted);
+    }
 
     .badge {
       display: inline-flex;
@@ -464,31 +685,19 @@
       font-weight: 900;
     }
 
-    .callout {
-      border-left: 5px solid var(--green);
-      background: var(--panel-2);
-      padding: 14px 16px;
-      margin: 16px 0;
-      color: #314238;
-    }
-
-    .callout.warn {
-      border-left-color: var(--amber);
-      background: #fff7e4;
-    }
-
     footer {
-      margin-top: 36px;
+      margin-top: 42px;
       border-top: 1px solid var(--line);
-      padding-top: 20px;
+      padding-top: 22px;
       color: var(--muted);
       font-size: 14px;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 980px) {
       .hero,
       .layout,
-      .privacy-strip {
+      .section-head,
+      .sim-grid {
         grid-template-columns: 1fr;
       }
 
@@ -497,36 +706,60 @@
         order: -1;
       }
 
-      .grid {
-        grid-template-columns: 1fr;
+      .sim-panel.light {
+        border-left: 0;
+        border-top: 2px solid var(--line-strong);
       }
     }
 
-    @media (max-width: 640px) {
-      .nav {
+    @media (max-width: 760px) {
+      .nav,
+      .sim-top,
+      .privacy-strip {
         align-items: flex-start;
         flex-direction: column;
+      }
+
+      .nav {
+        min-height: auto;
         padding: 14px 0;
       }
 
-      .shell {
-        width: min(100% - 24px, var(--max));
-        padding-top: 28px;
+      .wrap {
+        width: min(var(--max), calc(100% - 24px));
+        padding-top: 32px;
       }
 
-      section > header,
-      .body {
-        padding-left: 16px;
-        padding-right: 16px;
+      h1 {
+        font-size: clamp(34px, 10vw, 46px);
       }
 
+      .privacy-strip,
+      .cards,
+      .cards.two,
+      .choice-row,
+      .spaces,
+      .route-node,
       .step {
         grid-template-columns: 1fr;
       }
 
-      .table {
-        display: block;
-        overflow-x: auto;
+      .route-head {
+        gap: 8px;
+      }
+
+      .route-node {
+        gap: 6px;
+      }
+
+      .route-node p {
+        font-size: 15px;
+      }
+
+      .card,
+      .step,
+      .callout {
+        padding: 16px;
       }
     }
   </style>
@@ -542,223 +775,253 @@
         <a href="../../">教程首页</a>
         <a href="../../archive/">归档</a>
         <a href="../github-pages-manual/">GitHub Pages</a>
+        <a href="#deploy-sandbox">部署沙盒</a>
       </div>
     </nav>
   </header>
 
-  <main class="shell">
-    <div class="hero">
+  <main class="wrap">
+    <section class="hero" aria-label="页面标题">
       <div>
-        <p class="eyebrow">terminal deployment playbook</p>
-        <h1>Sub2API 终端式部署手册</h1>
-        <p class="lead">从 Docker Compose 到 Cloudflare DNS、宝塔 Nginx、HTTPS 证书、端口内网化和排错验证，把一次真实部署整理成可复用、可脱敏、可照抄的流程。</p>
+        <p class="eyebrow">Sub2API manual deploy</p>
+        <h1><span>Sub2API</span><span>手动部署</span><span>与调试沙盒。</span></h1>
+        <p class="lead">这是一篇脱敏版手动部署教程：先看懂请求怎么从客户端走到容器，再按 Docker Compose、Cloudflare、宝塔 Nginx、HTTPS、Base URL、排错顺序一步步收口。</p>
         <div class="hero-actions">
-          <a class="button" href="#manual">从手动部署开始</a>
-          <a class="button secondary" href="#debug">查看排错清单</a>
+          <a class="btn" href="#deploy-sandbox">打开部署沙盒</a>
+          <a class="btn secondary" href="#manual">看手动命令</a>
         </div>
       </div>
-      <aside class="terminal" aria-label="菜单式终端演示">
-        <div class="terminal-bar">
-          <span class="dots" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>
-          <span>sub2api-deploy.sh</span>
+
+      <aside class="route-card" aria-label="部署路径示意">
+        <div class="route-head">
+          <span>公网只看域名</span>
+          <span class="badge">端口内网化</span>
         </div>
-        <pre><span class="prompt">$</span> bash deploy-sub2api.sh
-
-Sub2API Deployment Console
-──────────────────────────
-1) Check Docker and disk
-2) Create deployment directory
-3) Generate secrets and .env
-4) Start PostgreSQL / Redis / Sub2API
-5) Create Cloudflare DNS record
-6) Configure BaoTa Nginx reverse proxy
-7) Issue HTTPS certificate and verify
-
-Choose step [1-7/all]: <span class="cyan">all</span>
-
-<span class="ok">[ok]</span> docker compose available
-<span class="ok">[ok]</span> service bound to 127.0.0.1:8080
-<span class="ok">[ok]</span> https://sub2api.example.com/health
-<span class="warn">[note]</span> store real secrets outside public docs</pre>
+        <div class="route-stack">
+          <div class="route-node" style="--accent: var(--blue)">
+            <strong>Client</strong>
+            <p>客户端填写网关域名、兼容路径和后台生成的 Key。</p>
+          </div>
+          <div class="route-node" style="--accent: var(--teal)">
+            <strong>Cloudflare</strong>
+            <p>DNS 把子域名指向服务器，可开启代理和基础防护。</p>
+          </div>
+          <div class="route-node" style="--accent: var(--amber)">
+            <strong>BaoTa Nginx</strong>
+            <p>负责 80/443、证书、反向代理和流式请求转发。</p>
+          </div>
+          <div class="route-node" style="--accent: var(--green)">
+            <strong>Local Port</strong>
+            <p>容器只给本机 Nginx 访问，公网不直连原始端口。</p>
+          </div>
+        </div>
       </aside>
-    </div>
+    </section>
 
     <div class="privacy-strip">
-      <strong>脱敏声明</strong>
-      <p>本页所有域名、IP、邮箱、路径和密钥都是示例值。真实部署时替换成自己的资产，不要把真实服务器信息写进公开教程。</p>
+      <strong>公开页脱敏</strong>
+      <p>本页所有 IP、域名、邮箱、路径和密钥都是示例。真实部署时替换为自己的值，但不要把真实服务器信息、Token、密码或后台入口写进公开 GitHub Pages。</p>
     </div>
 
     <div class="layout">
       <article>
-        <section id="mental-model">
-          <header>
-            <h2>先看懂它在做什么</h2>
-            <p class="section-lead">Sub2API 是一个 API 网关：客户端只看到你的统一域名和网关 Key，真实上游账号、订阅、调度和统计都在后台管理。</p>
-          </header>
-          <div class="body">
-            <div class="grid">
-              <div class="card">
-                <h3>对客户端</h3>
-                <p>OpenAI 兼容客户端通常填：</p>
-                <div class="codeblock"><pre>Base URL: https://sub2api.example.com/v1
-API Key:   sk-xxxx-from-sub2api</pre></div>
-                <p>然后客户端会自动拼出 <code>/v1/chat/completions</code>、<code>/v1/responses</code>、<code>/v1/models</code> 等路径。</p>
-              </div>
-              <div class="card">
-                <h3>对服务器</h3>
-                <p>容器只监听本机端口，公网只走 HTTPS 域名：</p>
-                <div class="codeblock"><pre>Cloudflare
-  -> BaoTa Nginx :443
-    -> 127.0.0.1:8080
-      -> sub2api container</pre></div>
-                <p>这样外部不能直接访问 <code>http://203.0.113.10:8080</code>。</p>
-              </div>
-            </div>
+        <section id="model" class="section">
+          <div class="section-head">
+            <h2>先把脑内地图摆正</h2>
+            <p>Sub2API 不是“把某个端口公开出去”这么简单。更稳的理解是：它在服务器里跑一个网关，公网入口只留 HTTPS 域名。</p>
+          </div>
 
-            <table class="table" aria-label="常用入口">
+          <div class="cards">
+            <div class="card">
+              <strong>01 Gateway</strong>
+              <h3>客户端只认一个统一入口</h3>
+              <p>OpenAI、Claude、Gemini 兼容客户端可以填同一个网关域名，再用 Sub2API 后台生成的 API Key 访问模型。</p>
+            </div>
+            <div class="card">
+              <strong>02 Reverse Proxy</strong>
+              <h3>Nginx 把公网流量转回本机</h3>
+              <p>浏览器和 SDK 访问 <code>443</code>，宝塔 Nginx 再转发到 <code>127.0.0.1:8080</code>。</p>
+            </div>
+            <div class="card">
+              <strong>03 Closed Port</strong>
+              <h3>原始端口不暴露到公网</h3>
+              <p>如果外部访问 <code>http://203.0.113.10:8080</code> 不通，这是正确方向。真正入口应该是域名和 HTTPS。</p>
+            </div>
+          </div>
+
+          <div class="table-wrap" style="margin-top:16px">
+            <table aria-label="常用入口">
               <thead>
                 <tr><th>用途</th><th>示例地址</th><th>说明</th></tr>
               </thead>
               <tbody>
                 <tr>
-                  <td>管理后台</td>
+                  <td>后台管理</td>
                   <td><code>https://sub2api.example.com/</code></td>
-                  <td>登录后台、添加上游账号、创建分组和 API Key。</td>
+                  <td>登录后台、添加上游账号、创建分组、生成网关 API Key。</td>
                 </tr>
                 <tr>
                   <td>OpenAI 兼容 Base URL</td>
                   <td><code>https://sub2api.example.com/v1</code></td>
-                  <td>大多数 OpenAI SDK、ChatBox、Cherry Studio、Open WebUI 等都用这个。</td>
+                  <td>多数 SDK 会在这个基础上拼 <code>/chat/completions</code>、<code>/responses</code> 或 <code>/models</code>。</td>
                 </tr>
                 <tr>
                   <td>Claude 兼容 Base URL</td>
                   <td><code>https://sub2api.example.com</code></td>
-                  <td>请求路径通常是 <code>/v1/messages</code>，是否加 <code>/v1</code> 取决于客户端会不会自动拼路径。</td>
+                  <td>常见路径是 <code>/v1/messages</code>。有些客户端会要求填到 <code>/v1</code>，以客户端说明为准。</td>
                 </tr>
                 <tr>
                   <td>健康检查</td>
                   <td><code>https://sub2api.example.com/health</code></td>
-                  <td>部署、反代、证书和 Cloudflare 都通时应返回 <code>{"status":"ok"}</code>。</td>
+                  <td>部署、反代、证书和 DNS 都通时，应返回类似 <code>{"status":"ok"}</code> 的结果。</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </section>
 
-        <section id="terminal">
-          <header>
-            <h2>菜单式终端脚本的思路</h2>
-            <p class="section-lead">如果想做成“输入一个命令，然后选 1-7”的体验，可以把每个阶段封装成函数。下面是脚本骨架，不包含任何真实密钥。</p>
-          </header>
-          <div class="body">
-            <div class="codeblock"><pre>#!/usr/bin/env bash
-set -Eeuo pipefail
+        <section id="baseurl-sandbox" class="section">
+          <div class="section-head">
+            <h2>Base URL 沙盒</h2>
+            <p>很多调用失败不是服务坏了，而是客户端把路径多拼或少拼了一段。先用沙盒看懂“你填的 Base URL”和“最终请求路径”的关系。</p>
+          </div>
 
-APP_DIR="/opt/app/sub2api"
-DOMAIN="sub2api.example.com"
-ORIGIN_PORT="8080"
-
-step_1_check() {
-  docker --version
-  docker compose version
-  df -h /
-}
-
-step_2_prepare() {
-  mkdir -p "$APP_DIR"
-  cd "$APP_DIR"
-  curl -fsSL https://raw.githubusercontent.com/Wei-Shaw/sub2api/main/deploy/docker-deploy.sh -o docker-deploy.sh
-  chmod +x docker-deploy.sh
-}
-
-step_3_env() {
-  cd "$APP_DIR"
-  ./docker-deploy.sh
-  sed -i 's/^BIND_HOST=.*/BIND_HOST=127.0.0.1/' .env
-  sed -i "s/^SERVER_PORT=.*/SERVER_PORT=${ORIGIN_PORT}/" .env
-}
-
-step_4_start() {
-  cd "$APP_DIR"
-  docker compose up -d
-  docker compose ps
-}
-
-step_5_dns() {
-  echo "Use Cloudflare API to create A record: ${DOMAIN} -> 203.0.113.10"
-}
-
-step_6_nginx() {
-  echo "Write BaoTa Nginx vhost to /www/server/panel/vhost/nginx/${DOMAIN}.conf"
-}
-
-step_7_tls_verify() {
-  certbot certonly --webroot -w "/www/wwwroot/${DOMAIN}" -d "$DOMAIN"
-  curl -fsS "https://${DOMAIN}/health"
-}</pre></div>
-
-            <div class="callout warn">
-              <strong>脚本原则：</strong>菜单脚本可以很方便，但第一次部署最好先手动跑一遍。手动跑通后，再把命令整理成脚本，能减少“脚本失败但不知道卡在哪”的痛苦。
+          <div class="simulator">
+            <div class="sim-top">
+              <h3>客户端路径模拟器</h3>
+              <div class="sim-controls" aria-label="客户端类型">
+                <button class="choice" type="button" data-client="openai" aria-pressed="true">OpenAI</button>
+                <button class="choice" type="button" data-client="claude" aria-pressed="false">Claude</button>
+                <button class="choice" type="button" data-client="gemini" aria-pressed="false">Gemini</button>
+              </div>
+            </div>
+            <div class="sim-grid">
+              <div class="sim-panel">
+                <div class="sim-label">建议填写</div>
+                <pre id="base-output"></pre>
+              </div>
+              <div class="sim-panel light">
+                <div class="sim-label">为什么这样填</div>
+                <div class="output-card">
+                  <h4 id="client-title"></h4>
+                  <p id="client-note"></p>
+                </div>
+                <div class="output-card">
+                  <h4>最终请求路径</h4>
+                  <p><code id="client-path"></code></p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
-        <section id="manual">
-          <header>
-            <h2>手动部署流程</h2>
-            <p class="section-lead">下面用示例域名和示例 IP 展示完整流程。真实操作时，把占位符替换成自己的服务器、域名和 Cloudflare 凭据。</p>
-          </header>
-          <div class="body">
-            <div class="timeline">
-              <div class="step">
-                <div>
-                  <h3>检查服务器资源</h3>
-                  <p>先看 Docker、磁盘和端口，避免部署到一半才发现空间不够或端口被占用。</p>
-                  <div class="codeblock"><pre>docker --version
+        <section id="deploy-sandbox" class="section">
+          <div class="section-head">
+            <h2>手动搭建模拟器</h2>
+            <p>先在这里按一遍流程。它不会改任何文件，只把部署状态拆成“服务器、本地端口、DNS、Nginx、HTTPS、客户端”几个空间。</p>
+          </div>
+
+          <div class="simulator">
+            <div class="sim-top">
+              <h3>Sub2API 发布流程</h3>
+              <div class="sim-controls">
+                <button class="secondary" id="back-btn" type="button">返回上一步</button>
+                <button id="next-btn" type="button">下一步</button>
+              </div>
+            </div>
+            <div class="sim-grid">
+              <div class="sim-panel">
+                <div class="sim-label" id="step-label">Step 0</div>
+                <pre id="command"></pre>
+                <div class="output-card" style="background:#17202b;border-color:#344255">
+                  <h4 style="color:#f8eedb">模拟输出</h4>
+                  <pre id="output"></pre>
+                </div>
+              </div>
+              <div class="sim-panel light">
+                <div class="sim-label">这一步在解决什么</div>
+                <div class="output-card">
+                  <p id="lesson-text"></p>
+                </div>
+                <div class="spaces">
+                  <div class="space">
+                    <div class="space-title" style="--color:var(--coral)">Server</div>
+                    <div class="space-body" id="server-space"></div>
+                  </div>
+                  <div class="space">
+                    <div class="space-title" style="--color:var(--teal)">Docker</div>
+                    <div class="space-body" id="docker-space"></div>
+                  </div>
+                  <div class="space">
+                    <div class="space-title" style="--color:var(--blue)">Network</div>
+                    <div class="space-body" id="network-space"></div>
+                  </div>
+                  <div class="space">
+                    <div class="space-title" style="--color:var(--green)">Client</div>
+                    <div class="space-body" id="client-space"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="manual" class="section">
+          <div class="section-head">
+            <h2>真正手动做一次</h2>
+            <p>第一次部署建议先手动跑通，再把稳定命令收进脚本。下面所有命令都用占位符，真实值只放在服务器内部。</p>
+          </div>
+
+          <div class="timeline">
+            <div class="step">
+              <div>
+                <h3>检查 Docker、磁盘和端口</h3>
+                <p>先确认服务器能跑容器，根分区有空间，目标端口没有被别的服务占用。</p>
+                <div class="code-card"><pre>docker --version
 docker compose version
 df -h /
 ss -ltnp | sed -n '1,120p'</pre></div>
-                </div>
               </div>
-              <div class="step">
-                <div>
-                  <h3>准备部署目录</h3>
-                  <p>使用本地目录持久化，方便未来整目录备份或迁移。</p>
-                  <div class="codeblock"><pre>mkdir -p /opt/app/sub2api
+            </div>
+            <div class="step">
+              <div>
+                <h3>准备部署目录</h3>
+                <p>把所有持久化数据集中放在一个目录，后面备份、迁移和清理都更容易。</p>
+                <div class="code-card"><pre>mkdir -p /opt/app/sub2api
 cd /opt/app/sub2api
 curl -fsSL https://raw.githubusercontent.com/Wei-Shaw/sub2api/main/deploy/docker-deploy.sh -o docker-deploy.sh
 chmod +x docker-deploy.sh
 ./docker-deploy.sh</pre></div>
-                </div>
               </div>
-              <div class="step">
-                <div>
-                  <h3>调整 .env</h3>
-                  <p>把服务端口绑定到本机，设置管理员邮箱、强密码、JWT/TOTP 固定密钥和轻量资源参数。</p>
-                  <div class="codeblock"><pre>cd /opt/app/sub2api
+            </div>
+            <div class="step">
+              <div>
+                <h3>把容器端口绑定到本机</h3>
+                <p>关键点是 <code>127.0.0.1</code>。公网访问不到原始端口，只能从 HTTPS 域名进来。</p>
+                <div class="code-card"><pre>cd /opt/app/sub2api
 sed -i 's/^BIND_HOST=.*/BIND_HOST=127.0.0.1/' .env
 sed -i 's/^SERVER_PORT=.*/SERVER_PORT=8080/' .env
 sed -i 's/^ADMIN_EMAIL=.*/ADMIN_EMAIL=admin@example.com/' .env
 sed -i 's/^ADMIN_PASSWORD=.*/ADMIN_PASSWORD=&lt;RANDOM_STRONG_PASSWORD&gt;/' .env
 chmod 600 .env</pre></div>
-                </div>
               </div>
-              <div class="step">
-                <div>
-                  <h3>启动服务</h3>
-                  <p>Docker Compose 会启动 Sub2API、PostgreSQL 和 Redis。</p>
-                  <div class="codeblock"><pre>cd /opt/app/sub2api
+            </div>
+            <div class="step">
+              <div>
+                <h3>启动 Sub2API、PostgreSQL 和 Redis</h3>
+                <p>先在服务器内部确认服务健康，再去处理域名和证书。</p>
+                <div class="code-card"><pre>cd /opt/app/sub2api
 docker compose up -d
 docker compose ps
-docker compose logs --tail=120 sub2api</pre></div>
-                </div>
+docker compose logs --tail=120 sub2api
+curl -fsS http://127.0.0.1:8080/health</pre></div>
               </div>
-              <div class="step">
-                <div>
-                  <h3>创建 Cloudflare DNS</h3>
-                  <p>给子域名创建 A 记录，指向服务器。可以开 Cloudflare 代理。</p>
-                  <div class="codeblock"><pre># 示例，不要把真实 token 写进公开脚本
-export CLOUDFLARE_API_TOKEN="&lt;CLOUDFLARE_API_TOKEN&gt;"
+            </div>
+            <div class="step">
+              <div>
+                <h3>创建 Cloudflare DNS</h3>
+                <p>给一个子域名创建 A 记录，指向服务器 IP。公开教程里只写 Token 占位符。</p>
+                <div class="code-card"><pre>export CLOUDFLARE_API_TOKEN="&lt;CLOUDFLARE_API_TOKEN&gt;"
 export ZONE_ID="&lt;ZONE_ID&gt;"
 
 curl -X POST "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records" \
@@ -771,73 +1034,46 @@ curl -X POST "https://api.cloudflare.com/client/v4/zones/${ZONE_ID}/dns_records"
     "ttl": 1,
     "proxied": true
   }'</pre></div>
-                </div>
               </div>
-              <div class="step">
-                <div>
-                  <h3>配置宝塔 Nginx 反代</h3>
-                  <p>正式公网入口使用宝塔 Nginx。不要把系统 Nginx 的 <code>/etc/nginx/sites-enabled</code> 当作默认入口。</p>
-                  <div class="codeblock"><pre>mkdir -p /www/wwwroot/sub2api.example.com/.well-known/acme-challenge
-cat &gt; /www/server/panel/vhost/nginx/sub2api.example.com.conf &lt;&lt;'EOF'
-server {
-    listen 80;
-    server_name sub2api.example.com;
-    underscores_in_headers on;
+            </div>
+            <div class="step">
+              <div>
+                <h3>配置宝塔 Nginx 反代</h3>
+                <p>宝塔环境默认改 <code>/www/server/panel/vhost/nginx/*.conf</code>，不要把系统 Nginx 的 <code>/etc/nginx/sites-enabled</code> 当成入口。</p>
+                <div class="code-card"><pre>mkdir -p /www/wwwroot/sub2api.example.com/.well-known/acme-challenge
 
-    location ^~ /.well-known/acme-challenge/ {
-        root /www/wwwroot/sub2api.example.com;
-        default_type text/plain;
-        try_files $uri =404;
-    }
-
-    location / {
-        proxy_pass http://127.0.0.1:8080;
-        proxy_http_version 1.1;
-        proxy_buffering off;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_read_timeout 3600s;
-        proxy_send_timeout 3600s;
-        client_max_body_size 256M;
-    }
-}
-EOF
+# 写入 /www/server/panel/vhost/nginx/sub2api.example.com.conf
+# 先监听 80，放行 ACME challenge，其余请求反代到 127.0.0.1:8080。
 
 /www/server/nginx/sbin/nginx -t -c /www/server/nginx/conf/nginx.conf
 /www/server/nginx/sbin/nginx -c /www/server/nginx/conf/nginx.conf -s reload</pre></div>
-                </div>
               </div>
-              <div class="step">
-                <div>
-                  <h3>签发 HTTPS 证书</h3>
-                  <p>先确认 HTTP challenge 可访问，再签发证书，最后把 80 跳转到 443。</p>
-                  <div class="codeblock"><pre>curl -fsS http://sub2api.example.com/.well-known/acme-challenge/test || true
-
-certbot certonly \
+            </div>
+            <div class="step">
+              <div>
+                <h3>签发证书并切到 HTTPS</h3>
+                <p>HTTP challenge 能访问后，再签发证书。证书成功后把 80 跳转到 443。</p>
+                <div class="code-card"><pre>certbot certonly \
   --webroot \
   -w /www/wwwroot/sub2api.example.com \
   -d sub2api.example.com \
   --non-interactive \
-  --agree-tos
+  --agree-tos \
+  -m admin@example.com
 
-certbot certificates -d sub2api.example.com</pre></div>
-                </div>
+curl -fsS https://sub2api.example.com/health</pre></div>
               </div>
             </div>
           </div>
         </section>
 
-        <section id="nginx">
-          <header>
-            <h2>正式 Nginx 配置模板</h2>
-            <p class="section-lead">证书签发后，把站点配置切成 80 跳 443、443 反代到本机端口。</p>
-          </header>
-          <div class="body">
-            <div class="codeblock"><pre>server {
+        <section id="nginx" class="section">
+          <div class="section-head">
+            <h2>Nginx 模板</h2>
+            <p>这个模板只展示结构。实际文件路径、域名、证书路径按你的服务器生成结果替换。</p>
+          </div>
+
+          <div class="code-card"><pre>server {
     listen 80;
     server_name sub2api.example.com;
     underscores_in_headers on;
@@ -862,8 +1098,6 @@ server {
     ssl_certificate     /etc/letsencrypt/live/sub2api.example.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/sub2api.example.com/privkey.pem;
     ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_prefer_server_ciphers on;
-    error_page 497 https://$host$request_uri;
 
     client_max_body_size 256M;
     proxy_read_timeout 3600s;
@@ -884,184 +1118,378 @@ server {
     }
 }</pre></div>
 
-            <div class="callout">
-              <strong>为什么要写 <code>underscores_in_headers on;</code>：</strong>一些 API 网关、Codex CLI、流式客户端会使用带下划线的请求头。Nginx 默认可能丢弃这类头，导致认证、追踪或客户端识别异常。
-            </div>
+          <div class="callout" style="margin-top:16px">
+            <p><strong>为什么开 <code>underscores_in_headers on;</code>：</strong>一些 API 网关和流式客户端会使用带下划线的请求头。Nginx 默认可能丢弃这类头，导致认证、追踪或客户端识别异常。</p>
           </div>
         </section>
 
-        <section id="base-url">
-          <header>
-            <h2>客户端怎么填 Base URL</h2>
-            <p class="section-lead">“域名能打开后台”只是第一层。真正调用模型时，客户端需要使用网关 API Key 和正确的 Base URL。</p>
-          </header>
-          <div class="body">
-            <table class="table">
-              <thead>
-                <tr><th>客户端类型</th><th>Base URL</th><th>API Key</th><th>说明</th></tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>OpenAI SDK / OpenAI 兼容工具</td>
-                  <td><code>https://sub2api.example.com/v1</code></td>
-                  <td><code>sk-xxxx</code></td>
-                  <td>SDK 会拼 <code>/chat/completions</code> 或 <code>/responses</code>。</td>
-                </tr>
-                <tr>
-                  <td>Claude Code / Anthropic 兼容</td>
-                  <td><code>https://sub2api.example.com</code></td>
-                  <td><code>sk-xxxx</code></td>
-                  <td>常见请求路径是 <code>/v1/messages</code>。有些客户端会要求填到 <code>/v1</code>，按客户端说明调整。</td>
-                </tr>
-                <tr>
-                  <td>Gemini 兼容</td>
-                  <td><code>https://sub2api.example.com</code></td>
-                  <td><code>sk-xxxx</code></td>
-                  <td>常见路径是 <code>/v1beta/models</code> 和 <code>/v1beta/models/...:generateContent</code>。</td>
-                </tr>
-              </tbody>
-            </table>
+        <section id="menu-script" class="section">
+          <div class="section-head">
+            <h2>可选：菜单式脚本骨架</h2>
+            <p>如果要做成“输入一个命令，然后选 1-7”的终端体验，就把已经手动跑通的阶段封装成函数。</p>
+          </div>
 
-            <div class="codeblock"><pre># Python OpenAI SDK 示例
-from openai import OpenAI
+          <div class="code-card"><pre>#!/usr/bin/env bash
+set -Eeuo pipefail
 
-client = OpenAI(
-    api_key="sk-xxxx",
-    base_url="https://sub2api.example.com/v1",
-)
+APP_DIR="/opt/app/sub2api"
+DOMAIN="sub2api.example.com"
+ORIGIN_PORT="8080"
 
-resp = client.chat.completions.create(
-    model="gpt-4o-mini",
-    messages=[{"role": "user", "content": "hello"}],
-)
-print(resp.choices[0].message.content)</pre></div>
+menu() {
+  printf '%s\n' \
+    "1) Check Docker and disk" \
+    "2) Prepare deployment directory" \
+    "3) Generate or edit .env" \
+    "4) Start Docker Compose" \
+    "5) Create Cloudflare DNS" \
+    "6) Write BaoTa Nginx vhost" \
+    "7) Issue HTTPS and verify" \
+    "all) Run all steps"
+}
+
+step_1_check() {
+  docker compose version
+  df -h /
+}
+
+step_4_start() {
+  cd "$APP_DIR"
+  docker compose up -d
+  docker compose ps
+  curl -fsS "http://127.0.0.1:${ORIGIN_PORT}/health"
+}
+
+step_7_verify() {
+  curl -fsS "https://${DOMAIN}/health"
+  ss -ltnp | grep ":${ORIGIN_PORT}"
+}</pre></div>
+
+          <div class="callout" style="margin-top:16px">
+            <p>脚本化的顺序是：先手动跑通，再抽成脚本。不要一开始就把所有步骤塞进脚本，否则失败时很难判断是 Docker、DNS、Nginx 还是证书卡住了。</p>
           </div>
         </section>
 
-        <section id="debug">
-          <header>
+        <section id="debug" class="section">
+          <div class="section-head">
             <h2>调试顺序：从内到外</h2>
-            <p class="section-lead">排错时不要一上来猜 Cloudflare。按“容器 → 本机端口 → 宝塔 Nginx → DNS → HTTPS → 客户端”的顺序检查。</p>
-          </header>
-          <div class="body">
-            <div class="grid">
-              <div class="card">
-                <h3>1. 容器健康</h3>
-                <div class="codeblock"><pre>cd /opt/app/sub2api
+            <p>不要一上来猜 Cloudflare。先确认容器，再确认本机端口，然后才看 Nginx、DNS、证书和客户端。</p>
+          </div>
+
+          <div class="cards two">
+            <div class="card">
+              <strong>01 Container</strong>
+              <h3>容器有没有真的起来</h3>
+              <div class="code-card"><pre>cd /opt/app/sub2api
 docker compose ps
 docker compose logs --tail=120 sub2api
 curl -fsS http://127.0.0.1:8080/health</pre></div>
-                <p><span class="badge">通过标准</span> 容器 healthy，health 返回 <code>{"status":"ok"}</code>。</p>
-              </div>
-              <div class="card">
-                <h3>2. 端口只监听本机</h3>
-                <div class="codeblock"><pre>ss -ltnp | grep ':8080'
+              <p><span class="badge">通过标准</span> 容器 running，health 返回正常。</p>
+            </div>
+            <div class="card">
+              <strong>02 Local Port</strong>
+              <h3>端口有没有只绑定本机</h3>
+              <div class="code-card"><pre>ss -ltnp | grep ':8080'
 
-# 期望看到：
-# 127.0.0.1:8080</pre></div>
-                <p><span class="badge">通过标准</span> 不应出现 <code>0.0.0.0:8080</code>。</p>
-              </div>
-              <div class="card">
-                <h3>3. 宝塔 Nginx 命中</h3>
-                <div class="codeblock"><pre>/www/server/nginx/sbin/nginx -t -c /www/server/nginx/conf/nginx.conf
+# 期望看到 127.0.0.1:8080
+# 不期望看到 0.0.0.0:8080</pre></div>
+              <p><span class="badge">通过标准</span> 公网扫不到原始端口。</p>
+            </div>
+            <div class="card">
+              <strong>03 Nginx</strong>
+              <h3>宝塔 Nginx 有没有命中</h3>
+              <div class="code-card"><pre>/www/server/nginx/sbin/nginx -t -c /www/server/nginx/conf/nginx.conf
 /www/server/nginx/sbin/nginx -c /www/server/nginx/conf/nginx.conf -s reload
 curl -fsS -I -H 'Host: sub2api.example.com' http://127.0.0.1/</pre></div>
-                <p><span class="badge">通过标准</span> 返回 200、301 或可预期的后台页面响应。</p>
-              </div>
-              <div class="card">
-                <h3>4. DNS 与 Cloudflare</h3>
-                <div class="codeblock"><pre>dig +short sub2api.example.com
+              <p><span class="badge">通过标准</span> 返回后台、301 或可预期响应。</p>
+            </div>
+            <div class="card">
+              <strong>04 Public</strong>
+              <h3>DNS 和 HTTPS 有没有生效</h3>
+              <div class="code-card"><pre>dig +short sub2api.example.com
 curl -fsS -I https://sub2api.example.com/
 curl -fsS https://sub2api.example.com/health</pre></div>
-                <p><span class="badge">通过标准</span> HTTPS 200，health 正常。</p>
-              </div>
+              <p><span class="badge">通过标准</span> HTTPS 可访问，health 正常。</p>
             </div>
+          </div>
 
-            <table class="table">
+          <div class="table-wrap" style="margin-top:16px">
+            <table aria-label="常见故障表">
               <thead>
                 <tr><th>现象</th><th>优先检查</th><th>常见原因</th></tr>
               </thead>
               <tbody>
                 <tr>
                   <td>域名 404</td>
-                  <td>宝塔 vhost 是否写到正确目录</td>
-                  <td>误写到系统 Nginx；server_name 不匹配；配置未 reload。</td>
+                  <td>宝塔 vhost 目录</td>
+                  <td>误写到系统 Nginx、<code>server_name</code> 不匹配、配置未 reload。</td>
                 </tr>
                 <tr>
-                  <td>证书申请失败</td>
+                  <td>证书签发失败</td>
                   <td><code>/.well-known/acme-challenge/</code></td>
-                  <td>Cloudflare 代理/缓存、Nginx 没放行 challenge、DNS 未生效。</td>
+                  <td>DNS 未生效、Nginx 没放行 challenge、Cloudflare 代理或缓存干扰。</td>
                 </tr>
                 <tr>
                   <td>客户端 401</td>
-                  <td>Sub2API 后台 API Key</td>
-                  <td>用了管理员密码或上游 key，而不是网关生成的 <code>sk-xxxx</code>。</td>
+                  <td>Sub2API 后台生成的 API Key</td>
+                  <td>用了管理员密码、上游 Key，或者 Key 没绑定正确分组。</td>
                 </tr>
                 <tr>
                   <td>客户端路径 404</td>
-                  <td>Base URL 是否多/少了 <code>/v1</code></td>
-                  <td>OpenAI SDK 通常填到 <code>/v1</code>；某些客户端会自己拼 <code>/v1</code>。</td>
+                  <td>Base URL 多了或少了 <code>/v1</code></td>
+                  <td>OpenAI SDK 多数填到 <code>/v1</code>；部分客户端会自己拼 <code>/v1</code>。</td>
                 </tr>
                 <tr>
-                  <td>流式请求卡住</td>
-                  <td>Nginx buffer 和 timeout</td>
-                  <td>未关闭 <code>proxy_buffering</code>，超时时间太短，或 WebSocket/SSE 头未转发。</td>
+                  <td>流式输出卡住</td>
+                  <td>Nginx buffer、timeout 和升级头</td>
+                  <td>未关闭 <code>proxy_buffering</code>，超时太短，或 SSE/WebSocket 头未转发。</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </section>
 
-        <section id="security">
-          <header>
+        <section id="security" class="section">
+          <div class="section-head">
             <h2>安全收口清单</h2>
-            <p class="section-lead">部署成功后，真正重要的是把公网面收小，避免“后台能打开”变成“后台裸奔”。</p>
-          </header>
-          <div class="body">
-            <div class="grid">
-              <div class="card">
-                <h3>必须做</h3>
-                <ul>
-                  <li>容器端口绑定到 <code>127.0.0.1</code>。</li>
-                  <li>公网只开放 80/443，通过 HTTPS 访问。</li>
-                  <li><code>.env</code> 权限设置为 <code>600</code>。</li>
-                  <li>管理员密码随机生成并放在非公开位置。</li>
-                  <li>日志设置轮转，避免容器日志吃满磁盘。</li>
-                </ul>
-              </div>
-              <div class="card">
-                <h3>最好做</h3>
-                <ul>
-                  <li>后台只允许少数可信 IP 或加 Cloudflare Access。</li>
-                  <li>开启两步验证，并保存 TOTP 固定密钥。</li>
-                  <li>定期备份 <code>data/</code>、<code>postgres_data/</code>、<code>redis_data/</code>。</li>
-                  <li>把部署命令整理成内部脚本，但公开教程只保留占位符。</li>
-                </ul>
-              </div>
-            </div>
+            <p>部署成功不是终点。真正上线前，要把公网入口、密钥、日志、备份和合规边界全部收住。</p>
+          </div>
 
-            <div class="callout warn">
-              <strong>合规提醒：</strong>API 网关、订阅转 API、账号调度等功能可能受上游服务条款限制。用于学习、内部测试或自用前，应先确认自己对上游账号和调用方式有合规使用权。
+          <div class="cards two">
+            <div class="card">
+              <strong>Must</strong>
+              <h3>必须做</h3>
+              <ul>
+                <li>容器端口绑定到 <code>127.0.0.1</code>。</li>
+                <li>公网只开放 80/443，通过 HTTPS 访问。</li>
+                <li><code>.env</code> 权限设置为 <code>600</code>。</li>
+                <li>管理员密码随机生成，存放在非公开位置。</li>
+                <li>日志设置轮转，避免容器日志吃满磁盘。</li>
+              </ul>
             </div>
+            <div class="card">
+              <strong>Better</strong>
+              <h3>最好做</h3>
+              <ul>
+                <li>后台限制可信 IP，或者加 Cloudflare Access。</li>
+                <li>开启两步验证，并保存 TOTP 固定密钥。</li>
+                <li>定期备份应用数据、PostgreSQL 数据和 Redis 数据。</li>
+                <li>内部脚本可以保存真实变量，公开教程只保留占位符。</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="callout" style="margin-top:16px">
+            <p><strong>合规提醒：</strong>API 网关、订阅转 API、账号调度等功能可能受上游服务条款限制。用于学习、内部测试或自用前，应先确认自己对上游账号和调用方式有合规使用权。</p>
           </div>
         </section>
       </article>
 
       <aside class="toc" aria-label="目录">
         <h2>本页目录</h2>
-        <a href="#mental-model">它在做什么</a>
-        <a href="#terminal">菜单式脚本</a>
-        <a href="#manual">手动部署</a>
+        <a href="#model">脑内地图</a>
+        <a href="#baseurl-sandbox">Base URL 沙盒</a>
+        <a href="#deploy-sandbox">部署沙盒</a>
+        <a href="#manual">手动命令</a>
         <a href="#nginx">Nginx 模板</a>
-        <a href="#base-url">Base URL</a>
+        <a href="#menu-script">菜单脚本</a>
         <a href="#debug">调试顺序</a>
         <a href="#security">安全收口</a>
       </aside>
     </div>
 
     <footer>
-      <p>本教程为脱敏版流程页：所有服务器、域名、邮箱、密钥、路径均为示例。真实部署前请先读取目标项目 README、部署脚本和当前服务器状态。</p>
+      <p>本教程为脱敏版流程页：所有服务器、域名、邮箱、密钥和路径均为示例。真实部署前请先读取目标项目 README、部署脚本和当前服务器状态。</p>
     </footer>
   </main>
+
+  <script>
+    const clients = {
+      openai: {
+        title: "OpenAI 兼容客户端",
+        base: "Base URL: https://sub2api.example.com/v1\nAPI Key:   sk-xxxx-from-sub2api\nModel:     选择后台允许的模型",
+        path: "https://sub2api.example.com/v1/chat/completions",
+        note: "大多数 OpenAI SDK 会把 /chat/completions、/responses 或 /models 拼到 base_url 后面，所以 base_url 通常填到 /v1。"
+      },
+      claude: {
+        title: "Claude / Anthropic 兼容客户端",
+        base: "Base URL: https://sub2api.example.com\nAPI Key:   sk-xxxx-from-sub2api\nModel:     claude-...",
+        path: "https://sub2api.example.com/v1/messages",
+        note: "Anthropic 兼容请求常见路径是 /v1/messages。有些客户端会要求你填根域名，有些会要求填到 /v1，遇到 404 时优先检查这一段。"
+      },
+      gemini: {
+        title: "Gemini 兼容客户端",
+        base: "Base URL: https://sub2api.example.com\nAPI Key:   sk-xxxx-from-sub2api\nModel:     gemini-...",
+        path: "https://sub2api.example.com/v1beta/models/...:generateContent",
+        note: "Gemini 兼容客户端常见路径是 /v1beta/models。客户端是否自动拼路径，取决于工具本身。"
+      }
+    };
+
+    const clientButtons = document.querySelectorAll("[data-client]");
+    const baseOutput = document.getElementById("base-output");
+    const clientTitle = document.getElementById("client-title");
+    const clientNote = document.getElementById("client-note");
+    const clientPath = document.getElementById("client-path");
+
+    function renderClient(type) {
+      const item = clients[type];
+      baseOutput.textContent = item.base;
+      clientTitle.textContent = item.title;
+      clientNote.textContent = item.note;
+      clientPath.textContent = item.path;
+      clientButtons.forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.client === type));
+      });
+    }
+
+    clientButtons.forEach((button) => {
+      button.addEventListener("click", () => renderClient(button.dataset.client));
+    });
+
+    renderClient("openai");
+
+    const steps = [
+      {
+        label: "Step 0",
+        command: "准备一台干净服务器\n# 目标：有 Docker、有磁盘、有域名可解析",
+        output: "还没有启动任何服务。",
+        lesson: "先确认资源和边界：Sub2API 是容器服务，公网最终只走 HTTPS 域名。",
+        server: ["Docker ready", "disk ok"],
+        docker: [],
+        network: [],
+        client: []
+      },
+      {
+        label: "Step 1",
+        command: "mkdir -p /opt/app/sub2api\ncd /opt/app/sub2api\n./docker-deploy.sh",
+        output: "生成 docker-compose.yml 和 .env。",
+        lesson: "部署目录是整个服务的家。后续备份和迁移都围绕这个目录做。",
+        server: ["/opt/app/sub2api", ".env"],
+        docker: ["compose file"],
+        network: [],
+        client: []
+      },
+      {
+        label: "Step 2",
+        command: "BIND_HOST=127.0.0.1\nSERVER_PORT=8080\ndocker compose up -d",
+        output: "Sub2API、PostgreSQL、Redis 启动。",
+        lesson: "绑定到 127.0.0.1 后，服务只给本机 Nginx 访问，外部不能直接扫端口。",
+        server: ["/opt/app/sub2api", ".env"],
+        docker: ["sub2api", "postgres", "redis"],
+        network: ["127.0.0.1:8080"],
+        client: []
+      },
+      {
+        label: "Step 3",
+        command: "curl http://127.0.0.1:8080/health",
+        output: "{\"status\":\"ok\"}",
+        lesson: "先在服务器内部确认应用健康。内部都不通时，不要去排 DNS 或证书。",
+        server: ["health ok"],
+        docker: ["sub2api running", "postgres running", "redis running"],
+        network: ["127.0.0.1:8080"],
+        client: []
+      },
+      {
+        label: "Step 4",
+        command: "Cloudflare DNS\nA sub2api.example.com -> 203.0.113.10\nproxied: true",
+        output: "子域名开始指向服务器。",
+        lesson: "DNS 只解决“域名去哪台服务器”。它不负责把请求转给容器，后面还需要 Nginx。",
+        server: ["server ip"],
+        docker: ["sub2api running"],
+        network: ["DNS A record", "127.0.0.1:8080"],
+        client: []
+      },
+      {
+        label: "Step 5",
+        command: "BaoTa Nginx vhost\nproxy_pass http://127.0.0.1:8080;",
+        output: "http://sub2api.example.com 可以转到本机容器。",
+        lesson: "Nginx 是公网和容器之间的门。配置写到宝塔 Nginx 的 vhost 目录，reload 后才生效。",
+        server: ["BaoTa Nginx"],
+        docker: ["sub2api running"],
+        network: ["sub2api.example.com", "127.0.0.1:8080"],
+        client: []
+      },
+      {
+        label: "Step 6",
+        command: "certbot certonly --webroot ...\n# then redirect 80 -> 443",
+        output: "https://sub2api.example.com/health 返回正常。",
+        lesson: "HTTPS 证书成功后，最终入口就是域名 443。80 只保留跳转和证书续期挑战。",
+        server: ["BaoTa Nginx", "Let's Encrypt cert"],
+        docker: ["sub2api running"],
+        network: ["https://sub2api.example.com", "127.0.0.1:8080"],
+        client: []
+      },
+      {
+        label: "Step 7",
+        command: "客户端填写\nBase URL: https://sub2api.example.com/v1\nAPI Key: sk-xxxx",
+        output: "模型请求从 HTTPS 域名进入网关。",
+        lesson: "客户端不要填服务器 IP 和端口。填域名、Base URL 和 Sub2API 后台生成的网关 Key。",
+        server: ["BaoTa Nginx", "cert auto-renew"],
+        docker: ["sub2api running", "postgres", "redis"],
+        network: ["Cloudflare", "HTTPS", "127.0.0.1:8080"],
+        client: ["Base URL", "sk-xxxx"]
+      }
+    ];
+
+    const stepEls = {
+      next: document.getElementById("next-btn"),
+      back: document.getElementById("back-btn"),
+      command: document.getElementById("command"),
+      output: document.getElementById("output"),
+      label: document.getElementById("step-label"),
+      lesson: document.getElementById("lesson-text"),
+      server: document.getElementById("server-space"),
+      docker: document.getElementById("docker-space"),
+      network: document.getElementById("network-space"),
+      client: document.getElementById("client-space")
+    };
+
+    let current = 0;
+
+    function renderTokens(target, items, color) {
+      target.innerHTML = "";
+      if (!items.length) {
+        const empty = document.createElement("span");
+        empty.className = "empty";
+        empty.textContent = "空";
+        target.appendChild(empty);
+        return;
+      }
+      items.forEach((item) => {
+        const token = document.createElement("span");
+        token.className = "token";
+        token.style.setProperty("--color", color);
+        token.textContent = item;
+        target.appendChild(token);
+      });
+    }
+
+    function renderStep() {
+      const step = steps[current];
+      stepEls.command.textContent = step.command;
+      stepEls.output.textContent = step.output;
+      stepEls.label.textContent = step.label;
+      stepEls.lesson.textContent = step.lesson;
+      stepEls.back.disabled = current === 0;
+      stepEls.next.disabled = current === steps.length - 1;
+      stepEls.next.textContent = current === steps.length - 1 ? "已完成" : "下一步";
+      renderTokens(stepEls.server, step.server, "var(--coral)");
+      renderTokens(stepEls.docker, step.docker, "var(--teal)");
+      renderTokens(stepEls.network, step.network, "var(--blue)");
+      renderTokens(stepEls.client, step.client, "var(--green)");
+    }
+
+    stepEls.next.addEventListener("click", () => {
+      current = Math.min(steps.length - 1, current + 1);
+      renderStep();
+    });
+
+    stepEls.back.addEventListener("click", () => {
+      current = Math.max(0, current - 1);
+      renderStep();
+    });
+
+    renderStep();
+  </script>
 </body>
 </html>
