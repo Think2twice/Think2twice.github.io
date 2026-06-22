@@ -306,18 +306,34 @@
 
     .poster-frame {
       position: relative;
+      display: block;
       aspect-ratio: 19 / 28;
       margin: 12px 48px 0 12px;
       overflow: hidden;
+      color: inherit;
+      text-decoration: none;
       background: #1a1715;
       border-radius: 5px;
       box-shadow: 0 10px 20px rgba(31, 23, 18, .2);
+      transition: transform .18s ease, box-shadow .18s ease;
     }
 
     .poster-frame img {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      transition: transform .28s ease;
+    }
+
+    .poster-frame:hover,
+    .poster-frame:focus-visible {
+      transform: translateY(-2px);
+      box-shadow: 0 14px 28px rgba(31, 23, 18, .24);
+    }
+
+    .poster-frame:hover img,
+    .poster-frame:focus-visible img {
+      transform: scale(1.025);
     }
 
     .rank-mark {
@@ -347,6 +363,19 @@
       font-size: clamp(1.08rem, 1.8vw, 1.36rem);
       line-height: 1.22;
       letter-spacing: 0;
+    }
+
+    .movie-title a {
+      color: inherit;
+      text-decoration: none;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+    }
+
+    .movie-title a:hover,
+    .movie-title a:focus-visible {
+      color: #8b2e29;
+      text-decoration: underline;
     }
 
     .movie-meta {
@@ -690,12 +719,12 @@
       <div class="movie-grid">
         <article class="movie-card">
           <span class="ticket-code">A-01</span>
-          <figure class="poster-frame">
+          <a class="poster-frame" href="https://movie.douban.com/subject/25934014/" target="_blank" rel="noopener noreferrer" aria-label="打开《爱乐之城》的豆瓣条目">
             <img src="assets/posters/la-la-land.jpg" alt="《爱乐之城》电影海报">
             <span class="rank-mark">A1</span>
-          </figure>
+          </a>
           <div class="movie-body">
-            <h3 class="movie-title">爱乐之城</h3>
+            <h3 class="movie-title"><a href="https://movie.douban.com/subject/25934014/" target="_blank" rel="noopener noreferrer">爱乐之城</a></h3>
             <span class="movie-meta">Musical Romance</span>
             <p class="movie-note">浪漫、音乐、遗憾和银幕魅力都在巅峰位。</p>
           </div>
@@ -703,12 +732,12 @@
 
         <article class="movie-card">
           <span class="ticket-code">A-02</span>
-          <figure class="poster-frame">
+          <a class="poster-frame" href="https://movie.douban.com/subject/1309163/" target="_blank" rel="noopener noreferrer" aria-label="打开《恋恋笔记本》的豆瓣条目">
             <img src="assets/posters/notebook.jpg" alt="《恋恋笔记本》电影海报">
             <span class="rank-mark">A2</span>
-          </figure>
+          </a>
           <div class="movie-body">
-            <h3 class="movie-title">恋恋笔记本</h3>
+            <h3 class="movie-title"><a href="https://movie.douban.com/subject/1309163/" target="_blank" rel="noopener noreferrer">恋恋笔记本</a></h3>
             <span class="movie-meta">Romance Classic</span>
             <p class="movie-note">经典爱情片位置，适合作为高司令大众向入门。</p>
           </div>
@@ -716,12 +745,12 @@
 
         <article class="movie-card">
           <span class="ticket-code">A-03</span>
-          <figure class="poster-frame">
+          <a class="poster-frame" href="https://movie.douban.com/subject/10512661/" target="_blank" rel="noopener noreferrer" aria-label="打开《银翼杀手 2049》的豆瓣条目">
             <img src="assets/posters/blade-runner-2049.jpg" alt="《银翼杀手 2049》电影海报">
             <span class="rank-mark">A3</span>
-          </figure>
+          </a>
           <div class="movie-body">
-            <h3 class="movie-title">银翼杀手 2049</h3>
+            <h3 class="movie-title"><a href="https://movie.douban.com/subject/10512661/" target="_blank" rel="noopener noreferrer">银翼杀手 2049</a></h3>
             <span class="movie-meta">Cyberpunk Sci-Fi</span>
             <p class="movie-note">赛博朋克电影，美术、孤独感和银幕气质都很强。</p>
           </div>
@@ -742,12 +771,12 @@
       <div class="movie-grid">
         <article class="movie-card">
           <span class="ticket-code">B-01</span>
-          <figure class="poster-frame">
+          <a class="poster-frame" href="https://movie.douban.com/subject/35010610/" target="_blank" rel="noopener noreferrer" aria-label="打开《挽救计划》的豆瓣条目">
             <img src="assets/posters/project-hail-mary.jpg" alt="《挽救计划》电影海报">
             <span class="rank-mark">B1</span>
-          </figure>
+          </a>
           <div class="movie-body">
-            <h3 class="movie-title">挽救计划</h3>
+            <h3 class="movie-title"><a href="https://movie.douban.com/subject/35010610/" target="_blank" rel="noopener noreferrer">挽救计划</a></h3>
             <span class="movie-meta">Sci-Fi Comedy</span>
             <p class="movie-note">科幻喜剧路线，放在第二梯队作为轻快科幻补票。</p>
           </div>
@@ -755,12 +784,12 @@
 
         <article class="movie-card">
           <span class="ticket-code">B-02</span>
-          <figure class="poster-frame">
+          <a class="poster-frame" href="https://movie.douban.com/subject/1432180/" target="_blank" rel="noopener noreferrer" aria-label="打开《生死停留》的豆瓣条目">
             <img src="assets/posters/stay.jpg" alt="《生死停留》电影海报">
             <span class="rank-mark">B2</span>
-          </figure>
+          </a>
           <div class="movie-body">
-            <h3 class="movie-title">生死停留</h3>
+            <h3 class="movie-title"><a href="https://movie.douban.com/subject/1432180/" target="_blank" rel="noopener noreferrer">生死停留</a></h3>
             <span class="movie-meta">Mind-Bending</span>
             <p class="movie-note">烧脑、猜不中结局。和《亡命驾驶》一起，像是他“犹豫风”的代表。</p>
           </div>
@@ -768,12 +797,12 @@
 
         <article class="movie-card">
           <span class="ticket-code">B-03</span>
-          <figure class="poster-frame">
+          <a class="poster-frame" href="https://movie.douban.com/subject/2010972/" target="_blank" rel="noopener noreferrer" aria-label="打开《亡命驾驶》的豆瓣条目">
             <img src="assets/posters/drive.jpg" alt="《亡命驾驶》电影海报">
             <span class="rank-mark">B3</span>
-          </figure>
+          </a>
           <div class="movie-body">
-            <h3 class="movie-title">亡命驾驶</h3>
+            <h3 class="movie-title"><a href="https://movie.douban.com/subject/2010972/" target="_blank" rel="noopener noreferrer">亡命驾驶</a></h3>
             <span class="movie-meta">I Drive Origin</span>
             <p class="movie-note">大家玩高司令 “I drive” 梗的起源，冷、酷、克制。</p>
           </div>
@@ -781,12 +810,12 @@
 
         <article class="movie-card">
           <span class="ticket-code">B-04</span>
-          <figure class="poster-frame">
+          <a class="poster-frame" href="https://movie.douban.com/subject/1855834/" target="_blank" rel="noopener noreferrer" aria-label="打开《充气娃娃之恋》的豆瓣条目">
             <img src="assets/posters/lars-real-girl.jpg" alt="《充气娃娃之恋》电影海报">
             <span class="rank-mark">B4</span>
-          </figure>
+          </a>
           <div class="movie-body">
-            <h3 class="movie-title">充气娃娃之恋</h3>
+            <h3 class="movie-title"><a href="https://movie.douban.com/subject/1855834/" target="_blank" rel="noopener noreferrer">充气娃娃之恋</a></h3>
             <span class="movie-meta">Warm Drama</span>
             <p class="movie-note">超温情，被翻译名耽误的一部。</p>
           </div>
@@ -794,12 +823,12 @@
 
         <article class="movie-card">
           <span class="ticket-code">B-05</span>
-          <figure class="poster-frame">
+          <a class="poster-frame" href="https://movie.douban.com/subject/4058939/" target="_blank" rel="noopener noreferrer" aria-label="打开《芭比》的豆瓣条目">
             <img src="assets/posters/barbie.jpg" alt="《芭比》电影海报">
             <span class="rank-mark">B5</span>
-          </figure>
+          </a>
           <div class="movie-body">
-            <h3 class="movie-title">芭比</h3>
+            <h3 class="movie-title"><a href="https://movie.douban.com/subject/4058939/" target="_blank" rel="noopener noreferrer">芭比</a></h3>
             <span class="movie-meta">Comedy</span>
             <p class="movie-note">喜剧位，Ken 的存在感非常适合单独开票。</p>
           </div>
@@ -820,12 +849,12 @@
       <div class="movie-grid">
         <article class="movie-card">
           <span class="ticket-code">C-01</span>
-          <figure class="poster-frame">
+          <a class="poster-frame" href="https://movie.douban.com/subject/26303622/" target="_blank" rel="noopener noreferrer" aria-label="打开《大空头》的豆瓣条目">
             <img src="assets/posters/big-short.jpg" alt="《大空头》电影海报">
             <span class="rank-mark">C1</span>
-          </figure>
+          </a>
           <div class="movie-body">
-            <h3 class="movie-title">大空头</h3>
+            <h3 class="movie-title"><a href="https://movie.douban.com/subject/26303622/" target="_blank" rel="noopener noreferrer">大空头</a></h3>
             <span class="movie-meta">Finance Crisis</span>
             <p class="movie-note">金融危机经济电影，容易看不进去，但也是 Top250 级别的硬货。</p>
           </div>
@@ -833,12 +862,12 @@
 
         <article class="movie-card">
           <span class="ticket-code">C-02</span>
-          <figure class="poster-frame">
+          <a class="poster-frame" href="https://movie.douban.com/subject/2974278/" target="_blank" rel="noopener noreferrer" aria-label="打开《蓝色情人节》的豆瓣条目">
             <img src="assets/posters/blue-valentine.jpg" alt="《蓝色情人节》电影海报">
             <span class="rank-mark">C2</span>
-          </figure>
+          </a>
           <div class="movie-body">
-            <h3 class="movie-title">蓝色情人节</h3>
+            <h3 class="movie-title"><a href="https://movie.douban.com/subject/2974278/" target="_blank" rel="noopener noreferrer">蓝色情人节</a></h3>
             <span class="movie-meta">Relationship Drama</span>
             <p class="movie-note">情绪浓度很高，适合想看关系崩塌质感时补。</p>
           </div>
@@ -846,12 +875,12 @@
 
         <article class="movie-card">
           <span class="ticket-code">C-03</span>
-          <figure class="poster-frame">
+          <a class="poster-frame" href="https://movie.douban.com/subject/3026559/" target="_blank" rel="noopener noreferrer" aria-label="打开《登月第一人》的豆瓣条目">
             <img src="assets/posters/first-man.jpg" alt="《登月第一人》电影海报">
             <span class="rank-mark">C3</span>
-          </figure>
+          </a>
           <div class="movie-body">
-            <h3 class="movie-title">登月第一人</h3>
+            <h3 class="movie-title"><a href="https://movie.douban.com/subject/3026559/" target="_blank" rel="noopener noreferrer">登月第一人</a></h3>
             <span class="movie-meta">Armstrong Bio</span>
             <p class="movie-note">阿姆斯特朗的传记电影，偏沉静克制。</p>
           </div>
@@ -859,12 +888,12 @@
 
         <article class="movie-card">
           <span class="ticket-code">C-04</span>
-          <figure class="poster-frame">
+          <a class="poster-frame" href="https://movie.douban.com/subject/5966609/" target="_blank" rel="noopener noreferrer" aria-label="打开《松林外》的豆瓣条目">
             <img src="assets/posters/place-beyond-pines.jpg" alt="《松林外》电影海报">
             <span class="rank-mark">C4</span>
-          </figure>
+          </a>
           <div class="movie-body">
-            <h3 class="movie-title">松林外</h3>
+            <h3 class="movie-title"><a href="https://movie.douban.com/subject/5966609/" target="_blank" rel="noopener noreferrer">松林外</a></h3>
             <span class="movie-meta">Crime Cool</span>
             <p class="movie-note">犯罪片，高司令纯纯的很酷。</p>
           </div>
@@ -878,7 +907,7 @@
     </footer>
 
     <section class="sources" aria-label="海报来源说明">
-      <p>海报图源：Wikipedia / Wikimedia file pages，本页仅作私人观影清单整理。来源条目：
+      <p>海报图源：Wikipedia / Wikimedia file pages；电影详情跳转至对应豆瓣电影条目。本页仅作私人观影清单整理。来源条目：
         <a href="https://en.wikipedia.org/wiki/La_La_Land">La La Land</a>,
         <a href="https://en.wikipedia.org/wiki/The_Notebook">The Notebook</a>,
         <a href="https://en.wikipedia.org/wiki/Blade_Runner_2049">Blade Runner 2049</a>,
