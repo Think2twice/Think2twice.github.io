@@ -1,72 +1,18 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>每日复盘发布系统 · 2026-06-21</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%2311161d'/%3E%3Cpath d='M16 18h32v6H16zm0 12h32v6H16zm0 12h20v6H16z' fill='%23f7d36d'/%3E%3C/svg%3E">
-  <style>
-    :root { color-scheme: light; --ink:#161b22; --muted:#63707d; --paper:#fbfaf6; --line:#ddd6ca; --coral:#e95d4e; --teal:#298b84; --blue:#5067c8; --amber:#d79a20; --shadow:0 16px 42px rgba(22,27,34,.08); font-family:"Avenir Next","PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
-    * { box-sizing:border-box; }
-    body { margin:0; color:var(--ink); background:linear-gradient(90deg,rgba(22,27,34,.035) 1px,transparent 1px) 0 0/34px 34px,linear-gradient(rgba(22,27,34,.035) 1px,transparent 1px) 0 0/34px 34px,var(--paper); line-height:1.72; }
-    a { color:inherit; }
-    header { border-bottom:1px solid var(--line); background:rgba(251,250,246,.92); }
-    nav { width:min(1040px,calc(100% - 32px)); min-height:64px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; gap:18px; font-weight:900; }
-    nav div { display:flex; flex-wrap:wrap; gap:14px; font-size:14px; }
-    main { width:min(1040px,calc(100% - 32px)); margin:0 auto; padding:46px 0 64px; }
-    h1 { margin:0; font-size:clamp(34px,5vw,62px); line-height:1.08; }
-    .lead { max-width:780px; color:#303842; font-size:19px; }
-    .map { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; margin:26px 0; }
-    .node { min-height:118px; border:1px solid var(--line); background:#fff; border-radius:8px; box-shadow:var(--shadow); padding:14px; }
-    .node b { display:block; margin-bottom:8px; }
-    .node span { color:var(--muted); font-size:14px; }
-    .section { margin-top:28px; border:1px solid var(--line); background:rgba(255,255,255,.9); border-radius:8px; box-shadow:var(--shadow); padding:20px; }
-    h2 { margin:0 0 10px; font-size:28px; }
-    ul { margin:0; padding-left:20px; color:var(--muted); }
-    li + li { margin-top:8px; }
-    code { background:rgba(22,27,34,.06); padding:2px 5px; border-radius:4px; }
-    @media (max-width:860px){ .map{grid-template-columns:1fr;} nav{align-items:flex-start; flex-direction:column; padding:12px 0;} }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>每日复盘发布系统</title>
+<meta name="description" content="每日复盘发布系统：脱敏流水总账、主题聚合、专题沉淀和认知替换表。">
+<style>
+:root{color-scheme:light;--paper:#fbfaf6;--ink:#17202a;--muted:#5d6976;--line:#ded7c9;--soft:#f1eadf;--teal:#247f78;--coral:#dc5f4f;--blue:#485fb7;--green:#3d7a54;--amber:#b87912;--violet:#6e5a9b;--shadow:0 14px 36px rgba(27,31,35,.08);font-family:"Avenir Next","PingFang SC","Microsoft YaHei",system-ui,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);line-height:1.65}.site-nav{position:sticky;top:0;z-index:5;background:rgba(251,250,246,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}.nav-inner{max-width:1180px;margin:0 auto;padding:12px 22px;display:flex;gap:18px;align-items:center;justify-content:space-between}.brand{font-weight:800}.nav-links{display:flex;gap:12px;flex-wrap:wrap}.nav-links a{color:var(--muted);text-decoration:none;font-size:14px}.hero{max-width:1180px;margin:0 auto;padding:34px 22px 20px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:24px;align-items:stretch}.eyebrow{color:var(--teal);font-weight:800;text-transform:uppercase;font-size:13px;letter-spacing:0}h1{font-size:clamp(32px,5vw,58px);line-height:1.05;margin:8px 0 14px;letter-spacing:0}.lead{font-size:18px;color:#334155;max-width:780px}.note-panel{border:1px solid var(--line);background:#fffdf9;box-shadow:var(--shadow);padding:18px;border-radius:8px}.note-panel strong{display:block;margin-bottom:6px}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.metric{border:1px solid var(--line);background:#fffaf0;padding:12px;border-radius:8px}.metric b{font-size:24px;display:block}.quick-grid,.card-grid{max-width:1180px;margin:0 auto;padding:10px 22px 24px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.quick,.card{display:block;text-decoration:none;color:inherit;border:1px solid var(--line);background:#fffdf9;border-radius:8px;padding:16px;box-shadow:0 8px 24px rgba(27,31,35,.05)}.quick b,.card h3{display:block;margin:0 0 6px}.quick span,.card p{color:var(--muted);font-size:14px}.section{border-top:1px solid var(--line);padding:34px 22px}.section-inner{max-width:1180px;margin:0 auto}.section h2{font-size:28px;margin:0 0 6px}.section-desc{color:var(--muted);margin:0 0 18px}.ledger-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px;background:#fffdf9}table{width:100%;border-collapse:collapse;min-width:980px}th,td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left;font-size:14px}th{background:#f4eee3;color:#2f3a45;position:sticky;top:47px;z-index:2}.badge{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700;background:#fff}.done{color:var(--green)}.open{color:var(--amber)}.blocked{color:var(--coral)}.method{color:var(--blue)}.status-cell{font-weight:700}.map-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}.stage{border:1px solid var(--line);background:#fffdf9;border-radius:8px;padding:12px;min-height:72px}.stage.now{border-color:var(--teal);box-shadow:inset 0 0 0 2px rgba(36,127,120,.15)}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.flow-step{border-left:4px solid var(--teal);background:#fffdf9;border-radius:8px;padding:13px;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}.list{margin:0;padding-left:18px}.list li{margin:8px 0}.footer{padding:30px 22px 46px;color:var(--muted);border-top:1px solid var(--line)}.footer-inner{max-width:1180px;margin:0 auto}.small{font-size:13px;color:var(--muted)}@media(max-width:860px){.hero{grid-template-columns:1fr}.quick-grid,.card-grid,.flow,.map-grid,.two-col{grid-template-columns:1fr}.metrics{grid-template-columns:1fr}th{position:static}h1{font-size:34px}.section{padding:28px 16px}.nav-inner{align-items:flex-start;flex-direction:column}.hero,.quick-grid,.card-grid{padding-left:16px;padding-right:16px}}
+</style>
 </head>
 <body>
-  <header><nav><a href="../../">2026-06-21 复盘</a><div><a href="../../../../">首页</a><a href="../../topics/github-pages-flow/">发布流程</a></div></nav></header>
-  <main>
-    <h1>每日复盘发布系统</h1>
-    <p class="lead">今天的核心变化：复盘页不再是“漂亮总结”，而是一个正式的信息处理流程。先完整留痕，再从留痕里筛出主题、专题、规则和认知变化。</p>
-    <section class="map" aria-label="阶段地图">
-      <article class="node"><b>零散 chat</b><span>问题、修复、项目推进散在不同线程里。</span></article>
-      <article class="node"><b>流水总账</b><span>所有可访问记录先脱敏入账。</span></article>
-      <article class="node"><b>散沙合集</b><span>小问答按主题聚合，不强行开页。</span></article>
-      <article class="node"><b>大石头专题</b><span>复杂流程和长期项目单独成页。</span></article>
-      <article class="node"><b>认知系统</b><span>以后再自然演化到标签、PARA、GTD 或知识图谱。</span></article>
-    </section>
-    <section class="section">
-      <h2>正式版原则</h2>
-      <ul>
-        <li>小问题也要进入总账；它们是否单独成页，要看复用性和重复频率。</li>
-        <li>不能访问的来源必须写清楚，不能补剧情。</li>
-        <li>不搬私密原话、账号、密钥、口令、联系方式或具体教材正文。</li>
-        <li>全景图要判断阶段和下一步，不只是罗列昨天做了什么。</li>
-        <li>认知替换表要写“旧认知、新认知、旧行为、新行为、触发证据、下一步验证”。</li>
-      </ul>
-    </section>
-    <section class="section">
-      <h2>今天已经落地的资产</h2>
-      <ul>
-        <li><code>docs/CODEX_DAILY_CHAT_DIGEST_AUTOMATION.md</code>：每日复盘自动化的正式规则。</li>
-        <li><code>daily-github-pages-publisher/AGENTS.md</code>：专门发布项目的执行边界。</li>
-        <li><code>daily-digests/2026-06-21/</code>：第一版正式每日全景复盘页面。</li>
-        <li><code>assets/posts.js</code>：把复盘页接入 GitHub Pages 首页和归档。</li>
-      </ul>
-    </section>
-    <section class="section">
-      <h2>下一步</h2>
-      <ul>
-        <li>明天先复查今天标记为“进行中/待处理”的条目：数据结构 1.1、麦克风卡顿。</li>
-        <li>把“每日复盘先总账再抽象”写成更短的 worker 检查清单。</li>
-        <li>当同类主题重复出现三次，再把散沙合集升级成稳定 docs 或 Skill。</li>
-      </ul>
-    </section>
-  </main>
-</body>
-</html>
+<nav class="site-nav"><div class="nav-inner"><div class="brand">学习教程库</div><div class="nav-links"><a href="../../../../">首页</a><a href="../../../../archive/">归档</a><a href="../../topics/github-pages-flow/">GitHub Pages</a><a href="../../projects/data-structure-automation/">数据结构自动化</a><a href="../../projects/daily-review-system/">复盘系统</a></div></div></nav>
+<header class="hero"><div><div class="eyebrow">Daily Digest · 2026-06-21</div><h1>每日复盘发布系统</h1><p class="lead">本次首跑把每日复盘从高层总结改造成可审计的信息处理流程：先流水总账，再聚合，再专题，再认知替换。</p></div><aside class="note-panel"><strong>返回</strong><p><a href="../../">回到每日总账</a></p></aside></header><section class="section"><div class="section-inner"><div class="card-grid"><article class="card"><span class="badge done">输入</span><h3>只使用本机可访问资料</h3><p>外部 ChatGPT、浏览器历史和移动端聊天不可访问时必须说明。</p></article>
+<article class="card"><span class="badge done">处理</span><h3>小问题也入账</h3><p>沙子进入总账或散沙合集，大石头才单独开专题。</p></article>
+<article class="card"><span class="badge done">输出</span><h3>Pages 和本地留档双写</h3><p>生成使用方法优化留档页，同时发布 daily-digests 页面并更新 posts.js。</p></article>
+<article class="card"><span class="badge done">验证</span><h3>发布前后都要查</h3><p>敏感信息搜索、HTML 读回、posts.js 解析、git status、commit/push。</p></article></div></div></section>
+</body></html>

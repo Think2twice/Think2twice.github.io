@@ -14,6 +14,36 @@ window.LEARNING_POSTS = [
     excerpt: "把高司令电影按三个梯队整理成带海报的 ticket box，可直接打开并用浏览器导出 PDF。"
   },
   {
+    title: "每日全景复盘：2026-06-22",
+    url: "./daily-digests/2026-06-22/",
+    archiveUrl: "../daily-digests/2026-06-22/",
+    date: "2026-06-22",
+    minutes: 16,
+    category: "每日复盘",
+    node: "panorama",
+    level: "流水总账 + 全景图",
+    tags: ["每日复盘", "Codex", "方法论"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "整理 2026-06-21 到 2026-06-22 早间可访问 Codex 线程：流水总账、散沙合集、数据结构自动化专题、Codex 方法系统和认知替换表。"
+  },
+  {
+    title: "每日全景复盘：2026-06-21",
+    url: "./daily-digests/2026-06-21/",
+    archiveUrl: "../daily-digests/2026-06-21/",
+    date: "2026-06-21",
+    minutes: 18,
+    category: "每日复盘",
+    node: "panorama",
+    level: "流水总账 + 全景图",
+    tags: ["每日复盘", "Codex", "方法论"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "整理 2026-06-21 可访问 Codex 线程：流水总账、散沙合集、大石头专题、全景图、阶段判断和认知替换表。"
+  },
+  {
     title: "Sub2API 手动部署与调试沙盒",
     url: "./guides/sub2api-terminal-deploy/",
     archiveUrl: "../guides/sub2api-terminal-deploy/",
@@ -26,20 +56,6 @@ window.LEARNING_POSTS = [
     featured: true,
     art: "browser",
     excerpt: "脱敏版 Sub2API 手动部署教程：用 Base URL 沙盒和部署模拟器理解 Docker Compose、Cloudflare、宝塔 Nginx、HTTPS 与端口收口。"
-  },
-  {
-    title: "2026-06-21 每日全景复盘",
-    url: "./daily-digests/2026-06-21/",
-    archiveUrl: "../daily-digests/2026-06-21/",
-    date: "2026-06-21",
-    minutes: 14,
-    category: "每日复盘",
-    node: "daily-review",
-    level: "流水总账到知识库",
-    tags: ["Codex", "GitHub Pages", "每日复盘", "自动化"],
-    featured: true,
-    art: "browser",
-    excerpt: "正式整理 2026-06-21 可访问 Codex 线程：流水总账、散沙合集、大石头专题、全景图和认知替换表。"
   },
   {
     title: "Git 三线地图：把 Git 看成三条轨道",

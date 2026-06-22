@@ -647,6 +647,7 @@
   <script src="./assets/posts.js"></script>
   <script>
     const posts = window.LEARNING_POSTS || [];
+    const homePosts = posts.filter((post) => post.homeVisible !== false);
     const categoryRow = document.getElementById("category-row");
     const postList = document.getElementById("post-list");
     const recentPosts = document.getElementById("recent-posts");
@@ -700,7 +701,7 @@
     }
 
     function renderCategories() {
-      const categories = ["全部", ...new Set(posts.map((post) => post.category))];
+      const categories = ["全部", ...new Set(homePosts.map((post) => post.category))];
       categoryRow.innerHTML = categories.map((category) =>
         `<button class="category-btn" type="button" aria-pressed="${category === activeCategory}" data-category="${category}">${category}</button>`
       ).join("");
@@ -713,7 +714,7 @@
     }
 
     function renderPosts() {
-      const visible = activeCategory === "全部" ? posts : posts.filter((post) => post.category === activeCategory);
+      const visible = activeCategory === "全部" ? homePosts : homePosts.filter((post) => post.category === activeCategory);
       postList.innerHTML = visible.map((post) => `<a class="post-card" href="${post.url}">
         ${artTemplate(post.art)}
         <article class="post-body">
@@ -730,7 +731,7 @@
     }
 
     function renderSidebar() {
-      recentPosts.innerHTML = posts.slice(0, 5).map((post) =>
+      recentPosts.innerHTML = homePosts.slice(0, 5).map((post) =>
         `<a class="side-link" href="${post.url}"><span>${post.title}</span><span>${formatDate(post.date)}</span></a>`
       ).join("");
 

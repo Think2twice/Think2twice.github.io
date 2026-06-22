@@ -1,51 +1,18 @@
 <!doctype html>
 <html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>数据结构教材自动化 · 2026-06-21</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%2311161d'/%3E%3Cpath d='M16 18h32v6H16zm0 12h32v6H16zm0 12h20v6H16z' fill='%23f7d36d'/%3E%3C/svg%3E">
-  <style>
-    :root { color-scheme: light; --ink:#161b22; --muted:#63707d; --paper:#fbfaf6; --line:#ddd6ca; --coral:#e95d4e; --green:#3f7c4d; --blue:#5067c8; --amber:#d79a20; --shadow:0 16px 42px rgba(22,27,34,.08); font-family:"Avenir Next","PingFang SC","Microsoft YaHei",system-ui,sans-serif; }
-    * { box-sizing:border-box; }
-    body { margin:0; color:var(--ink); background:linear-gradient(90deg,rgba(22,27,34,.035) 1px,transparent 1px) 0 0/34px 34px,linear-gradient(rgba(22,27,34,.035) 1px,transparent 1px) 0 0/34px 34px,var(--paper); line-height:1.72; }
-    a { color:inherit; }
-    header { border-bottom:1px solid var(--line); background:rgba(251,250,246,.92); }
-    nav { width:min(1060px,calc(100% - 32px)); min-height:64px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; gap:18px; font-weight:900; }
-    nav div { display:flex; flex-wrap:wrap; gap:14px; font-size:14px; }
-    main { width:min(1060px,calc(100% - 32px)); margin:0 auto; padding:46px 0 64px; }
-    h1 { margin:0; font-size:clamp(34px,5vw,62px); line-height:1.08; }
-    .lead { max-width:800px; color:#303842; font-size:19px; }
-    .timeline { display:grid; gap:12px; margin-top:26px; }
-    .row { display:grid; grid-template-columns:150px 1fr 160px; gap:14px; border:1px solid var(--line); background:rgba(255,255,255,.9); border-radius:8px; box-shadow:var(--shadow); padding:16px; }
-    .time { color:var(--muted); font-weight:900; font-size:13px; }
-    h2 { margin:0 0 8px; font-size:19px; }
-    p { margin:0; color:var(--muted); }
-    .status { justify-self:start; align-self:start; border:1px solid var(--line); background:#fff; border-radius:999px; padding:3px 9px; font-size:12px; font-weight:900; }
-    .done { color:var(--green); }
-    .warn { color:var(--amber); }
-    .open { color:var(--blue); }
-    .note { margin-top:24px; border:1px solid var(--line); background:#fff; border-radius:8px; box-shadow:var(--shadow); padding:18px; }
-    @media (max-width:760px){ nav{align-items:flex-start; flex-direction:column; padding:12px 0;} .row{grid-template-columns:1fr;} }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>数据结构教材自动化</title>
+<meta name="description" content="数据结构教材自动化：脱敏流水总账、主题聚合、专题沉淀和认知替换表。">
+<style>
+:root{color-scheme:light;--paper:#fbfaf6;--ink:#17202a;--muted:#5d6976;--line:#ded7c9;--soft:#f1eadf;--teal:#247f78;--coral:#dc5f4f;--blue:#485fb7;--green:#3d7a54;--amber:#b87912;--violet:#6e5a9b;--shadow:0 14px 36px rgba(27,31,35,.08);font-family:"Avenir Next","PingFang SC","Microsoft YaHei",system-ui,sans-serif}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);line-height:1.65}.site-nav{position:sticky;top:0;z-index:5;background:rgba(251,250,246,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}.nav-inner{max-width:1180px;margin:0 auto;padding:12px 22px;display:flex;gap:18px;align-items:center;justify-content:space-between}.brand{font-weight:800}.nav-links{display:flex;gap:12px;flex-wrap:wrap}.nav-links a{color:var(--muted);text-decoration:none;font-size:14px}.hero{max-width:1180px;margin:0 auto;padding:34px 22px 20px;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(280px,.8fr);gap:24px;align-items:stretch}.eyebrow{color:var(--teal);font-weight:800;text-transform:uppercase;font-size:13px;letter-spacing:0}h1{font-size:clamp(32px,5vw,58px);line-height:1.05;margin:8px 0 14px;letter-spacing:0}.lead{font-size:18px;color:#334155;max-width:780px}.note-panel{border:1px solid var(--line);background:#fffdf9;box-shadow:var(--shadow);padding:18px;border-radius:8px}.note-panel strong{display:block;margin-bottom:6px}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.metric{border:1px solid var(--line);background:#fffaf0;padding:12px;border-radius:8px}.metric b{font-size:24px;display:block}.quick-grid,.card-grid{max-width:1180px;margin:0 auto;padding:10px 22px 24px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.quick,.card{display:block;text-decoration:none;color:inherit;border:1px solid var(--line);background:#fffdf9;border-radius:8px;padding:16px;box-shadow:0 8px 24px rgba(27,31,35,.05)}.quick b,.card h3{display:block;margin:0 0 6px}.quick span,.card p{color:var(--muted);font-size:14px}.section{border-top:1px solid var(--line);padding:34px 22px}.section-inner{max-width:1180px;margin:0 auto}.section h2{font-size:28px;margin:0 0 6px}.section-desc{color:var(--muted);margin:0 0 18px}.ledger-wrap{overflow:auto;border:1px solid var(--line);border-radius:8px;background:#fffdf9}table{width:100%;border-collapse:collapse;min-width:980px}th,td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left;font-size:14px}th{background:#f4eee3;color:#2f3a45;position:sticky;top:47px;z-index:2}.badge{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700;background:#fff}.done{color:var(--green)}.open{color:var(--amber)}.blocked{color:var(--coral)}.method{color:var(--blue)}.status-cell{font-weight:700}.map-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}.stage{border:1px solid var(--line);background:#fffdf9;border-radius:8px;padding:12px;min-height:72px}.stage.now{border-color:var(--teal);box-shadow:inset 0 0 0 2px rgba(36,127,120,.15)}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}.flow-step{border-left:4px solid var(--teal);background:#fffdf9;border-radius:8px;padding:13px;border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}.list{margin:0;padding-left:18px}.list li{margin:8px 0}.footer{padding:30px 22px 46px;color:var(--muted);border-top:1px solid var(--line)}.footer-inner{max-width:1180px;margin:0 auto}.small{font-size:13px;color:var(--muted)}@media(max-width:860px){.hero{grid-template-columns:1fr}.quick-grid,.card-grid,.flow,.map-grid,.two-col{grid-template-columns:1fr}.metrics{grid-template-columns:1fr}th{position:static}h1{font-size:34px}.section{padding:28px 16px}.nav-inner{align-items:flex-start;flex-direction:column}.hero,.quick-grid,.card-grid{padding-left:16px;padding-right:16px}}
+</style>
 </head>
 <body>
-  <header><nav><a href="../../">2026-06-21 复盘</a><div><a href="../../../../">首页</a><a href="../../projects/daily-review-system/">复盘系统</a></div></nav></header>
-  <main>
-    <h1>数据结构教材自动化</h1>
-    <p class="lead">这条线今天的价值不是某个具体知识点，而是一个自动化教材 worker 如何在锁、切片、题库、动画、专题和关联图谱之间形成闭环。</p>
-    <section class="timeline" aria-label="数据结构自动化时间线">
-      <article class="row"><div class="time">凌晨</div><div><h2>质量规则补强</h2><p>动态过程优先 SVG/HTML 动画，动画必须可上一步、下一步、暂停；重难点要有专题，不再只写 README 摘要。</p></div><span class="status done">规则完成</span></article>
-      <article class="row"><div class="time">上午</div><div><h2>第 7 章并发冲突暴露锁边界</h2><p>7.1 在失锁前已有部分写入；7.2 在写入前遇到锁校验不一致后停止，未越权继续。</p></div><span class="status warn">正确止损</span></article>
-      <article class="row"><div class="time">中午前后</div><div><h2>第 7/8 章问题接力补救</h2><p>补上“章内位置 / 问题接力”和闭卷验收，把小节从孤立讲义变成一条学习链。</p></div><span class="status done">补救完成</span></article>
-      <article class="row"><div class="time">下午</div><div><h2>第 8 章排序连续推进</h2><p>可访问日志显示多节排序内容完成，产物包括 README、题库、SVG、HTML 动画、专题和 diagnostics。</p></div><span class="status done">主线推进</span></article>
-      <article class="row"><div class="time">傍晚</div><div><h2>章级关联与总图谱</h2><p>第 7 章、第 8 章关联整理，以及第 7-8 章总图谱整理完成；链接、JSON、动画控件等被校验。</p></div><span class="status done">闭环完成</span></article>
-      <article class="row"><div class="time">晚上</div><div><h2>从第 1 章重新启动</h2><p>用户要求按同样节奏从第 1 章开始。读取时可见已启动 1.1，但尚未看到最终交付记录。</p></div><span class="status open">进行中</span></article>
-    </section>
-    <section class="note">
-      <h2>沉淀规则</h2>
-      <p>教材自动化的完成标准不只是文件写入，而是“锁安全 + 主讲义 + 图示 + 可控动画 + 题库链接 + diagnostics + 关联阅读 + 队列推进”。明天复盘应补查 1.1 是否按这套标准完成。</p>
-    </section>
-  </main>
-</body>
-</html>
+<nav class="site-nav"><div class="nav-inner"><div class="brand">学习教程库</div><div class="nav-links"><a href="../../../../">首页</a><a href="../../../../archive/">归档</a><a href="../../topics/github-pages-flow/">GitHub Pages</a><a href="../../projects/data-structure-automation/">数据结构自动化</a><a href="../../projects/daily-review-system/">复盘系统</a></div></div></nav>
+<header class="hero"><div><div class="eyebrow">Daily Digest · 2026-06-21</div><h1>数据结构教材自动化</h1><p class="lead">这一天的数据结构主线是：守住锁边界，完成第 8 章收尾和第 7/8 章图谱，又重启第 1-3 章多节工作。</p></div><aside class="note-panel"><strong>返回</strong><p><a href="../../">回到每日总账</a></p></aside></header><section class="section"><div class="section-inner"><div class="card-grid"><article class="card"><span class="badge done">锁守卫</span><h3>guard stop 就停止</h3><p>不读规则、不读切片、不写文件；token_mismatch 也停止。</p></article>
+<article class="card"><span class="badge done">内容质量</span><h3>README 只是承载面</h3><p>每节要有章内位置、问题接力、SVG/动画、题库、专题和闭卷验收。</p></article>
+<article class="card"><span class="badge done">阶段</span><h3>从排序章完成到基础章重启</h3><p>第 8 章多节与图谱完成，第 1-3 章继续推进，4.1 留到后续确认。</p></article>
+<article class="card"><span class="badge done">下一步</span><h3>不要只看产量</h3><p>抽检动画控制、reviewLinks、诊断项和问题接力是否一致。</p></article></div></div></section>
+</body></html>
