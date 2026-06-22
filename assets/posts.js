@@ -1,5 +1,19 @@
 window.LEARNING_POSTS = [
   {
+    title: "高司令电影 Ticket Box",
+    url: "./guides/gosling-ticket-box/",
+    archiveUrl: "../guides/gosling-ticket-box/",
+    date: "2026-06-22",
+    minutes: 6,
+    category: "片单",
+    node: "movie-watchlist",
+    level: "三梯队电影票盒",
+    tags: ["电影", "Ryan Gosling", "片单", "PDF"],
+    featured: true,
+    art: "browser",
+    excerpt: "把高司令电影按三个梯队整理成带海报的 ticket box，可直接打开并用浏览器导出 PDF。"
+  },
+  {
     title: "Sub2API 手动部署与调试沙盒",
     url: "./guides/sub2api-terminal-deploy/",
     archiveUrl: "../guides/sub2api-terminal-deploy/",
