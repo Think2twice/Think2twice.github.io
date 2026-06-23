@@ -18,7 +18,7 @@ window.LEARNING_POSTS = [
     url: "./daily-digests/2026-06-22/",
     archiveUrl: "../daily-digests/2026-06-22/",
     date: "2026-06-22",
-    minutes: 16,
+    minutes: 20,
     category: "每日复盘",
     node: "panorama",
     level: "流水总账 + 全景图",
@@ -26,7 +26,7 @@ window.LEARNING_POSTS = [
     featured: false,
     homeVisible: false,
     art: "browser",
-    excerpt: "整理 2026-06-21 到 2026-06-22 早间可访问 Codex 线程：流水总账、散沙合集、数据结构自动化专题、Codex 方法系统和认知替换表。"
+    excerpt: "整理 2026-06-22 全天到 2026-06-23 早间的 49 条可访问 Codex 线程：数据结构自动化、408 总站修复、工具散沙、页面发布和认知替换表。"
   },
   {
     title: "每日全景复盘：2026-06-21",
