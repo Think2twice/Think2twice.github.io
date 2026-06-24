@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "Codex Subagent 与中文终端乱码修复",
+    url: "./guides/codex-subagent-terminal-locale/",
+    archiveUrl: "../guides/codex-subagent-terminal-locale/",
+    date: "2026-06-24",
+    minutes: 10,
+    category: "Codex",
+    node: "codex-workflow",
+    level: "子代理判断 + 终端 locale",
+    tags: ["Codex", "Subagent", "终端", "GitHub Pages"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "把两个散问题沉淀成可回看的轻量教程：什么时候让 Codex 开 subagent，以及底部终端中文路径乱码时如何用 UTF-8 locale 兜底。"
+  },
+  {
     title: "高司令电影 Ticket Box",
     url: "./guides/gosling-ticket-box/",
     archiveUrl: "../guides/gosling-ticket-box/",
