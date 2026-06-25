@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "每日全景复盘：2026-06-24",
+    url: "./daily-digests/2026-06-24/",
+    archiveUrl: "../daily-digests/2026-06-24/",
+    date: "2026-06-24",
+    minutes: 24,
+    category: "每日复盘",
+    node: "panorama",
+    level: "流水总账 + 全景图",
+    tags: ["每日复盘", "Codex", "方法论"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "整理 2026-06-24 到 2026-06-25 早间的 16 条可访问 Codex 线程/执行单元：OpenWebUI 源码化、多代理工作流、媒体工具链、Skill 治理和 Pages 发布排障。"
+  },
+  {
     title: "Codex Subagent 与中文终端乱码修复",
     url: "./guides/codex-subagent-terminal-locale/",
     archiveUrl: "../guides/codex-subagent-terminal-locale/",
