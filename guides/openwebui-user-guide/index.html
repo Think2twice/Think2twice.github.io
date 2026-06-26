@@ -333,12 +333,44 @@
     }
 
     .shot {
+      position: relative;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--panel);
       box-shadow: var(--shadow);
       padding: 10px;
       overflow: hidden;
+    }
+
+    .shot.is-zoomable {
+      cursor: zoom-in;
+    }
+
+    .shot.is-zoomable::after {
+      content: "点击放大";
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      min-height: 32px;
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 999px;
+      background: rgba(17, 22, 29, 0.78);
+      color: #fffaf0;
+      padding: 5px 10px;
+      font-size: 12px;
+      font-weight: 900;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: opacity 160ms ease, transform 160ms ease;
+      pointer-events: none;
+    }
+
+    .shot.is-zoomable:hover::after,
+    .shot.is-zoomable:focus-visible::after {
+      opacity: 1;
+      transform: translateY(0);
     }
 
     .shot img {
@@ -432,6 +464,75 @@
       font-size: 14px;
     }
 
+    body.lightbox-open {
+      overflow: hidden;
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(17, 22, 29, 0.88);
+      padding: 28px;
+    }
+
+    .lightbox[aria-hidden="false"] {
+      display: flex;
+    }
+
+    .lightbox-frame {
+      width: min(96vw, 1560px);
+      max-height: 92vh;
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 12px;
+      margin: 0;
+    }
+
+    .lightbox-frame img {
+      max-width: 100%;
+      max-height: calc(92vh - 58px);
+      display: block;
+      justify-self: center;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+    }
+
+    .lightbox-frame figcaption {
+      max-width: min(96vw, 1120px);
+      justify-self: center;
+      margin: 0;
+      border-radius: 8px;
+      background: rgba(255, 250, 240, 0.94);
+      color: #343b45;
+      padding: 9px 12px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .lightbox-close {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      width: 44px;
+      height: 44px;
+      border: 2px solid rgba(255, 250, 240, 0.7);
+      border-radius: 999px;
+      background: #fffaf0;
+      color: var(--ink);
+      font: inherit;
+      font-size: 28px;
+      font-weight: 900;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.24);
+    }
+
     footer {
       border-top: 1px solid var(--line);
       background: rgba(255,255,255,0.74);
@@ -488,6 +589,15 @@
       .workflow-panel,
       .note-flow {
         padding: 12px;
+      }
+
+      .lightbox {
+        padding: 14px;
+      }
+
+      .lightbox-close {
+        top: 12px;
+        right: 12px;
       }
     }
   </style>
@@ -890,5 +1000,66 @@
       <span>把聊天变成笔记，把答案变成知识。</span>
     </div>
   </footer>
+  <div class="lightbox" id="image-lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="图片放大预览">
+    <button class="lightbox-close" type="button" aria-label="关闭图片预览">×</button>
+    <figure class="lightbox-frame">
+      <img id="lightbox-image" src="" alt="">
+      <figcaption id="lightbox-caption"></figcaption>
+    </figure>
+  </div>
+  <script>
+    (() => {
+      const lightbox = document.getElementById('image-lightbox');
+      const lightboxImage = document.getElementById('lightbox-image');
+      const lightboxCaption = document.getElementById('lightbox-caption');
+      const closeButton = lightbox.querySelector('.lightbox-close');
+
+      const closeLightbox = () => {
+        lightbox.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('lightbox-open');
+        lightboxImage.removeAttribute('src');
+        lightboxImage.alt = '';
+        lightboxCaption.textContent = '';
+      };
+
+      const openLightbox = (img) => {
+        const figure = img.closest('figure');
+        const caption = figure?.querySelector('figcaption')?.textContent?.trim() || img.alt || '截图预览';
+        lightboxImage.src = img.currentSrc || img.src;
+        lightboxImage.alt = img.alt || caption;
+        lightboxCaption.textContent = caption;
+        lightbox.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('lightbox-open');
+        closeButton.focus();
+      };
+
+      document.querySelectorAll('.shot img').forEach((img) => {
+        const figure = img.closest('.shot');
+        figure.classList.add('is-zoomable');
+        figure.tabIndex = 0;
+        figure.setAttribute('role', 'button');
+        figure.setAttribute('aria-label', `放大查看图片：${img.alt || '截图'}`);
+        figure.addEventListener('click', () => openLightbox(img));
+        figure.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openLightbox(img);
+          }
+        });
+      });
+
+      closeButton.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', (event) => {
+        if (event.target === lightbox) {
+          closeLightbox();
+        }
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && lightbox.getAttribute('aria-hidden') === 'false') {
+          closeLightbox();
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
