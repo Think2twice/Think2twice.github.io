@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "ChatGPT 小站使用指南：聊天、笔记、SideChat 与图片生成",
+    url: "./guides/openwebui-user-guide/",
+    archiveUrl: "../guides/openwebui-user-guide/",
+    date: "2026-06-26",
+    minutes: 16,
+    category: "ChatGPT 小站",
+    node: "chatgpt-user-guide",
+    level: "用户教程 + 功能亮点",
+    tags: ["ChatGPT", "笔记", "SideChat", "图片生成"],
+    featured: true,
+    homeVisible: true,
+    art: "browser",
+    excerpt: "面向用户的 ChatGPT 小站中文教程：如何把聊天里的好回答添加到笔记，继续用 SideChat 追问，导出分享长资料，并使用图片生成与改图能力。"
+  },
+  {
     title: "每日全景复盘：2026-06-25",
     url: "./daily-digests/2026-06-25/",
     archiveUrl: "../daily-digests/2026-06-25/",
@@ -12,7 +27,7 @@ window.LEARNING_POSTS = [
     featured: false,
     homeVisible: false,
     art: "browser",
-    excerpt: "整理 2026-06-25 到 2026-06-26 早间的 22 条可访问 Codex 线程/执行单元：OpenWebUI 源码化、文件附件闭环、接口网关、提交拆分、旁路代理治理和自动化学习边界。"
+    excerpt: "整理 2026-06-25 到 2026-06-26 早间的 22 条可访问 Codex 线程/执行单元：ChatGPT 小站源码化、文件附件闭环、接口网关、提交拆分、旁路代理治理和自动化学习边界。"
   },
   {
     title: "每日全景复盘：2026-06-24",
@@ -27,7 +42,7 @@ window.LEARNING_POSTS = [
     featured: false,
     homeVisible: false,
     art: "browser",
-    excerpt: "整理 2026-06-24 到 2026-06-25 早间的 16 条可访问 Codex 线程/执行单元：OpenWebUI 源码化、多代理工作流、媒体工具链、Skill 治理和 Pages 发布排障。"
+    excerpt: "整理 2026-06-24 到 2026-06-25 早间的 16 条可访问 Codex 线程/执行单元：ChatGPT 小站源码化、多代理工作流、媒体工具链、Skill 治理和 Pages 发布排障。"
   },
   {
     title: "Codex Subagent 与中文终端乱码修复",

@@ -1,0 +1,894 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ChatGPT 小站使用指南：聊天、笔记、SideChat 与图片生成</title>
+  <meta name="description" content="一份面向用户的 ChatGPT 小站中文使用教程，介绍聊天、添加到笔记、Markdown 编辑器、SideChat、长对话大纲、导出分享和图片生成。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%2311161d'/%3E%3Cpath d='M18 21h28M18 32h28M18 43h28' stroke='%23f7d36d' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #15191f;
+      --muted: #66717f;
+      --paper: #fbfaf6;
+      --panel: #ffffff;
+      --panel-warm: #fff7e8;
+      --line: #e2ddd4;
+      --line-strong: #20242c;
+      --coral: #ee5c48;
+      --teal: #358f8c;
+      --blue: #5867d8;
+      --amber: #e5a72e;
+      --green: #417b55;
+      --dark: #11161d;
+      --soft: rgba(21, 25, 31, 0.065);
+      --shadow: 0 18px 44px rgba(21, 25, 31, 0.08);
+      --radius: 8px;
+      --max: 1180px;
+      font-family: "Inter", "Avenir Next", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(21,25,31,0.035) 1px, transparent 1px) 0 0 / 34px 34px,
+        linear-gradient(rgba(21,25,31,0.035) 1px, transparent 1px) 0 0 / 34px 34px,
+        var(--paper);
+      line-height: 1.72;
+    }
+
+    a {
+      color: inherit;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 4px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: rgba(251, 250, 246, 0.92);
+      backdrop-filter: blur(16px);
+    }
+
+    .nav {
+      width: min(var(--max), calc(100% - 32px));
+      min-height: 68px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 38px;
+      border: 2px solid var(--line-strong);
+      background: var(--dark);
+      box-shadow: 4px 4px 0 var(--amber);
+      position: relative;
+      transform: rotate(-3deg);
+    }
+
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      left: 8px;
+      right: 8px;
+      height: 3px;
+      background: #f7d36d;
+    }
+
+    .brand-mark::before {
+      top: 12px;
+    }
+
+    .brand-mark::after {
+      top: 21px;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 18px;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .nav-links a {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      padding: 8px 0;
+    }
+
+    .nav-links a:hover,
+    .nav-links a[aria-current="page"] {
+      color: var(--coral);
+      border-color: var(--coral);
+    }
+
+    main {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      padding: 54px 0 72px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.14;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 900px;
+      font-size: clamp(42px, 6.4vw, 82px);
+    }
+
+    h2 {
+      font-size: clamp(30px, 4vw, 50px);
+    }
+
+    h3 {
+      font-size: 23px;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .lead {
+      max-width: 780px;
+      margin-top: 22px;
+      color: #343b45;
+      font-size: clamp(17px, 2vw, 22px);
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(360px, 0.9fr);
+      gap: 34px;
+      align-items: center;
+      margin-bottom: 44px;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 42px;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--line-strong);
+      border-radius: 8px;
+      background: var(--dark);
+      color: #fffaf0;
+      padding: 8px 14px;
+      text-decoration: none;
+      font-weight: 900;
+      box-shadow: 5px 5px 0 rgba(21, 25, 31, 0.16);
+    }
+
+    .button.secondary {
+      background: var(--panel-warm);
+      color: var(--ink);
+    }
+
+    .workflow-panel {
+      border: 2px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .workflow-panel svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .section {
+      margin-top: 44px;
+      padding-top: 30px;
+      border-top: 2px solid var(--line-strong);
+    }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(280px, 0.48fr);
+      gap: 24px;
+      align-items: end;
+      margin-bottom: 22px;
+    }
+
+    .section-head p {
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .feature {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    .feature strong {
+      display: inline-block;
+      margin-bottom: 10px;
+      color: var(--coral);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .feature p {
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    .story {
+      display: grid;
+      grid-template-columns: minmax(300px, 0.74fr) minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+
+    .story.reverse {
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 0.76fr);
+    }
+
+    .text-block {
+      display: grid;
+      gap: 14px;
+      color: #343b45;
+      font-size: 17px;
+    }
+
+    .text-block h3 {
+      color: var(--ink);
+      font-size: 28px;
+    }
+
+    .steps {
+      display: grid;
+      gap: 12px;
+      counter-reset: steps;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      counter-increment: steps;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      padding: 14px;
+    }
+
+    .step::before {
+      content: counter(steps);
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--line-strong);
+      border-radius: 8px;
+      background: var(--panel-warm);
+      color: var(--ink);
+      font-weight: 900;
+    }
+
+    .step b {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--ink);
+    }
+
+    .step span {
+      color: var(--muted);
+    }
+
+    figure {
+      margin: 0;
+    }
+
+    .shot {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding: 10px;
+      overflow: hidden;
+    }
+
+    .shot img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 6px;
+      background: #fff;
+    }
+
+    .shot.compact img {
+      max-height: 520px;
+      object-fit: contain;
+    }
+
+    figcaption {
+      margin-top: 9px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .gallery.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .note-flow {
+      border: 2px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--panel-warm);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .note-flow svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .callout {
+      border: 2px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: #fff2c8;
+      padding: 20px;
+      font-size: 18px;
+    }
+
+    .compare {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .mini-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .mini-list li {
+      border-left: 4px solid var(--teal);
+      background: rgba(255,255,255,0.8);
+      padding: 10px 12px;
+      color: #343b45;
+    }
+
+    .source-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .source-list a {
+      color: var(--blue);
+      font-weight: 800;
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      background: rgba(255,255,255,0.74);
+      padding: 28px 0;
+      color: var(--muted);
+    }
+
+    .footer-inner {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 980px) {
+      .hero,
+      .section-head,
+      .story,
+      .story.reverse,
+      .compare {
+        grid-template-columns: 1fr;
+      }
+
+      .grid,
+      .gallery.three {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 680px) {
+      .nav {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 14px 0;
+      }
+
+      main {
+        width: min(100% - 24px, var(--max));
+        padding-top: 36px;
+      }
+
+      h1 {
+        font-size: clamp(36px, 12vw, 52px);
+      }
+
+      .grid,
+      .gallery,
+      .gallery.three {
+        grid-template-columns: 1fr;
+      }
+
+      .workflow-panel,
+      .note-flow {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <nav class="nav" aria-label="主导航">
+      <a class="brand" href="../../">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>学习教程库</span>
+      </a>
+      <div class="nav-links">
+        <a href="../../">教程</a>
+        <a href="../../archive/">归档</a>
+        <a href="#notes">笔记</a>
+        <a href="#sidechat">SideChat</a>
+        <a href="#images">图片生成</a>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <h1 id="page-title">ChatGPT 小站使用指南</h1>
+        <p class="lead">这份教程不是单纯介绍“怎么聊天”，而是把聊天、笔记、追问、导出和图片生成串成一个完整工作流：先获得答案，再筛选、编辑、补洞，最后沉淀成自己的知识。</p>
+        <div class="hero-actions">
+          <a class="button" href="#quick-start">先看使用路线</a>
+          <a class="button secondary" href="#notes">从笔记功能开始</a>
+        </div>
+      </div>
+      <div class="workflow-panel" aria-label="ChatGPT 小站使用闭环图">
+        <svg viewBox="0 0 640 500" role="img" aria-labelledby="flow-title flow-desc">
+          <title id="flow-title">从聊天到笔记再到导出的闭环</title>
+          <desc id="flow-desc">用户在 Chat 中提问，把有价值的回答添加到笔记，用 SideChat 继续追问，再导出或分享。</desc>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#20242c"></path>
+            </marker>
+          </defs>
+          <rect x="1" y="1" width="638" height="498" rx="18" fill="#fffaf0" stroke="#20242c" stroke-width="2"></rect>
+          <rect x="38" y="52" width="205" height="120" rx="12" fill="#ffffff" stroke="#20242c" stroke-width="2"></rect>
+          <text x="62" y="88" font-size="24" font-weight="900" fill="#15191f">Chat 提问</text>
+          <text x="62" y="124" font-size="17" fill="#66717f">模型回答、代码、图片、文件</text>
+          <text x="62" y="150" font-size="17" fill="#66717f">都先从对话里产生</text>
+          <rect x="390" y="52" width="210" height="120" rx="12" fill="#ffffff" stroke="#20242c" stroke-width="2"></rect>
+          <text x="414" y="88" font-size="24" font-weight="900" fill="#15191f">添加到笔记</text>
+          <text x="414" y="124" font-size="17" fill="#66717f">有用回答进入日期笔记</text>
+          <text x="414" y="150" font-size="17" fill="#66717f">持续追加，随时归档</text>
+          <rect x="38" y="288" width="205" height="126" rx="12" fill="#ffffff" stroke="#20242c" stroke-width="2"></rect>
+          <text x="62" y="324" font-size="24" font-weight="900" fill="#15191f">SideChat 补洞</text>
+          <text x="62" y="360" font-size="17" fill="#66717f">围绕整篇笔记或选中文本</text>
+          <text x="62" y="386" font-size="17" fill="#66717f">继续追问，再插回正文</text>
+          <rect x="390" y="288" width="210" height="126" rx="12" fill="#ffffff" stroke="#20242c" stroke-width="2"></rect>
+          <text x="414" y="324" font-size="24" font-weight="900" fill="#15191f">导出与分享</text>
+          <text x="414" y="360" font-size="17" fill="#66717f">PDF、Markdown、txt</text>
+          <text x="414" y="386" font-size="17" fill="#66717f">也能复制到 Notion</text>
+          <path d="M250 112 H380" fill="none" stroke="#20242c" stroke-width="3" marker-end="url(#arrow)"></path>
+          <path d="M494 178 V278" fill="none" stroke="#20242c" stroke-width="3" marker-end="url(#arrow)"></path>
+          <path d="M384 350 H252" fill="none" stroke="#20242c" stroke-width="3" marker-end="url(#arrow)"></path>
+          <path d="M140 278 V184" fill="none" stroke="#20242c" stroke-width="3" marker-end="url(#arrow)"></path>
+          <circle cx="320" cy="250" r="54" fill="#11161d"></circle>
+          <text x="320" y="242" text-anchor="middle" font-size="19" font-weight="900" fill="#fffaf0">信息</text>
+          <text x="320" y="270" text-anchor="middle" font-size="19" font-weight="900" fill="#fffaf0">变知识</text>
+        </svg>
+      </div>
+    </section>
+
+    <section class="section" id="quick-start">
+      <div class="section-head">
+        <h2>先用这条路线</h2>
+        <p>如果你第一次使用，只要记住这五步：问、收、改、追、导。它的重点不是让聊天变复杂，而是让每次好回答都能留下来。</p>
+      </div>
+      <div class="grid">
+        <article class="feature">
+          <strong>01</strong>
+          <h3>先在 Chat 里提问</h3>
+          <p>选择合适模型，直接提问、上传图片或文件，让 AI 先给出一版答案。</p>
+        </article>
+        <article class="feature">
+          <strong>02</strong>
+          <h3>把好回答加到笔记</h3>
+          <p>每条 AI 回答下方都有添加到笔记按钮，看到真正有价值的内容就点一下。</p>
+        </article>
+        <article class="feature">
+          <strong>03</strong>
+          <h3>在笔记里删减改写</h3>
+          <p>笔记是可编辑 Markdown 文本，不是只读收藏夹。删掉废话，保留高密度内容。</p>
+        </article>
+        <article class="feature">
+          <strong>04</strong>
+          <h3>用 SideChat 继续追问</h3>
+          <p>围绕整篇笔记或选中的一段继续问，回答满意后直接插入正文。</p>
+        </article>
+        <article class="feature">
+          <strong>05</strong>
+          <h3>导出、分享或回看</h3>
+          <p>笔记和 Chat 都可以复制、下载或导出，适合放进 Notion、微信文件传输助手或本地资料库。</p>
+        </article>
+        <article class="feature">
+          <strong>附加能力</strong>
+          <h3>图片生成与改图</h3>
+          <p>可以纯文本生成图片，也可以上传图片后要求重新构图、调光影、修风格。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="foundation">
+      <div class="section-head">
+        <h2>它的官方能力底座</h2>
+        <p>ChatGPT 小站建立在可自托管 AI 平台能力之上，功能覆盖模型接入、RAG、Markdown/LaTeX、图片生成、工具和多端响应式界面。这里的定制体验是在这个底座上继续打磨使用闭环。</p>
+      </div>
+      <div class="grid">
+        <article class="feature">
+          <strong>模型接入</strong>
+          <h3>支持多种模型来源</h3>
+          <p>官方支持 Ollama 与 OpenAI-compatible API，因此可以按实际配置接入不同模型、不同供应商或本地模型。</p>
+        </article>
+        <article class="feature">
+          <strong>资料输入</strong>
+          <h3>RAG 与文件理解</h3>
+          <p>可以把文档放进聊天或知识库，让 AI 基于文件、网页或检索内容回答。PDF 等文件适合做资料阅读。</p>
+        </article>
+        <article class="feature">
+          <strong>表达能力</strong>
+          <h3>Markdown 与公式</h3>
+          <p>聊天与笔记都适合承载代码、列表、标题和数学公式，所以学习类、考试类内容不容易散掉。</p>
+        </article>
+        <article class="feature">
+          <strong>工具</strong>
+          <h3>代码与扩展能力</h3>
+          <p>底层平台支持工具、Python function calling 和插件扩展，适合把模型能力接到实际任务里。</p>
+        </article>
+        <article class="feature">
+          <strong>多端</strong>
+          <h3>电脑和手机都能用</h3>
+          <p>响应式界面和 PWA 能力让它不局限于桌面端，移动端也可以查看对话、笔记和生成结果。</p>
+        </article>
+        <article class="feature">
+          <strong>图片</strong>
+          <h3>生成与编辑图片</h3>
+          <p>官方功能本身支持多种图片生成/编辑后端；本实例重点把生成过程和结果展示做得更接近原生体验。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="notes">
+      <div class="section-head">
+        <h2>笔记：把散落的好回答收起来</h2>
+        <p>笔记是这套使用方法的核心。它解决的不是“收藏一下”，而是把多个 Chat 里真正有用的回答整理到同一处，慢慢变成一个主题笔记。</p>
+      </div>
+      <div class="story">
+        <div class="text-block">
+          <h3>添加到笔记像一个每日收集箱</h3>
+          <p>当你第一次点击 AI 回答下方的“添加到笔记”，系统会自动创建一个以当天日期命名的笔记，例如 <b>2026-06-26</b>。之后无论你在哪个 Chat 里继续点击，内容都会追加到这篇日期笔记后面。</p>
+          <p>当你把这篇日期笔记改名成一个主题，例如“极限与 PPT 总结”或“图片提示词整理”，它就相当于归档成了一个正式笔记。之后再点击“添加到笔记”，系统会重新创建当天日期笔记，开始下一轮收集。</p>
+          <div class="note-flow">
+            <svg viewBox="0 0 740 250" role="img" aria-label="日期笔记到主题归档的流程图">
+              <rect x="1" y="1" width="738" height="248" rx="16" fill="#fff7e8" stroke="#20242c" stroke-width="2"></rect>
+              <rect x="38" y="54" width="150" height="82" rx="10" fill="#fff" stroke="#20242c" stroke-width="2"></rect>
+              <text x="113" y="88" text-anchor="middle" font-size="20" font-weight="900" fill="#15191f">点击回答</text>
+              <text x="113" y="116" text-anchor="middle" font-size="15" fill="#66717f">添加到笔记</text>
+              <defs>
+                <marker id="note-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="#20242c"></path>
+                </marker>
+              </defs>
+              <path d="M200 95 H283" stroke="#20242c" stroke-width="3" marker-end="url(#note-arrow)"></path>
+              <rect x="300" y="54" width="150" height="82" rx="10" fill="#fff" stroke="#20242c" stroke-width="2"></rect>
+              <text x="375" y="88" text-anchor="middle" font-size="20" font-weight="900" fill="#15191f">日期笔记</text>
+              <text x="375" y="116" text-anchor="middle" font-size="15" fill="#66717f">持续追加</text>
+              <path d="M462 95 H545" stroke="#20242c" stroke-width="3" marker-end="url(#note-arrow)"></path>
+              <rect x="562" y="54" width="150" height="82" rx="10" fill="#fff" stroke="#20242c" stroke-width="2"></rect>
+              <text x="637" y="88" text-anchor="middle" font-size="20" font-weight="900" fill="#15191f">主题归档</text>
+              <text x="637" y="116" text-anchor="middle" font-size="15" fill="#66717f">手动或 AI 命名</text>
+              <text x="72" y="184" font-size="16" fill="#343b45">适合十几个 Chat 里围绕同一问题不断收集：先不打断思路，后面再统一删减、重命名、总结。</text>
+            </svg>
+          </div>
+        </div>
+        <div class="gallery">
+          <figure class="shot compact">
+            <img src="./assets/note-add-button.jpg" width="956" height="778" alt="AI 回答下方的添加到笔记按钮">
+            <figcaption>每条 AI 回答下方都有“添加到笔记”入口，和复制、编辑、朗读等操作放在一起。</figcaption>
+          </figure>
+          <figure class="shot compact">
+            <img src="./assets/note-add-flow.jpg" width="1600" height="1365" alt="从 Chat 添加回答到左侧笔记入口的示意截图">
+            <figcaption>点击后内容会进入左侧“笔记”，减少复制粘贴和切换应用造成的打断。</figcaption>
+          </figure>
+        </div>
+      </div>
+      <div class="gallery" style="margin-top: 18px;">
+        <figure class="shot">
+          <img src="./assets/note-result.jpg" width="1600" height="1296" alt="添加后的日期笔记正文示例">
+          <figcaption>添加后的内容会成为笔记正文，后续可以继续编辑、删减和补充。</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="./assets/note-editor.jpg" width="1600" height="1405" alt="笔记编辑器支持公式代码和浮动格式工具栏">
+          <figcaption>笔记不是静态收藏夹，而是可编辑的 Markdown 文本编辑器，支持标题、列表、代码块、公式和常用文本格式。</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section" id="editor">
+      <div class="section-head">
+        <h2>编辑与导出：把回答变成高密度资料</h2>
+        <p>AI 的原始回答经常有冗余。笔记让用户可以直接删掉无用部分、重排结构、保留公式和代码，再导出成自己真正会回看的资料。</p>
+      </div>
+      <div class="story reverse">
+        <div class="gallery">
+          <figure class="shot">
+            <img src="./assets/note-export-list.jpg" width="1600" height="555" alt="笔记列表中的下载菜单">
+            <figcaption>笔记列表中可以从菜单下载，支持纯文本、Markdown 和 PDF。</figcaption>
+          </figure>
+          <figure class="shot">
+            <img src="./assets/note-share-copy.jpg" width="1600" height="427" alt="笔记详情页的分享和复制到剪贴板菜单">
+            <figcaption>进入笔记后也可以分享、复制链接，或把 Markdown 内容复制到剪贴板，方便放入 Notion 等工具。</figcaption>
+          </figure>
+        </div>
+        <div class="text-block">
+          <h3>这部分适合做“第二遍加工”</h3>
+          <p>你可以先从多个 Chat 里收集三十条有价值回答，再在笔记里删掉重复解释、补上自己的判断，把内容压缩成一篇真正属于自己的高密度笔记。</p>
+          <ul class="mini-list">
+            <li><b>公式和代码不丢：</b>数学公式、代码块、标题层级在编辑和查看时都能保留较好的格式。</li>
+            <li><b>导出方式多：</b>PDF 适合阅读和分享，Markdown 适合导入 Notion 或继续二次编辑，txt 适合纯文本存档。</li>
+            <li><b>分页更规整：</b>导出 PDF 时，页面之间会尽量保持清楚分割，便于发到微信文件传输助手或其他设备查看。</li>
+          </ul>
+        </div>
+      </div>
+      <figure class="shot" style="margin-top: 18px;">
+        <img src="./assets/note-pdf-print.jpg" width="1600" height="1316" alt="笔记导出 PDF 的打印预览，保留页面分隔、公式和代码">
+        <figcaption>导出 PDF 时，标题、代码、数学公式和分页都能较完整地保留下来，更像一份可阅读的资料，而不是一段粗糙复制文本。</figcaption>
+      </figure>
+    </section>
+
+    <section class="section" id="sidechat">
+      <div class="section-head">
+        <h2>SideChat：围绕笔记继续对话</h2>
+        <p>SideChat 是专门服务笔记的侧边对话。它不是另开一个普通 Chat，而是在当前笔记上下文里继续追问、解释、总结，并把有用回答直接插回笔记。</p>
+      </div>
+      <div class="story">
+        <div class="text-block">
+          <h3>一边看笔记，一边让 AI 补洞</h3>
+          <p>当一篇笔记来自多个 Chat，它很可能还有不连贯、没讲透或你自己还不理解的地方。打开右侧 SideChat，可以直接要求它“总结笔记内容”“解释这一段”“补一个例子”。</p>
+          <div class="steps">
+            <div class="step">
+              <div><b>打开右侧对话</b><span>在笔记顶部点击 SideChat 图标，右侧出现对话面板。</span></div>
+            </div>
+            <div class="step">
+              <div><b>围绕整篇笔记提问</b><span>让 AI 总结、润色、拆结构，适合快速发现笔记里的主线。</span></div>
+            </div>
+            <div class="step">
+              <div><b>把回答插入正文</b><span>光标放在笔记中某个位置，点击 SideChat 回答旁边的“插入”，回答会进入光标处。</span></div>
+            </div>
+            <div class="step">
+              <div><b>选中文字引用提问</b><span>选中一段不懂的内容，直接围绕这段问，答案可以插到原文附近。</span></div>
+            </div>
+          </div>
+        </div>
+        <figure class="shot">
+          <img src="./assets/sidechat-open.jpg" width="1600" height="1155" alt="笔记右侧 SideChat 入口和输入框">
+          <figcaption>右侧 SideChat 可以围绕当前笔记提问，底部输入框示例为“总结笔记内容”。</figcaption>
+        </figure>
+      </div>
+      <div class="gallery three" style="margin-top: 18px;">
+        <figure class="shot">
+          <img src="./assets/sidechat-answer.jpg" width="1600" height="1160" alt="SideChat 根据笔记生成总结回答">
+          <figcaption>SideChat 会基于当前笔记生成回答，适合总结、解释、补充结构。</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="./assets/sidechat-insert.jpg" width="1600" height="908" alt="SideChat 回答旁边出现插入按钮">
+          <figcaption>鼠标移到回答附近，可以看到“插入”动作，左侧光标位置决定插入点。</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="./assets/sidechat-inserted.jpg" width="1600" height="771" alt="SideChat 回答被插入笔记正文">
+          <figcaption>点击插入后，SideChat 的回答会进入笔记正文，继续成为可编辑内容。</figcaption>
+        </figure>
+      </div>
+      <figure class="shot" style="margin-top: 18px;">
+        <img src="./assets/sidechat-quote.jpg" width="1600" height="1152" alt="选中笔记文字后引用到 SideChat 中提问">
+        <figcaption>选中文字后引用提问，是 SideChat 最有用的地方之一：问题来自原文，回答也能回到原文附近。</figcaption>
+      </figure>
+    </section>
+
+    <section class="section" id="chat">
+      <div class="section-head">
+        <h2>Chat：完整会话也能管理和回看</h2>
+        <p>如果笔记是精选沉淀，Chat 就是完整过程记录。长对话可以通过导出保存，用右侧大纲快速跳转，也可以选中某段文字后直接引用追问。</p>
+      </div>
+      <div class="compare">
+        <figure class="shot">
+          <img src="./assets/chat-menu-top.jpg" width="1600" height="1113" alt="Chat 右上角菜单支持下载复制">
+          <figcaption>Chat 右上角三个点可以复制整段对话，也可以下载为 JSON、txt、PDF 等格式。</figcaption>
+        </figure>
+        <figure class="shot">
+          <img src="./assets/chat-menu-sidebar.jpg" width="1600" height="1161" alt="左侧 Chat 标题菜单支持复制下载重命名置顶等">
+          <figcaption>左侧对话列表里的三个点也有管理入口，适合不进入对话时快速复制、下载、重命名、置顶或归档。</figcaption>
+        </figure>
+      </div>
+      <div class="story" style="margin-top: 22px;">
+        <div class="text-block">
+          <h3>长 Chat 用右侧大纲找问题</h3>
+          <p>一个 Chat 里问了很多问题时，手动滚动很容易迷路。右侧大纲会把用户问题整理成列表，平时收起成一个安静的浮条，鼠标移过去后展开。</p>
+          <p>点击某个问题标题，页面会快速跳转到对应位置。对于学习、排错和长项目讨论来说，这相当于给 Chat 加了一层目录。</p>
+        </div>
+        <div class="gallery">
+          <figure class="shot compact">
+            <img src="./assets/chat-outline-closed.jpg" width="1600" height="1166" alt="长 Chat 右侧大纲收起状态">
+            <figcaption>未展开时，大纲只是一条轻量浮条，不干扰阅读。</figcaption>
+          </figure>
+          <figure class="shot compact">
+            <img src="./assets/chat-outline-open.jpg" width="1600" height="1163" alt="长 Chat 右侧大纲展开后显示问题列表">
+            <figcaption>展开后可以看到问题列表，点击就能跳到对应问题。</figcaption>
+          </figure>
+        </div>
+      </div>
+      <div class="story reverse" style="margin-top: 22px;">
+        <div class="gallery">
+          <figure class="shot compact">
+            <img src="./assets/chat-quote-actions.jpg" width="1300" height="615" alt="Chat 中选中文字后出现提问和解释按钮">
+            <figcaption>在 Chat 正文里选中文字，会出现“提问”和“解释”入口，和官方 ChatGPT 的引用追问体验类似。</figcaption>
+          </figure>
+          <figure class="shot compact">
+            <img src="./assets/chat-quote-input.jpg" width="1300" height="549" alt="对选中文本进行引用提问的输入框">
+            <figcaption>选择“提问”后，可以围绕刚才选中的片段继续问，例如“什么意思”“为什么选这个”。</figcaption>
+          </figure>
+        </div>
+        <div class="text-block">
+          <h3>选中一段，就围绕这一段继续问</h3>
+          <p>长回答里经常只有某个词、某个选项或某一小段卡住了你。这个时候不需要复制原文重新粘贴，只要选中文字，就可以直接对这段内容提问或要求解释。</p>
+          <p>这和笔记 SideChat 的引用提问互相呼应：Chat 里适合立刻追问当前回答，笔记里适合围绕沉淀后的资料继续补充。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="images">
+      <div class="section-head">
+        <h2>图片生成：直接生成，也可以按图改图</h2>
+        <p>当前实例接入了高质量图片生成能力。你可以直接用文字生成图片，也可以上传图片，让 AI 重新构图、调整光影、改变风格或做局部改图。</p>
+      </div>
+      <div class="story reverse">
+        <figure class="shot">
+          <img src="./assets/image-generation-status.jpg" width="1600" height="1114" alt="图片生成过程中的深色生成状态卡片">
+          <figcaption>生成过程中会出现类似原生 ChatGPT 的状态卡片，让用户知道图片还在构思、打草稿和生成细节。</figcaption>
+        </figure>
+        <div class="text-block">
+          <h3>怎么让它更稳定地产出好图</h3>
+          <ul class="mini-list">
+            <li><b>纯文本生成：</b>直接描述主体、构图、风格、用途和比例，例如“做一张冷调建筑感海报，适合小红书封面”。</li>
+            <li><b>上传参考图改图：</b>先放图片，再说清楚要改什么，例如“重新构图，让画面更平、光影更好看、保留主体”。</li>
+            <li><b>分步调试：</b>第一轮先要方向，第二轮再改光影、裁切、细节和文字，成功率通常比一次说完更高。</li>
+            <li><b>注意边界：</b>具体结果取决于当前模型、额度和图片后端配置；复杂局部编辑可以多轮微调。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="scenarios">
+      <div class="section-head">
+        <h2>推荐使用场景</h2>
+        <p>这套功能真正有价值的地方，是减少“复制、粘贴、切应用、回头找”的摩擦，让你能持续整理自己的认知。</p>
+      </div>
+      <div class="grid">
+        <article class="feature">
+          <strong>学习备考</strong>
+          <h3>把多个问题整理成一篇主题笔记</h3>
+          <p>比如围绕极限、网络、算法或英语学习，在不同 Chat 里问到的好解释都追加进同一篇笔记，最后用 AI 命名和 SideChat 补洞。</p>
+        </article>
+        <article class="feature">
+          <strong>项目研究</strong>
+          <h3>从长对话沉淀决策记录</h3>
+          <p>长 Chat 用大纲定位，关键结论添加到笔记；最后导出 Markdown 或 PDF，形成项目过程资料。</p>
+        </article>
+        <article class="feature">
+          <strong>创作与图片</strong>
+          <h3>边对话边做视觉方案</h3>
+          <p>可以上传图片让它提取风格，再进一步生成或改图；有用的提示词和结果说明也能加到笔记。</p>
+        </article>
+      </div>
+      <div class="callout" style="margin-top: 18px;">
+        最重要的用法不是“把 AI 当答案机器”，而是把它当成一个持续整理信息、追问疑点、压缩知识密度的工作台。
+      </div>
+    </section>
+
+    <section class="section" id="sources">
+      <div class="section-head">
+        <h2>参考来源</h2>
+        <p>官方能力说明来自底层开源项目和文档；截图与笔记、SideChat、大纲、图片生成状态来自 ChatGPT 小站界面示例。</p>
+      </div>
+      <ul class="source-list">
+        <li><a href="https://github.com/open-webui/open-webui">底层开源项目 GitHub README</a>：模型接入、RAG、Markdown/LaTeX、图片生成、工具、响应式等官方能力概览。</li>
+        <li><a href="https://docs.openwebui.com/features/">底层开源项目 Features 文档</a>：功能入口与官方使用说明。</li>
+      </ul>
+      <p class="small-note" style="margin-top: 16px;">页面中的界面示例为已定制的 ChatGPT 使用体验，实际可见模型、按钮和图片能力以管理员开放的配置为准。</p>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span>ChatGPT 小站使用指南 · 2026-06-26</span>
+      <span>把聊天变成笔记，把答案变成知识。</span>
+    </div>
+  </footer>
+</body>
+</html>
