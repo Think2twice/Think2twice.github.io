@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenWebUI 本地源码化与功能闭环</title>
+  <style>
+    :root{--paper:#fbfaf6;--ink:#1c1f24;--muted:#66717f;--line:#e3ded5;--card:#fff;--soft:#f4efe6;--blue:#5265b8;--teal:#24736d;--amber:#b9802f;--red:#b4574d;--green:#48745b;font-family:"Avenir Next","PingFang SC","Microsoft YaHei",system-ui,sans-serif}*{box-sizing:border-box}body{margin:0;background:linear-gradient(90deg,rgba(21,25,31,.035) 1px,transparent 1px) 0 0/34px 34px,linear-gradient(rgba(21,25,31,.035) 1px,transparent 1px) 0 0/34px 34px,var(--paper);color:var(--ink);line-height:1.72}a{color:inherit}.top{border-bottom:1px solid var(--line);background:rgba(251,250,246,.92);position:sticky;top:0}.nav,main{width:min(1120px,calc(100% - 32px));margin:auto}.nav{min-height:64px;display:flex;justify-content:space-between;align-items:center;gap:16px}.brand{font-weight:900;text-decoration:none}.links{display:flex;gap:14px;flex-wrap:wrap;font-size:14px;font-weight:800}main{padding:34px 0 68px}.eyebrow{display:inline-flex;border:1px solid #111;background:#fff;padding:3px 10px;font-size:13px;font-weight:900}h1{font-size:clamp(34px,5vw,58px);line-height:1.08;margin:14px 0 10px}.lead{font-size:18px;color:#343b45;max-width:860px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0}.stat{background:#fff;border:1px solid var(--line);border-radius:8px;padding:15px;box-shadow:0 14px 32px rgba(21,25,31,.07)}.stat b{display:block;font-size:26px;color:var(--blue)}h2{font-size:30px;margin:36px 0 14px}.timeline{display:grid;gap:12px}.step{display:grid;grid-template-columns:190px 1fr;gap:14px;background:#fff;border:1px solid var(--line);border-radius:8px;padding:16px}.step b{color:var(--teal)}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{background:#fff;border:1px solid var(--line);border-radius:8px;padding:17px;box-shadow:0 14px 32px rgba(21,25,31,.07)}.tag{display:inline-flex;border:1px solid var(--line);border-radius:999px;background:var(--soft);padding:2px 8px;color:var(--muted);font-size:12px;font-weight:800}.footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}@media(max-width:800px){.stats,.grid,.step{grid-template-columns:1fr}.nav{align-items:flex-start;flex-direction:column}}
+  </style>
+</head>
+<body>
+<header class="top"><nav class="nav"><a class="brand" href="../../../../">Think2twice</a><div class="links"><a href="../../">返回总账</a><a href="../../../../archive/">Archive</a></div></nav></header>
+<main>
+  <span class="eyebrow">大石头专题 / 2026-06-25</span>
+  <h1>OpenWebUI 本地源码化与功能闭环</h1>
+  <p class="lead">当天最大的工程线不是单个功能，而是把一组“像官方 ChatGPT 一样”的能力拆清：模型、工具、文件、图片、RAG、语音、网关、品牌、部署和 Git 历史。</p>
+  <div class="stats"><div class="stat"><b>源码</b>服务器热补丁回迁</div><div class="stat"><b>闭环</b>生成文件真实下载</div><div class="stat"><b>网关</b>后台切换与 API 服务</div><div class="stat"><b>治理</b>进度表 + Skill + commits</div></div>
+  <h2>项目阶段</h2>
+  <div class="timeline">
+    <div class="step"><b>1. 热修阶段</b><div>服务器上先让功能可用：品牌、模型档位、网关、侧栏样式等。风险是改动散落，靠记忆维护。</div></div>
+    <div class="step"><b>2. 源码阶段</b><div>把热修迁回 fork、本地源码和配置模板；每个功能都写入 PROJECT_PROGRESS 和 Lessons。</div></div>
+    <div class="step"><b>3. 闭环阶段</b><div>图片状态、生成文件、RAG/TTS、网关后台都要有端到端证据，不只看某个接口 200。</div></div>
+    <div class="step"><b>4. 提交阶段</b><div>工作区已经足够大，下一步不是继续加功能，而是按逻辑提交拆分，形成可回滚历史。</div></div>
+    <div class="step"><b>5. 部署阶段</b><div>把程序层更新到服务器，确认不覆盖用户数据、上传文件、知识库和运行配置。</div></div>
+  </div>
+  <h2>当天关键模块</h2>
+  <div class="grid">
+    <article class="card"><h3>图片链路</h3><p><span class="tag">状态事件</span></p><p>已定位状态事件和文件事件如何进入前端消息。风险点是图片请求是否会影响普通聊天上游状态，以及 UI 真实自动出图是否验收。</p></article>
+    <article class="card"><h3>文件链路</h3><p><span class="tag">附件下载</span></p><p>Office/PDF/zip 要从工具产物变成 Files 记录，再挂回 message.files。先做最小单类型闭环。</p></article>
+    <article class="card"><h3>网关后台</h3><p><span class="tag">管理员入口</span></p><p>第 12 项已回到本地源码：后台页、后端路由和前端 API 同步推进；服务器临时页只作为兼容入口。</p></article>
+    <article class="card"><h3>RAG/TTS</h3><p><span class="tag">质量优先</span></p><p>默认策略从“能跑/便宜”改为“质量优先且可验证”。embedding 维度、TTS 可用模型和 key 隔离都写入配置和文档。</p></article>
+    <article class="card"><h3>品牌面</h3><p><span class="tag">加载体验</span></p><p>不仅是图标，还包括标题、通知、加载页、运行 DB、build 产物和部署模板。</p></article>
+    <article class="card"><h3>提交治理</h3><p><span class="tag">Git 历史</span></p><p>已经不是“能否做功能”的问题，而是如何把功能拆成清楚的 commits，方便未来向上游 fork 解释。</p></article>
+  </div>
+  <h2>下一步</h2>
+  <div class="timeline">
+    <div class="step"><b>先冻结</b><div>先不要继续堆新功能，确认当前未跟踪文件、临时截图、output 和源码改动归属。</div></div>
+    <div class="step"><b>再拆提交</b><div>文档/配置、网关/RAG、图片、文件附件、品牌、UI 小修分别提交。</div></div>
+    <div class="step"><b>最后验收</b><div>用普通聊天触发图片、文件生成、模型档位和网关切换，记录浏览器和 API 证据。</div></div>
+  </div>
+  <div class="footer">本页为每日复盘派生页面，公开版本已脱敏。</div>
+</main>
+</body>
+</html>

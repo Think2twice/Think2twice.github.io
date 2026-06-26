@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "每日全景复盘：2026-06-25",
+    url: "./daily-digests/2026-06-25/",
+    archiveUrl: "../daily-digests/2026-06-25/",
+    date: "2026-06-25",
+    minutes: 26,
+    category: "每日复盘",
+    node: "panorama",
+    level: "流水总账 + 全景图",
+    tags: ["每日复盘", "Codex", "方法论"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "整理 2026-06-25 到 2026-06-26 早间的 22 条可访问 Codex 线程/执行单元：OpenWebUI 源码化、文件附件闭环、接口网关、提交拆分、旁路代理治理和自动化学习边界。"
+  },
+  {
     title: "每日全景复盘：2026-06-24",
     url: "./daily-digests/2026-06-24/",
     archiveUrl: "../daily-digests/2026-06-24/",
