@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "每日全景复盘：2026-06-26",
+    url: "./daily-digests/2026-06-26/",
+    archiveUrl: "../daily-digests/2026-06-26/",
+    date: "2026-06-26",
+    minutes: 24,
+    category: "每日复盘",
+    node: "panorama",
+    level: "流水总账 + 全景图",
+    tags: ["每日复盘", "Codex", "方法论"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "整理 2026-06-26 早间到 2026-06-27 早间的 16 条可访问流水记录：OpenWebUI 源码治理、SoruxGPT 护栏、媒体修复、iOS Safari、Windows 清理和 Pages 教程体验。"
+  },
+  {
     title: "ChatGPT 小站使用指南：聊天、笔记、SideChat 与图片生成",
     url: "./guides/openwebui-user-guide/",
     archiveUrl: "../guides/openwebui-user-guide/",
