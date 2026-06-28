@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "每日全景复盘：2026-06-27",
+    url: "./daily-digests/2026-06-27/",
+    archiveUrl: "../daily-digests/2026-06-27/",
+    date: "2026-06-27",
+    minutes: 22,
+    category: "每日复盘",
+    node: "panorama",
+    level: "流水总账 + 全景图",
+    tags: ["每日复盘", "Codex", "方法论"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "整理 2026-06-27 早间到 2026-06-28 早间的 12 条可访问流水记录：OpenWebUI 治理、服务器清理、Rosetta 文件桥接、Agent 邮箱边界、AList 缓存、视频 Skill 分类、自动化方法和 408 首页体验。"
+  },
+  {
     title: "每日全景复盘：2026-06-26",
     url: "./daily-digests/2026-06-26/",
     archiveUrl: "../daily-digests/2026-06-26/",
