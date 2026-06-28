@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>02. 网关控制页与上游路由</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<nav class="topnav">
+			<a href="./index.html">课程首页</a>
+			<span>02. 网关控制页与上游路由</span>
+		</nav>
+
+		<main class="article">
+			<p class="eyebrow">Gateway Policy</p>
+			<h1>把接口切换做成可控的管理员能力</h1>
+			<p class="lead">
+				这一课对应 gateway 管理提交：控制页不直接暴露密钥，刷新只读状态，只有手点测试才触发上游请求。
+			</p>
+
+			<section class="diagram-card">
+				<svg class="gateway-map" viewBox="0 0 920 360" role="img" aria-label="gateway admin routing map">
+					<defs>
+						<marker id="arrowHead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+							<path d="M 0 0 L 10 5 L 0 10 z" fill="#1f6feb" />
+						</marker>
+					</defs>
+					<g class="gateway-box" transform="translate(55 90)">
+						<rect width="190" height="90" rx="8" />
+						<text x="95" y="40">管理员页面</text>
+						<text x="95" y="66">/admin/gateway</text>
+					</g>
+					<path class="gateway-arrow" d="M245 135 H365" />
+					<g class="gateway-box" transform="translate(365 90)">
+						<rect width="190" height="90" rx="8" />
+						<text x="95" y="40">OpenWebUI 后端</text>
+						<text x="95" y="66">/api/v1/fay/gateway</text>
+					</g>
+					<path class="gateway-arrow" d="M555 135 H675" />
+					<g class="gateway-box" transform="translate(675 90)">
+						<rect width="190" height="90" rx="8" />
+						<text x="95" y="40">dual API gateway</text>
+						<text x="95" y="66">admin API</text>
+					</g>
+					<path class="gateway-arrow gateway-arrow--down" d="M770 180 V255" />
+					<g class="gateway-box gateway-box--small" transform="translate(625 255)">
+						<rect width="120" height="56" rx="8" />
+						<text x="60" y="35">接口1</text>
+					</g>
+					<g class="gateway-box gateway-box--small" transform="translate(790 255)">
+						<rect width="120" height="56" rx="8" />
+						<text x="60" y="35">接口2</text>
+					</g>
+					<circle class="gateway-dot" cx="460" cy="135" r="9">
+						<animate attributeName="opacity" values="1;.25;1" dur="2.4s" repeatCount="indefinite" />
+					</circle>
+				</svg>
+			</section>
+
+			<section>
+				<h2>核心原则</h2>
+				<p>
+					接口切换是管理能力，不是聊天能力。页面刷新必须只是读取状态，不能偷偷测试接口一或接口二。测试上游属于会消耗额度、可能污染上游状态的动作，必须由用户明确点击。
+				</p>
+			</section>
+
+			<section>
+				<h2>为什么要放进 OpenWebUI 后台</h2>
+				<p>
+					独立 gateway 页面虽然能用，但它绕开了 OpenWebUI 的管理员体系。迁入 `/admin/gateway` 后，浏览器只和 OpenWebUI 后端说话，后端再把管理员 cookie 或 token 转发给 gateway 校验；真实 admin key 可以只留在服务器环境变量或本机私有配置里。
+				</p>
+			</section>
+
+			<section>
+				<h2>三类请求不要混</h2>
+				<div class="split-grid">
+					<div class="mini-panel">
+						<h3>普通聊天</h3>
+						<p>代表用户日常对话，可使用 active 上游和自动失败切换。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>图片请求</h3>
+						<p>默认优先 `image_preferred`，并且不应改变普通聊天 active。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>Embedding</h3>
+						<p>服务 RAG 检索，成功失败也不应该改变普通聊天 active。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>管理测试</h3>
+						<p>只有点击“测试”按钮才触发，用于低频排查。</p>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<h2>文件对应关系</h2>
+				<pre><code>backend/open_webui/routers/fay_gateway.py
+src/lib/apis/fayGateway.ts
+src/routes/(app)/admin/gateway/+page.svelte
+fay-custom/server-overrides/dual-api-gateway/gateway.py</code></pre>
+				<p>
+					读代码时按这个顺序看：前端页面发请求，前端 API client 包装，OpenWebUI 后端代理，gateway admin API 执行策略。
+				</p>
+			</section>
+		</main>
+	</body>
+</html>

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>10. 侧边栏分组标题要稳定可读</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<nav class="topnav">
+			<a href="./index.html">课程首页</a>
+			<span>10. 侧边栏分组标题要稳定可读</span>
+		</nav>
+
+		<main class="article">
+			<p class="eyebrow">Sidebar</p>
+			<h1>高频扫视区要安静清楚</h1>
+			<p class="lead">
+				这一课对应 sidebar polish 提交：用轻量脚本稳定侧边栏分区标题，而不改动上游侧栏结构。
+			</p>
+
+			<section class="diagram-card">
+				<svg class="sidebar-map" viewBox="0 0 900 320" role="img" aria-label="sidebar polish map">
+					<rect class="sidebar-shell" x="90" y="42" width="230" height="236" rx="10" />
+					<rect class="sidebar-label" x="122" y="82" width="70" height="22" rx="6" />
+					<rect class="sidebar-row" x="122" y="118" width="150" height="24" rx="8" />
+					<rect class="sidebar-row" x="122" y="152" width="130" height="24" rx="8" />
+					<rect class="sidebar-label" x="122" y="198" width="70" height="22" rx="6" />
+					<rect class="sidebar-row" x="122" y="232" width="160" height="24" rx="8" />
+					<path class="sidebar-arrow" d="M350 160 H530" />
+					<g class="sidebar-note" transform="translate(560 98)">
+						<rect width="250" height="124" rx="8" />
+						<text x="125" y="48">只增强分区标题</text>
+						<text x="125" y="78">不改侧栏数据结构</text>
+					</g>
+				</svg>
+			</section>
+
+			<section>
+				<h2>核心判断</h2>
+				<p>
+					这类视觉修补应该轻量、可撤、可观察：先稳定高频阅读层级，不把侧栏重构成另一套系统。
+				</p>
+			</section>
+		</main>
+	</body>
+</html>

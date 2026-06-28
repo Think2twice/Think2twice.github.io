@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "OpenWebUI 私有 fork 改造课程：从提交栈到源码部署",
+    url: "./guides/openwebui-fork-course/",
+    archiveUrl: "../guides/openwebui-fork-course/",
+    date: "2026-06-28",
+    minutes: 28,
+    category: "OpenWebUI",
+    node: "openwebui-fork-course",
+    level: "提交栈 + 手工教程 + 工程课程",
+    tags: ["OpenWebUI", "Git", "前端", "部署"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "把一次 OpenWebUI 私有 fork 改造拆成可回看的课程：版本管理、网关、模型分级、品牌壳、Safari 修复、文件附件、工具路由、笔记、刷新快捷键、工作区 seeds、全源码部署和静态描述文件清理。"
+  },
+  {
     title: "每日全景复盘：2026-06-27",
     url: "./daily-digests/2026-06-27/",
     archiveUrl: "../daily-digests/2026-06-27/",

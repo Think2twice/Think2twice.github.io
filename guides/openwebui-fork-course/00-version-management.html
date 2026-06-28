@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>00. 版本管理</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<nav class="topnav">
+			<a href="./index.html">课程首页</a>
+			<span>00. 版本管理</span>
+		</nav>
+
+		<main class="article">
+			<header>
+				<p class="eyebrow">GitOps-lite</p>
+				<h1>私有 fork 的正确提交栈</h1>
+				<p class="lead">
+					当一个 OpenWebUI fork 已经累积大量定制时，最专业的做法不是把所有功能塞进一个提交，也不是维护十几个互相冲突的长期分支，而是整理成一条可阅读、可回滚、可 cherry-pick 的提交栈。
+				</p>
+			</header>
+
+			<section class="diagram-card">
+				<svg viewBox="0 0 760 250" role="img" aria-label="stacked commit workflow">
+					<defs>
+						<marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+							<path d="M0,0 L0,6 L9,3 z" fill="#1f6feb" />
+						</marker>
+					</defs>
+					<g class="commit-flow">
+						<circle cx="80" cy="125" r="24" />
+						<circle cx="210" cy="125" r="24" />
+						<circle cx="340" cy="125" r="24" />
+						<circle cx="470" cy="125" r="24" />
+						<circle cx="600" cy="125" r="24" />
+						<path d="M104 125 H186 M234 125 H316 M364 125 H446 M494 125 H576" marker-end="url(#arrow)" />
+						<text x="45" y="180">base</text>
+						<text x="172" y="180">mobile</text>
+						<text x="300" y="180">files</text>
+						<text x="430" y="180">images</text>
+						<text x="553" y="180">private fork</text>
+					</g>
+				</svg>
+			</section>
+
+			<section>
+				<h2>为什么不每个功能一个长期分支</h2>
+				<p>
+					这个项目的功能互相依赖：移动端、图片、文件、笔记、网关、品牌、部署模板都会碰到共享文件。长期分支越多，冲突越多，最后反而不清楚哪一个分支代表真实产品。
+				</p>
+			</section>
+
+			<section>
+				<h2>正确路线</h2>
+				<ol>
+					<li>保留官方 `upstream/main` 作为干净来源。</li>
+					<li>在私有 `origin/codex/fay-openwebui-custom` 上维护 Fay 的产品分支。</li>
+					<li>把当前工作树拆成一串逻辑 commit。</li>
+					<li>整体 push 到 private fork。</li>
+					<li>以后要给官方 PR 时，再从干净 upstream 分支 cherry-pick 单个功能。</li>
+				</ol>
+			</section>
+
+			<section>
+				<h2>手工操作</h2>
+				<pre><code>git branch backup/fay-split-before-YYYYMMDD-HHMMSS
+git add -p src/app.html
+git diff --cached
+git commit -m "feat(mobile): fix iOS Safari tap handling"
+git push origin codex/fay-openwebui-custom</code></pre>
+			</section>
+
+			<section>
+				<h2>本项目采用的规则</h2>
+				<p>
+					本项目采用 GitOps-lite：本地源码是唯一真相，服务器只是运行由源码生成的交付物，项目进度和错误教训写入三件套。
+				</p>
+			</section>
+		</main>
+	</body>
+</html>

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>01. 本地开发启动底座</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<nav class="topnav">
+			<a href="./index.html">课程首页</a>
+			<span>01. 本地开发启动底座</span>
+		</nav>
+
+		<main class="article">
+			<p class="eyebrow">Local Bootstrap</p>
+			<h1>把本机 OpenWebUI 跑成一条稳定链路</h1>
+			<p class="lead">
+				这一课对应本地启动底座提交：先让源码、gateway、配置库和模型种子在本机闭环，后面的功能修复才有可靠验证面。
+			</p>
+
+			<section class="diagram-card">
+				<svg class="pipeline" viewBox="0 0 900 260" role="img" aria-label="local OpenWebUI bootstrap pipeline">
+					<defs>
+						<linearGradient id="pipeLine" x1="0" x2="1">
+							<stop offset="0" stop-color="#10a37f" />
+							<stop offset="1" stop-color="#1f6feb" />
+						</linearGradient>
+					</defs>
+					<path class="pipeline__rail" d="M90 130 H810" />
+					<g class="pipeline__node" transform="translate(90 130)">
+						<circle r="34" />
+						<text y="7">env</text>
+					</g>
+					<g class="pipeline__node" transform="translate(270 130)">
+						<circle r="34" />
+						<text y="7">DB</text>
+					</g>
+					<g class="pipeline__node" transform="translate(450 130)">
+						<circle r="34" />
+						<text y="7">gateway</text>
+					</g>
+					<g class="pipeline__node" transform="translate(630 130)">
+						<circle r="34" />
+						<text y="7">models</text>
+					</g>
+					<g class="pipeline__node" transform="translate(810 130)">
+						<circle r="34" />
+						<text y="7">UI</text>
+					</g>
+					<circle class="runner" r="10">
+						<animateMotion dur="4.5s" repeatCount="indefinite" path="M90 130 H810" />
+					</circle>
+				</svg>
+			</section>
+
+			<section>
+				<h2>为什么先做启动底座</h2>
+				<p>
+					复杂产品的 bug 往往不是一个文件能解释的。OpenWebUI 的聊天、图片、RAG、语音和模型列表跨越前端、后端、数据库和外部接口。如果本地启动链路不稳定，每次修复都会变成“我到底在测源码、服务器，还是旧缓存”的混乱。
+				</p>
+				<p>
+					所以这次先建立一个原则：本机默认跑本机 gateway，配置写回本地数据库，模型菜单由脚本种下，服务器只作为之后的部署面和对照面。
+				</p>
+			</section>
+
+			<section>
+				<h2>四层结构</h2>
+				<div class="split-grid">
+					<div class="mini-panel">
+						<h3>源码层</h3>
+						<p>`start-local-openwebui.sh` 和 `stop-local-openwebui.sh` 是本地入口，负责启动顺序和进程边界。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>配置层</h3>
+						<p>`.env.fay-local` 保存本机环境变量，`sync-local-rag-config.py` 把关键项写进 `webui.db`。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>接口层</h3>
+						<p>本机 gateway 监听 `127.0.0.1:13280`，避免默认依赖服务器隧道。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>产品层</h3>
+						<p>`apply-local-model-tiers.py` 写入 GPT-5.5 菜单和公开读取权限，让 UI 默认可用。</p>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<h2>手工操作顺序</h2>
+				<ol class="steps">
+					<li>建 Python 虚拟环境，安装 `backend/requirements.txt`。</li>
+					<li>写 `.env.fay-local`，把 OpenWebUI 指向 `http://127.0.0.1:13280/v1`。</li>
+					<li>复制 `config.example.json` 到 `.local-run/gateway.config.private.json`，只在本机填真实 key。</li>
+					<li>运行 `fay-custom/scripts/start-local-openwebui.sh --screen`。</li>
+					<li>检查 `http://127.0.0.1:13280/health` 和 `http://127.0.0.1:8080/health`。</li>
+				</ol>
+			</section>
+
+			<section>
+				<h2>核心判断</h2>
+				<p>
+					`.env` 不是唯一真相。OpenWebUI 的后台配置会落进数据库，所以可靠做法是启动前同步数据库。模型菜单也不是单纯前端文字，它背后有 `model` 表、`access_grant` 权限和用户默认设置。
+				</p>
+				<pre><code>bash -n fay-custom/scripts/start-local-openwebui.sh fay-custom/scripts/stop-local-openwebui.sh
+python -m py_compile fay-custom/scripts/sync-local-rag-config.py fay-custom/scripts/apply-local-model-tiers.py</code></pre>
+			</section>
+		</main>
+	</body>
+</html>

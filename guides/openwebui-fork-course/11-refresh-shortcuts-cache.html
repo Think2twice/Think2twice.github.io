@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>11. 刷新快捷键不能触发重新生成</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<nav class="topnav">
+			<a href="./index.html">课程首页</a>
+			<span>11. 刷新快捷键不能触发重新生成</span>
+		</nav>
+
+		<main class="article">
+			<p class="eyebrow">Refresh</p>
+			<h1>浏览器刷新键，应该还给浏览器</h1>
+			<p class="lead">
+				这一课对应刷新修复提交：把重新生成移到 `Command+Option+R`，同时让聊天缓存改成 network-first。
+			</p>
+
+			<section class="diagram-card">
+				<svg class="refresh-flow" viewBox="0 0 900 320" role="img" aria-label="refresh shortcut flow">
+					<g class="refresh-key" transform="translate(80 90)">
+						<rect width="180" height="70" rx="10" />
+						<text x="90" y="43">⌘ R</text>
+					</g>
+					<path class="refresh-arrow" d="M265 125 H405" />
+					<g class="refresh-box" transform="translate(420 76)">
+						<rect width="180" height="98" rx="8" />
+						<text x="90" y="44">浏览器刷新</text>
+						<text x="90" y="70">应用不拦截</text>
+					</g>
+					<g class="refresh-key" transform="translate(80 198)">
+						<rect width="180" height="70" rx="10" />
+						<text x="90" y="43">⌘ ⌥ R</text>
+					</g>
+					<path class="refresh-arrow refresh-arrow--green" d="M265 233 H405" />
+					<g class="refresh-box" transform="translate(420 184)">
+						<rect width="180" height="98" rx="8" />
+						<text x="90" y="44">重新生成</text>
+						<text x="90" y="70">明确应用动作</text>
+					</g>
+					<g class="refresh-box refresh-box--quiet" transform="translate(660 120)">
+						<rect width="170" height="90" rx="8" />
+						<text x="85" y="40">Chat GET</text>
+						<text x="85" y="65">network-first</text>
+					</g>
+				</svg>
+			</section>
+
+			<section>
+				<h2>核心判断</h2>
+				<p>
+					用户按标准浏览器快捷键时，应用不应该抢这个键。应用动作可以有快捷键，但不能覆盖系统级肌肉记忆。
+				</p>
+			</section>
+
+			<section>
+				<h2>三个落点</h2>
+				<div class="split-grid">
+					<div class="mini-panel">
+						<h3>快捷键迁移</h3>
+						<p>重新生成移到 `Command+Option+R`。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>Shift 严格匹配</h3>
+						<p>没有声明 Shift 的快捷键不能吃掉 `Command+Shift+R`。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>刷新放行</h3>
+						<p>`Command/Ctrl+R` 直接交还浏览器。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>网络优先</h3>
+						<p>刷新后优先拿最新聊天，断网时才回退缓存。</p>
+					</div>
+				</div>
+			</section>
+		</main>
+	</body>
+</html>

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>14. 清理旧静态描述文件</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<nav class="topnav">
+			<a href="./index.html">课程首页</a>
+			<span>14. 清理旧静态描述文件</span>
+		</nav>
+
+		<main class="article">
+			<p class="eyebrow">Static Descriptors</p>
+			<h1>删文件之前，先确认谁还在引用它</h1>
+			<p class="lead">
+				这一课对应静态描述文件清理提交：`manifest.json` 和 `opensearch.xml` 已经由后端动态路由接管，旧 OpenWebUI 静态描述文件就应该从 fork 里退场。
+			</p>
+
+			<section class="diagram-card">
+				<svg class="cleanup-map" viewBox="0 0 900 360" role="img" aria-label="static cleanup map">
+					<g class="cleanup-ring" transform="translate(110 58)">
+						<circle cx="110" cy="110" r="96" />
+						<text x="110" y="94">前端入口</text>
+						<text x="110" y="122">layout / app</text>
+					</g>
+					<g class="cleanup-ring cleanup-ring--green" transform="translate(340 58)">
+						<circle cx="110" cy="110" r="96" />
+						<text x="110" y="94">后端动态</text>
+						<text x="110" y="122">main.py routes</text>
+					</g>
+					<g class="cleanup-ring cleanup-ring--gold" transform="translate(570 58)">
+						<circle cx="110" cy="110" r="96" />
+						<text x="110" y="94">浏览器缓存</text>
+						<text x="110" y="122">PWA / search</text>
+					</g>
+					<path class="cleanup-line" d="M250 168 H340" />
+					<path class="cleanup-line cleanup-line--green" d="M480 168 H570" />
+					<g class="cleanup-box" transform="translate(265 272)">
+						<rect width="370" height="58" rx="8" />
+						<text x="185" y="36">确认动态接管以后，再 git rm</text>
+					</g>
+				</svg>
+			</section>
+
+			<section>
+				<h2>核心判断</h2>
+				<p>
+					旧描述文件不是因为“看起来没用”才删除，而是因为前端入口仍保留，实际响应已经交给后端动态路由生成品牌化内容。
+				</p>
+			</section>
+
+			<section>
+				<h2>手工检查顺序</h2>
+				<div class="split-grid">
+					<div class="mini-panel">
+						<h3>先查路由</h3>
+						<p>确认 <code>main.py</code> 已经提供 manifest 和 opensearch 动态接口。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>再看旧内容</h3>
+						<p>静态 opensearch 里仍写着旧品牌时，就应该退出权威入口。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>只删描述</h3>
+						<p>只删除 tracked 描述文件，不误删图片占位符、marker 和 robots。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>最后验证</h3>
+						<p>跑 diff 检查、HTML smoke 和 staged 文件私密路径扫描。</p>
+					</div>
+				</div>
+			</section>
+		</main>
+	</body>
+</html>

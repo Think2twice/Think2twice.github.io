@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>03. GPT-5.5 模型分级与 Arena 可见性</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<nav class="topnav">
+			<a href="./index.html">课程首页</a>
+			<span>03. GPT-5.5 模型分级与 Arena 可见性</span>
+		</nav>
+
+		<main class="article">
+			<p class="eyebrow">Model Menu</p>
+			<h1>模型菜单不是前端文案</h1>
+			<p class="lead">
+				这一课解释为什么 GPT-5.5 五档模型和 Arena 可见性必须同时处理数据库 preset、权限、全局配置和用户设置。
+			</p>
+
+			<section class="diagram-card">
+				<svg class="model-fan" viewBox="0 0 900 320" role="img" aria-label="model tier fan diagram">
+					<path class="model-fan__stem" d="M450 260 C450 190 450 150 450 90" />
+					<g class="model-tier" transform="translate(120 55)">
+						<rect width="145" height="62" rx="8" />
+						<text x="72" y="38">Auto</text>
+					</g>
+					<g class="model-tier" transform="translate(305 35)">
+						<rect width="145" height="62" rx="8" />
+						<text x="72" y="38">GPT-5.5</text>
+					</g>
+					<g class="model-tier" transform="translate(490 35)">
+						<rect width="145" height="62" rx="8" />
+						<text x="72" y="38">Thinking</text>
+					</g>
+					<g class="model-tier" transform="translate(675 55)">
+						<rect width="145" height="62" rx="8" />
+						<text x="72" y="38">Pro</text>
+					</g>
+					<g class="model-tier model-tier--base" transform="translate(340 230)">
+						<rect width="220" height="64" rx="8" />
+						<text x="110" y="40">base: gpt-5.5</text>
+					</g>
+					<path class="model-link" d="M450 230 L192 117" />
+					<path class="model-link" d="M450 230 L378 97" />
+					<path class="model-link" d="M450 230 L562 97" />
+					<path class="model-link" d="M450 230 L748 117" />
+				</svg>
+			</section>
+
+			<section>
+				<h2>核心判断</h2>
+				<p>
+					模型下拉要稳定，必须同时改四类数据：模型 preset、普通用户 read 权限、全局 UI 默认值、用户个人 settings。否则当前账号看着正常，换一个普通账号或重启容器就可能丢。
+				</p>
+			</section>
+
+			<section>
+				<h2>Arena 为什么单独处理</h2>
+				<p>
+					`Arena Model` 是评测配置模型，不完全等同于普通 `model` 表记录。普通用户能否看到它，关键在 `config.evaluation.arena.models[*].meta.access_grants`。默认没有公开读取权限时，管理员能看到，普通用户可能看不到。
+				</p>
+			</section>
+
+			<section>
+				<h2>四个落点</h2>
+				<div class="split-grid">
+					<div class="mini-panel">
+						<h3>Preset</h3>
+						<p>五档模型写入 `model` 表，非基座档位指向同一个 `base_model_id`。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>权限</h3>
+						<p>`access_grant` 给 `user:*:read`，普通用户才看得到。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>默认值</h3>
+						<p>`default_models` 和 pinned/order 列表统一写成五档加 Arena。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>用户设置</h3>
+						<p>已有用户 settings 和新用户默认触发器都要更新。</p>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<h2>验证方式</h2>
+				<pre><code>python fay-custom/scripts/apply-local-model-tiers.py --data-dir .local-data/open-webui
+curl -fsS http://127.0.0.1:8080/api/models -H "Authorization: Bearer $TOKEN"</code></pre>
+				<p>普通用户也应该看到五档模型和 `arena-model`，而不是只有管理员看到。</p>
+			</section>
+		</main>
+	</body>
+</html>

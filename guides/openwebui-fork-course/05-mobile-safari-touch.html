@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>05. iOS Safari/PWA 单击与输入修复</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<nav class="topnav">
+			<a href="./index.html">课程首页</a>
+			<span>05. iOS Safari/PWA 单击与输入修复</span>
+		</nav>
+
+		<main class="article">
+			<p class="eyebrow">Mobile Safari</p>
+			<h1>不要补按钮，要修触摸链路</h1>
+			<p class="lead">
+				这一课对应移动端提交：从 preload、tooltip、tap bridge、编辑器焦点和遮罩关闭五层修复 iOS Safari/PWA 的单击问题。
+			</p>
+
+			<section class="diagram-card">
+				<svg class="touch-stack" viewBox="0 0 900 330" role="img" aria-label="mobile touch fix stack">
+					<g class="touch-layer" transform="translate(120 40)">
+						<rect width="660" height="48" rx="8" />
+						<text x="330" y="31">SvelteKit preload: hover -> tap</text>
+					</g>
+					<g class="touch-layer" transform="translate(150 95)">
+						<rect width="600" height="48" rx="8" />
+						<text x="300" y="31">iOS tap bridge: touchend -> click</text>
+					</g>
+					<g class="touch-layer" transform="translate(180 150)">
+						<rect width="540" height="48" rx="8" />
+						<text x="270" y="31">Tooltip: touch devices destroy Tippy</text>
+					</g>
+					<g class="touch-layer" transform="translate(210 205)">
+						<rect width="480" height="48" rx="8" />
+						<text x="240" y="31">MessageInput: focus editor on touchstart</text>
+					</g>
+					<g class="touch-layer" transform="translate(240 260)">
+						<rect width="420" height="48" rx="8" />
+						<text x="210" y="31">Sidebar overlay: explicit close</text>
+					</g>
+				</svg>
+			</section>
+
+			<section>
+				<h2>核心判断</h2>
+				<p>
+					“每个按钮都要双击”不是某一个按钮的问题。第一下 tap 可能被 hover preload、tooltip focus 或编辑器容器吞掉。正确修法是把触摸链路分层收口，而不是继续给单个按钮补洞。
+				</p>
+			</section>
+
+			<section>
+				<h2>五层修复</h2>
+				<div class="split-grid">
+					<div class="mini-panel">
+						<h3>预加载</h3>
+						<p>`data-sveltekit-preload-data="tap"` 避免移动端首击只触发 hover preload。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>Tap Bridge</h3>
+						<p>只在 iOS WebKit 上启用，轻触可点击元素时触发一次真实 click。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>Tooltip</h3>
+						<p>触摸设备不创建 Tippy，避免 tooltip 抢走首击。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>输入框</h3>
+						<p>在 `touchstart` capture 阶段 focus 编辑器，让光标和键盘真实出现。</p>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<h2>验证方式</h2>
+				<pre><code>node --check static/__fay/openwebui-ios-tap-bridge.js
+curl -fsS http://127.0.0.1:8080/ | rg "preload-data=\\\"tap\\\"|openwebui-ios-tap-bridge"</code></pre>
+				<p>最终仍要用 iPhone Safari 和主屏幕 PWA 实机验收，因为桌面浏览器无法完全复现 iOS WebKit 的首击行为。</p>
+			</section>
+		</main>
+	</body>
+</html>

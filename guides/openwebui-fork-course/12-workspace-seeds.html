@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>12. Workspace seeds 要能重复安装和回滚</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<nav class="topnav">
+			<a href="./index.html">课程首页</a>
+			<span>12. Workspace seeds 要能重复安装和回滚</span>
+		</nav>
+
+		<main class="article">
+			<p class="eyebrow">Workspace Seeds</p>
+			<h1>配置也要进版本管理</h1>
+			<p class="lead">
+				这一课对应 workspace seed 提交：把 prompts、skills、tools 和 action functions 变成可校验、可安装、可回滚的文件包。
+			</p>
+
+			<section class="diagram-card">
+				<svg class="seed-flow" viewBox="0 0 900 320" role="img" aria-label="workspace seed flow">
+					<g class="seed-box" transform="translate(80 66)">
+						<rect width="170" height="74" rx="8" />
+						<text x="85" y="45">Prompts</text>
+					</g>
+					<g class="seed-box" transform="translate(80 180)">
+						<rect width="170" height="74" rx="8" />
+						<text x="85" y="45">Skills</text>
+					</g>
+					<g class="seed-box" transform="translate(320 66)">
+						<rect width="170" height="74" rx="8" />
+						<text x="85" y="45">Tools</text>
+					</g>
+					<g class="seed-box" transform="translate(320 180)">
+						<rect width="170" height="74" rx="8" />
+						<text x="85" y="45">Functions</text>
+					</g>
+					<path class="seed-arrow" d="M500 160 H610" />
+					<g class="seed-box seed-box--target" transform="translate(630 104)">
+						<rect width="190" height="112" rx="8" />
+						<text x="95" y="48">OpenWebUI API</text>
+						<text x="95" y="76">upsert / uninstall</text>
+					</g>
+				</svg>
+			</section>
+
+			<section>
+				<h2>核心判断</h2>
+				<p>
+					工作空间资源是产品能力的一部分。只存在数据库里的配置，不能复盘、不能 diff，也很难迁移。
+				</p>
+			</section>
+
+			<section>
+				<h2>安装器边界</h2>
+				<div class="split-grid">
+					<div class="mini-panel">
+						<h3>API 优先</h3>
+						<p>通过 OpenWebUI API 安装，不直接改数据库。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>可校验</h3>
+						<p>`--validate-only` 只读检查 seed 文件格式。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>可回滚</h3>
+						<p>`--uninstall` 只删除 seed 包管理的资源。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>不污染</h3>
+						<p>Action functions 默认不全局启用。</p>
+					</div>
+				</div>
+			</section>
+		</main>
+	</body>
+</html>

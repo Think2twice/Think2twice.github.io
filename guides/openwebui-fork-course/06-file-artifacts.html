@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>06. 文件生成必须变成真实附件</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<nav class="topnav">
+			<a href="./index.html">课程首页</a>
+			<span>06. 文件生成必须变成真实附件</span>
+		</nav>
+
+		<main class="article">
+			<p class="eyebrow">File Artifacts</p>
+			<h1>生成了，不等于能下载</h1>
+			<p class="lead">
+				这一课对应文件产物提交：把 Pyodide 文件、后端工具输出和前端附件卡统一成真实可下载对象。
+			</p>
+
+			<section class="diagram-card">
+				<svg class="artifact-flow" viewBox="0 0 900 320" role="img" aria-label="file artifact flow">
+					<path class="artifact-flow__line" d="M110 160 H790" />
+					<g class="artifact-step" transform="translate(70 110)">
+						<rect width="150" height="90" rx="8" />
+						<text x="75" y="42">Python</text>
+						<text x="75" y="66">写文件</text>
+					</g>
+					<g class="artifact-step" transform="translate(270 110)">
+						<rect width="150" height="90" rx="8" />
+						<text x="75" y="42">Upload</text>
+						<text x="75" y="66">入库</text>
+					</g>
+					<g class="artifact-step" transform="translate(470 110)">
+						<rect width="150" height="90" rx="8" />
+						<text x="75" y="42">Message</text>
+						<text x="75" y="66">关联附件</text>
+					</g>
+					<g class="artifact-step" transform="translate(670 110)">
+						<rect width="150" height="90" rx="8" />
+						<text x="75" y="42">Download</text>
+						<text x="75" y="66">真实下载</text>
+					</g>
+				</svg>
+			</section>
+
+			<section>
+				<h2>核心判断</h2>
+				<p>
+					文件生成的完成标准是“OpenWebUI 有文件记录、消息关联了附件、下载接口能返回真实文件”。模型在正文里说完成，只能算过程描述，不能算结果。
+				</p>
+			</section>
+
+			<section>
+				<h2>四个落点</h2>
+				<div class="split-grid">
+					<div class="mini-panel">
+						<h3>执行层</h3>
+						<p>Pyodide 扫描 `/mnt/uploads` 的新增文件，连同 MIME 和大小传回主线程。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>上传层</h3>
+						<p>主线程把生成物转成浏览器 `File` 并调用 `uploadFile()`。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>渲染层</h3>
+						<p>消息组件合并附件来源，并把过程折叠到状态卡。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>下载层</h3>
+						<p>文件卡片点击时请求 `?attachment=true`，用响应头文件名触发下载。</p>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<h2>验证方式</h2>
+				<pre><code>python -m py_compile backend/open_webui/utils/pdf_generator.py backend/open_webui/tools/builtin.py backend/open_webui/utils/tools.py
+node --check static/__fay/openwebui-filegen-status.js</code></pre>
+				<p>最终验收要看真实附件、真实下载和打开后的文件内容，不只看聊天正文。</p>
+			</section>
+		</main>
+	</body>
+</html>

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>08. 笔记捕获、数学渲染和导出</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<nav class="topnav">
+			<a href="./index.html">课程首页</a>
+			<span>08. 笔记捕获、数学渲染和导出</span>
+		</nav>
+
+		<main class="article">
+			<p class="eyebrow">Notes</p>
+			<h1>别让笔记功能漂在 DOM 上</h1>
+			<p class="lead">
+				这一课对应笔记提交：把添加到笔记、数学公式和 PDF 导出放回源码，让它们随组件生命周期稳定工作。
+			</p>
+
+			<section class="diagram-card">
+				<svg class="note-flow" viewBox="0 0 900 320" role="img" aria-label="note capture flow">
+					<path class="note-flow__line" d="M110 160 H790" />
+					<g class="note-step" transform="translate(60 102)">
+						<rect width="160" height="116" rx="8" />
+						<text x="80" y="48">聊天回答</text>
+						<text x="80" y="76">Markdown</text>
+					</g>
+					<g class="note-step" transform="translate(265 102)">
+						<rect width="160" height="116" rx="8" />
+						<text x="80" y="48">原生按钮</text>
+						<text x="80" y="76">写入 Note</text>
+					</g>
+					<g class="note-step" transform="translate(470 102)">
+						<rect width="160" height="116" rx="8" />
+						<text x="80" y="48">KaTeX 节点</text>
+						<text x="80" y="76">保留源码</text>
+					</g>
+					<g class="note-step" transform="translate(675 102)">
+						<rect width="160" height="116" rx="8" />
+						<text x="80" y="48">打印/PDF</text>
+						<text x="80" y="76">稳定导出</text>
+					</g>
+				</svg>
+			</section>
+
+			<section>
+				<h2>核心判断</h2>
+				<p>
+					只要一个功能要长期存在，就应该回到组件和数据模型里。运行时脚本适合临时验证，不适合承载按钮、保存逻辑和可编辑公式。
+				</p>
+			</section>
+
+			<section>
+				<h2>四个落点</h2>
+				<div class="split-grid">
+					<div class="mini-panel">
+						<h3>原生入口</h3>
+						<p>聊天消息工具栏直接调用 Notes API，不再扫描 DOM 插按钮。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>每日笔记</h3>
+						<p>按日期聚合回答，用 marker 防止重复追加同一条消息。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>公式源码</h3>
+						<p>KaTeX HTML 上保存原始 TeX，编辑和导出时都能恢复。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>导出排版</h3>
+						<p>打印 CSS 处理分页、表格、代码块和长公式。</p>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<h2>验证方式</h2>
+				<pre><code>node --check static/__fay/openwebui-note-export.js
+node -e "/* Svelte parse ResponseMessage/RichTextInput/NoteEditor */"</code></pre>
+				<p>最终要用真实聊天回答测：添加、去重、打开笔记、编辑公式和导出 PDF 都算同一条链路。</p>
+			</section>
+		</main>
+	</body>
+</html>

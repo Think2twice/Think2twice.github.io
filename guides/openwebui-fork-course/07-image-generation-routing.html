@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>07. 图片生成和图片编辑要走意图路由</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<nav class="topnav">
+			<a href="./index.html">课程首页</a>
+			<span>07. 图片生成和图片编辑要走意图路由</span>
+		</nav>
+
+		<main class="article">
+			<p class="eyebrow">Image Routing</p>
+			<h1>先判断该不该画，再把图画出来</h1>
+			<p class="lead">
+				这一课对应图片路由提交：把图片生成、图片编辑、附件恢复和状态提示连成一个可控闭环。
+			</p>
+
+			<section class="diagram-card">
+				<svg class="image-router" viewBox="0 0 900 360" role="img" aria-label="image routing state machine">
+					<defs>
+						<marker id="arrowImage" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+							<path d="M0,0 L0,6 L9,3 z" fill="#1f6feb" />
+						</marker>
+					</defs>
+					<g class="router-node" transform="translate(60 120)">
+						<rect width="170" height="96" rx="8" />
+						<text x="85" y="42">用户当前轮</text>
+						<text x="85" y="68">文字 + 图片</text>
+					</g>
+					<path class="router-arrow" d="M230 168 H340" />
+					<g class="router-node router-node--decision" transform="translate(340 100)">
+						<path d="M95 0 L190 70 L95 140 L0 70 Z" />
+						<text x="95" y="62">明确要求</text>
+						<text x="95" y="88">生成/编辑?</text>
+					</g>
+					<path class="router-arrow" d="M530 150 C610 90 690 86 760 108" />
+					<path class="router-arrow router-arrow--muted" d="M530 190 C610 260 690 265 760 238" />
+					<g class="router-node" transform="translate(680 58)">
+						<rect width="170" height="96" rx="8" />
+						<text x="85" y="42">调用图片工具</text>
+						<text x="85" y="68">保存附件</text>
+					</g>
+					<g class="router-node router-node--quiet" transform="translate(680 210)">
+						<rect width="170" height="96" rx="8" />
+						<text x="85" y="42">普通回答</text>
+						<text x="85" y="68">不污染上下文</text>
+					</g>
+				</svg>
+			</section>
+
+			<section>
+				<h2>核心判断</h2>
+				<p>
+					图片功能的第一原则是门控：只有当前轮明确要求生成或编辑图片时才打开图片工具。上下文里有图片，只能说明“可能需要看图”，不能说明“应该画图”。
+				</p>
+			</section>
+
+			<section>
+				<h2>四个落点</h2>
+				<div class="split-grid">
+					<div class="mini-panel">
+						<h3>意图路由</h3>
+						<p>把生成、编辑、解释、引用图片拆开判断，避免分析图片时误触发生成。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>当前轮输入</h3>
+						<p>编辑图片时只读取当前用户消息里的上传图，不复用历史附件。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>附件归一</h3>
+						<p>把 URL、文件 ID、content type 统一成消息可渲染的图片附件。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>状态可见</h3>
+						<p>图片生成时显示过程卡，失败时给出清楚的可恢复错误。</p>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<h2>验证方式</h2>
+				<pre><code>python fay-custom/scripts/check-image-attachment-normalization.py
+python fay-custom/scripts/check-image-context-isolation.py</code></pre>
+				<p>真正的验收不是“出了一张图”，而是看图、改图、刷新恢复和非图片问题都走到了正确分支。</p>
+			</section>
+		</main>
+	</body>
+</html>

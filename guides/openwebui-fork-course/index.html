@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Fay OpenWebUI Course</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<header class="hero">
+			<div class="hero__copy">
+				<p class="eyebrow">Private Fork Learning Track</p>
+				<h1>Fay OpenWebUI 改造课程</h1>
+				<p>
+					把一次真实的 OpenWebUI 产品化改造拆成工程提交、手工教程和知识课程。
+				</p>
+			</div>
+			<svg class="hero__map" viewBox="0 0 520 260" role="img" aria-label="commit stack diagram">
+				<defs>
+					<linearGradient id="rail" x1="0" x2="1">
+						<stop offset="0" stop-color="#10a37f" />
+						<stop offset="1" stop-color="#3b82f6" />
+					</linearGradient>
+				</defs>
+				<path d="M70 215 C150 110 230 140 300 68 S430 60 470 28" fill="none" stroke="url(#rail)" stroke-width="8" stroke-linecap="round" />
+				<g class="pulse"><circle cx="70" cy="215" r="13" /><circle cx="180" cy="132" r="13" /><circle cx="300" cy="68" r="13" /><circle cx="420" cy="50" r="13" /></g>
+				<g class="labels">
+					<text x="42" y="246">source</text>
+					<text x="145" y="166">commit</text>
+					<text x="270" y="102">lesson</text>
+					<text x="382" y="84">private fork</text>
+				</g>
+			</svg>
+		</header>
+
+		<main class="layout">
+			<section class="panel">
+				<h2>课程目录</h2>
+				<ol class="lesson-list">
+					<li><a href="./00-version-management.html">00. 版本管理：私有 fork 的正确提交栈</a></li>
+					<li><a href="./01-local-dev-bootstrap.html">01. 本地开发启动底座</a></li>
+					<li><a href="./02-gateway-admin.html">02. 网关控制页与上游路由</a></li>
+					<li><a href="./03-model-tiers.html">03. GPT-5.5 模型分级与 Arena 可见性</a></li>
+					<li><a href="./04-branding-shell.html">04. ChatGPT 品牌壳与 PWA 图标</a></li>
+					<li><a href="./05-mobile-safari-touch.html">05. iOS Safari/PWA 单击与输入修复</a></li>
+					<li><a href="./06-file-artifacts.html">06. 文件生成必须变成真实附件</a></li>
+					<li><a href="./07-image-generation-routing.html">07. 图片生成和图片编辑要走意图路由</a></li>
+					<li><a href="./08-notes-math-export.html">08. 笔记捕获、数学渲染和导出</a></li>
+					<li><a href="./09-chat-outline-typography.html">09. 长对话要有用户问题大纲</a></li>
+					<li><a href="./10-sidebar-polish.html">10. 侧边栏分组标题要稳定可读</a></li>
+					<li><a href="./11-refresh-shortcuts-cache.html">11. 刷新快捷键不能触发重新生成</a></li>
+					<li><a href="./12-workspace-seeds.html">12. Workspace seeds 要能重复安装和回滚</a></li>
+					<li><a href="./13-fullsource-deployment.html">13. 全源码部署要把服务器覆盖模板收口</a></li>
+					<li><a href="./14-static-runtime-cleanup.html">14. 清理旧静态描述文件</a></li>
+				</ol>
+			</section>
+			<section class="panel panel--quiet">
+				<h2>学习方式</h2>
+				<p>每一课都对应一个或一组 Git 提交：先讲为什么，再讲手工怎么做，最后讲背后的前后端知识。</p>
+			</section>
+		</main>
+	</body>
+</html>

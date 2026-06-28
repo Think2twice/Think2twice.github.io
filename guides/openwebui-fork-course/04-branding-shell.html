@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>04. ChatGPT 品牌壳与 PWA 图标</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<nav class="topnav">
+			<a href="./index.html">课程首页</a>
+			<span>04. ChatGPT 品牌壳与 PWA 图标</span>
+		</nav>
+
+		<main class="article">
+			<p class="eyebrow">Brand Surface</p>
+			<h1>品牌不是一个标题，是一组入口</h1>
+			<p class="lead">
+				这一课对应品牌提交：把后端配置、前端 HTML 壳、通知标题、favicon、PWA 图标和启动页一起收口。
+			</p>
+
+			<section class="diagram-card">
+				<svg class="brand-ring" viewBox="0 0 900 360" role="img" aria-label="brand surface ring">
+					<circle class="brand-ring__center" cx="450" cy="180" r="72" />
+					<text class="brand-ring__title" x="450" y="187">ChatGPT</text>
+					<g class="brand-chip" transform="translate(80 70)">
+						<rect width="150" height="54" rx="8" />
+						<text x="75" y="34">/api/config</text>
+					</g>
+					<g class="brand-chip" transform="translate(670 70)">
+						<rect width="150" height="54" rx="8" />
+						<text x="75" y="34">favicon</text>
+					</g>
+					<g class="brand-chip" transform="translate(80 240)">
+						<rect width="150" height="54" rx="8" />
+						<text x="75" y="34">PWA</text>
+					</g>
+					<g class="brand-chip" transform="translate(670 240)">
+						<rect width="150" height="54" rx="8" />
+						<text x="75" y="34">通知</text>
+					</g>
+					<path class="brand-line" d="M230 97 C300 118 350 142 386 165" />
+					<path class="brand-line" d="M670 97 C600 118 550 142 514 165" />
+					<path class="brand-line" d="M230 267 C300 238 350 218 386 195" />
+					<path class="brand-line" d="M670 267 C600 238 550 218 514 195" />
+				</svg>
+			</section>
+
+			<section>
+				<h2>核心判断</h2>
+				<p>
+					品牌改造的完成标准不是“页面中间看到 ChatGPT”，而是所有第一眼入口都一致：浏览器标签、启动图、PWA 图标、后端配置名、通知标题和静态资源。
+				</p>
+				<p>
+					第二眼入口也要一致：设置页、分享页、社区提示和前端常量如果仍显示旧品牌，用户会感觉壳和里面不是同一个产品。
+				</p>
+			</section>
+
+			<section>
+				<h2>三类文件</h2>
+				<div class="split-grid">
+					<div class="mini-panel">
+						<h3>后端配置</h3>
+						<p>`env.py` 和 `main.py` 决定 `/api/config`、FastAPI 标题和启动日志。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>前端壳</h3>
+						<p>`src/app.html` 决定 title、favicon、manifest、splash 和主题启动分支。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>静态资源</h3>
+						<p>图标需要同步到后端静态目录、前端静态目录和服务器覆盖目录。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>文案收尾</h3>
+						<p>`APP_NAME`、设置页、分享页和社区提示要扫掉可见旧品牌。</p>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<h2>验证方式</h2>
+				<pre><code>curl -fsS http://127.0.0.1:8080/api/config
+curl -fsS http://127.0.0.1:8080/ | rg "ChatGPT|chatgpt-brand|splash"</code></pre>
+				<p>如果 `/api/config` 还是旧名，前端即使看着改了，也不能算品牌收口完成。</p>
+			</section>
+		</main>
+	</body>
+</html>

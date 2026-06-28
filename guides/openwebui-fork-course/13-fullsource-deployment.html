@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>13. 全源码部署要把服务器覆盖模板收口</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<nav class="topnav">
+			<a href="./index.html">课程首页</a>
+			<span>13. 全源码部署要把服务器覆盖模板收口</span>
+		</nav>
+
+		<main class="article">
+			<p class="eyebrow">Deployment</p>
+			<h1>服务器补丁也要回到源码里</h1>
+			<p class="lead">
+				这一课对应部署模板提交：把 full-source 镜像、品牌启动补丁、Nginx、RAG/音频配置和网关网络示例脱敏入库。
+			</p>
+
+			<section class="diagram-card">
+				<svg class="deploy-map" viewBox="0 0 900 340" role="img" aria-label="deployment map">
+					<g class="deploy-box" transform="translate(70 72)">
+						<rect width="180" height="88" rx="8" />
+						<text x="90" y="40">本地源码</text>
+						<text x="90" y="64">build + backend</text>
+					</g>
+					<path class="deploy-arrow" d="M260 116 H370" />
+					<g class="deploy-box" transform="translate(390 72)">
+						<rect width="180" height="88" rx="8" />
+						<text x="90" y="40">运行镜像</text>
+						<text x="90" y="64">fullsource</text>
+					</g>
+					<path class="deploy-arrow" d="M580 116 H690" />
+					<g class="deploy-box" transform="translate(710 72)">
+						<rect width="150" height="88" rx="8" />
+						<text x="75" y="40">HTTPS</text>
+						<text x="75" y="64">Nginx</text>
+					</g>
+					<g class="deploy-box deploy-box--quiet" transform="translate(190 218)">
+						<rect width="220" height="74" rx="8" />
+						<text x="110" y="44">branding patch</text>
+					</g>
+					<g class="deploy-box deploy-box--quiet" transform="translate(490 218)">
+						<rect width="220" height="74" rx="8" />
+						<text x="110" y="44">RAG / TTS / STT</text>
+					</g>
+				</svg>
+			</section>
+
+			<section>
+				<h2>核心判断</h2>
+				<p>
+					服务器上长期存在的补丁，必须能从源码仓库重建。真正私密的是密钥和值，不是部署结构本身。
+				</p>
+			</section>
+
+			<section>
+				<h2>四个边界</h2>
+				<div class="split-grid">
+					<div class="mini-panel">
+						<h3>源码产物</h3>
+						<p>镜像复制本地 `build/` 和 `backend/`，不靠服务器手工改文件。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>启动补丁</h3>
+						<p>品牌和模型分级在启动前自动修正。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>脱敏变量</h3>
+						<p>模板只写变量名，真实 key 留在服务器 `.env`。</p>
+					</div>
+					<div class="mini-panel">
+						<h3>正式入口</h3>
+						<p>Nginx 负责 HTTPS 和 `__fay` 补丁资源映射。</p>
+					</div>
+				</div>
+			</section>
+		</main>
+	</body>
+</html>
