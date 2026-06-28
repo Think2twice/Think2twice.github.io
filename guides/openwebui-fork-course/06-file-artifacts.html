@@ -3,83 +3,148 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>06. 文件生成必须变成真实附件</title>
+		<title>文件生成：必须变成真实附件</title>
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
 		<nav class="topnav">
 			<a href="./index.html">课程首页</a>
-			<span>06. 文件生成必须变成真实附件</span>
+			<span>06. 文件附件</span>
 		</nav>
 
-		<main class="article">
-			<p class="eyebrow">File Artifacts</p>
-			<h1>生成了，不等于能下载</h1>
-			<p class="lead">
-				这一课对应文件产物提交：把 Pyodide 文件、后端工具输出和前端附件卡统一成真实可下载对象。
-			</p>
+		<main class="article article--long">
+			<header class="lesson-header">
+				<p class="eyebrow">Artifacts</p>
+				<h1>文件生成：必须变成真实附件</h1>
+				<p class="lead">让 DOCX、PDF、PPTX、XLSX、ZIP 等生成结果以 OpenWebUI 真实附件形式出现，而不是正文里的假路径或空白页。</p>
+				<div class="meta-strip">
+					<span>对应提交</span>
+					<strong>4027e9673</strong>
+				</div>
+			</header>
 
 			<section class="diagram-card">
-				<svg class="artifact-flow" viewBox="0 0 900 320" role="img" aria-label="file artifact flow">
-					<path class="artifact-flow__line" d="M110 160 H790" />
-					<g class="artifact-step" transform="translate(70 110)">
-						<rect width="150" height="90" rx="8" />
-						<text x="75" y="42">Python</text>
-						<text x="75" y="66">写文件</text>
-					</g>
-					<g class="artifact-step" transform="translate(270 110)">
-						<rect width="150" height="90" rx="8" />
-						<text x="75" y="42">Upload</text>
-						<text x="75" y="66">入库</text>
-					</g>
-					<g class="artifact-step" transform="translate(470 110)">
-						<rect width="150" height="90" rx="8" />
-						<text x="75" y="42">Message</text>
-						<text x="75" y="66">关联附件</text>
-					</g>
-					<g class="artifact-step" transform="translate(670 110)">
-						<rect width="150" height="90" rx="8" />
-						<text x="75" y="42">Download</text>
-						<text x="75" y="66">真实下载</text>
+				<svg class="lesson-map" viewBox="0 0 960 330" role="img" aria-label="文件附件 workflow">
+					<defs>
+						<linearGradient id="flow-06" x1="0" x2="1">
+							<stop offset="0" stop-color="#10a37f" />
+							<stop offset="1" stop-color="#1f6feb" />
+						</linearGradient>
+					</defs>
+					<path class="lesson-rail" d="M100 150 C230 54 356 246 486 150 S742 54 860 150" stroke="url(#flow-06)" />
+					<g class="lesson-node" transform="translate(100 150)">
+								<circle r="42" />
+								<text y="6">现象</text>
+							</g>
+<g class="lesson-node" transform="translate(360 150)">
+								<circle r="42" />
+								<text y="6">边界</text>
+							</g>
+<g class="lesson-node" transform="translate(610 150)">
+								<circle r="42" />
+								<text y="6">改动</text>
+							</g>
+<g class="lesson-node" transform="translate(860 150)">
+								<circle r="42" />
+								<text y="6">验证</text>
+							</g>
+					<g class="lesson-caption">
+						<text x="480" y="282">文件生成：必须变成真实附件</text>
 					</g>
 				</svg>
 			</section>
 
 			<section>
-				<h2>核心判断</h2>
-				<p>
-					文件生成的完成标准是“OpenWebUI 有文件记录、消息关联了附件、下载接口能返回真实文件”。模型在正文里说完成，只能算过程描述，不能算结果。
-				</p>
+				<h2>这一节先解决什么</h2>
+				<p>用户要的是“文件已经附在这条回复下面，可以点开下载”，不是看到一段 Python 代码、<code>sandbox:</code> 假链接或 <code>/mnt/uploads</code> 路径。文件生成的 UX 成败取决于四层：生成、注册、下载、前端展示。</p>
+<p>这类功能不能只看服务器上有没有文件。过去的问题就是文件存在，但 UI 里点开空白页、正文过程摊开、PDF 质量差、只生成一个格式而不是用户要求的多个格式。</p>
+<p>官方 ChatGPT 的体验是结果优先、过程可展开。这个项目也采用同样原则：可见正文干净，附件是真实按钮，过程默认折叠，用户想看再展开。</p>
 			</section>
 
 			<section>
-				<h2>四个落点</h2>
-				<div class="split-grid">
-					<div class="mini-panel">
-						<h3>执行层</h3>
-						<p>Pyodide 扫描 `/mnt/uploads` 的新增文件，连同 MIME 和大小传回主线程。</p>
+				<h2>你要先看懂的边界</h2>
+				<div class="detail-grid">
+					<div class="detail-card">
+						<h3>用户现象</h3>
+						<p>用户看到的是体验问题：按钮点不动、文件下不来、图片跑题、模型不显示、刷新后问题消失。工程上不能只修表象，要追到触发链路。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>上传层</h3>
-						<p>主线程把生成物转成浏览器 `File` 并调用 `uploadFile()`。</p>
+					<div class="detail-card">
+						<h3>代码边界</h3>
+						<p>先判断它属于前端组件、后端路由、运行配置、数据持久化还是部署覆盖层。边界判断错了，修复就会漂移。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>渲染层</h3>
-						<p>消息组件合并附件来源，并把过程折叠到状态卡。</p>
+					<div class="detail-card">
+						<h3>验收边界</h3>
+						<p>能编译只是第一层。真实验收还要看 API、浏览器行为、刷新后的持久化结果，以及是否误触发昂贵或危险工具。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>下载层</h3>
-						<p>文件卡片点击时请求 `?attachment=true`，用响应头文件名触发下载。</p>
+					<div class="detail-card">
+						<h3>文档边界</h3>
+						<p>公开教程只写结构、方法和占位符；真实 token、域名、IP、账号、Cookie、服务器路径都不进入 GitHub Pages。</p>
 					</div>
 				</div>
 			</section>
 
 			<section>
-				<h2>验证方式</h2>
-				<pre><code>python -m py_compile backend/open_webui/utils/pdf_generator.py backend/open_webui/tools/builtin.py backend/open_webui/utils/tools.py
-node --check static/__fay/openwebui-filegen-status.js</code></pre>
-				<p>最终验收要看真实附件、真实下载和打开后的文件内容，不只看聊天正文。</p>
+				<h2>关键文件地图</h2>
+				<ul><li><code>backend/open_webui/tools/builtin.py</code>：文件生成和附件注册逻辑。</li>
+<li><code>backend/open_webui/utils/pdf_generator.py</code>：结构化 PDF 生成。</li>
+<li><code>src/lib/components/chat/Messages/ResponseMessage.svelte</code>：附件和过程卡片展示。</li>
+<li><code>fay-custom/scripts/check-*</code>：文件生成和附件路由回归脚本。</li></ul>
+				<p class="note">读代码时不要一上来全仓库搜索。先用这张地图定位层，再用 <code>rg</code> 查具体符号，最后才决定改哪个文件。</p>
 			</section>
+
+			<section>
+				<h2>手工复现流程</h2>
+				<ol><li>先识别用户要的是文件产物，而不是图片或普通聊天。</li>
+<li>后端生成文件后，必须注册到 OpenWebUI Files，拿到真实 file id。</li>
+<li>助手消息的 <code>files</code> 字段要包含真实附件元数据，前端才能渲染附件按钮。</li>
+<li>正文清洗掉代码、stdout、sandbox 假路径，只保留简洁结果提示。</li>
+<li>过程信息进入折叠卡片，包含执行代码、stdout/stderr、注册结果和文件列表。</li>
+<li>PDF 不能只保证 <code>%PDF</code>，还要检查中文字体、标题层级、代码块和长文排版。</li></ol>
+				<pre><code>git status --short
+git add backend/open_webui/tools/builtin.py
+git diff --cached
+git diff --cached --check
+git commit -m &quot;feat(fay): 文件附件&quot;
+git push origin codex/fay-openwebui-custom</code></pre>
+			</section>
+
+			<section>
+				<h2>这一节背后的知识课</h2>
+				<ul><li>Artifact 是一等结果，不是聊天正文里的链接文本。</li>
+<li>下载接口要返回 attachment header、正确字节数和正确文件签名。</li>
+<li>前端按钮定位要点真实附件 chip，不能只按文件名找第一个文本。</li>
+<li>PDF 生成需要字体栈和换行策略，中文长文不能用最简占位 PDF。</li></ul>
+				<p>真正要学会的不是这一组文件名，而是它背后的判断模式。下次换成别的项目时，文件会变，但“先分层、再改动、最后验证真实表面”的顺序不变。</p>
+			</section>
+
+			<section>
+				<h2>验证门禁</h2>
+				<ul><li>生成文件存在且注册到 Files。</li>
+<li>认证下载接口返回真实附件而不是前端 HTML。</li>
+<li>浏览器点击附件按钮触发 download 事件。</li>
+<li>最新助手消息不出现 <code>sandbox:</code>、<code>&lt;details&gt;</code>、裸 Python 过程等坏词。</li>
+<li>PDF 打开后能看到标题、列表、代码块和中文正文。</li></ul>
+				<p class="note">门禁的意义是把“我觉得可以了”变成“证据显示可以了”。每个提交都应该有自己的最小门禁，而不是全仓库一次性跑到崩。</p>
+			</section>
+
+			<section>
+				<h2>常见坑和防复发</h2>
+				<ul><li>不要把文件写到磁盘就算完成。</li>
+<li>不要把正文里的路径当成下载入口。</li>
+<li>不要用脚本点错目标后误判 UI 坏了。</li>
+<li>不要把“PDF 合法”当成“PDF 可读”。</li></ul>
+			</section>
+
+			<section>
+				<h2>给你自己的练习</h2>
+				<p>用四层表检查一个文件功能：生成层、注册层、下载层、UI 层。每层写一个失败现象和一个验证命令。</p>
+			</section>
+
+			<nav class="lesson-pager" aria-label="lesson navigation">
+				<a class="pager-card" href="./05-mobile-safari-touch.html"><span>上一节</span><strong>05. Safari 修复</strong></a>
+				<a class="pager-card pager-card--home" href="./index.html"><span>目录</span><strong>回到课程首页</strong></a>
+				<a class="pager-card" href="./07-image-generation-routing.html"><span>下一节</span><strong>07. 图片路由</strong></a>
+			</nav>
 		</main>
 	</body>
 </html>

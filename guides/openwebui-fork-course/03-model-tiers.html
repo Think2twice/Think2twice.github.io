@@ -3,94 +3,146 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>03. GPT-5.5 模型分级与 Arena 可见性</title>
+		<title>模型分级与 Arena：可见性不是只改模型表</title>
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
 		<nav class="topnav">
 			<a href="./index.html">课程首页</a>
-			<span>03. GPT-5.5 模型分级与 Arena 可见性</span>
+			<span>03. 模型分级</span>
 		</nav>
 
-		<main class="article">
-			<p class="eyebrow">Model Menu</p>
-			<h1>模型菜单不是前端文案</h1>
-			<p class="lead">
-				这一课解释为什么 GPT-5.5 五档模型和 Arena 可见性必须同时处理数据库 preset、权限、全局配置和用户设置。
-			</p>
+		<main class="article article--long">
+			<header class="lesson-header">
+				<p class="eyebrow">Models</p>
+				<h1>模型分级与 Arena：可见性不是只改模型表</h1>
+				<p class="lead">让普通用户也能看到 GPT-5.5 五档模型和 Arena Model，并把模型顺序、默认 pin、权限和部署模板统一。</p>
+				<div class="meta-strip">
+					<span>对应提交</span>
+					<strong>01125a2eb</strong>
+				</div>
+			</header>
 
 			<section class="diagram-card">
-				<svg class="model-fan" viewBox="0 0 900 320" role="img" aria-label="model tier fan diagram">
-					<path class="model-fan__stem" d="M450 260 C450 190 450 150 450 90" />
-					<g class="model-tier" transform="translate(120 55)">
-						<rect width="145" height="62" rx="8" />
-						<text x="72" y="38">Auto</text>
+				<svg class="lesson-map" viewBox="0 0 960 330" role="img" aria-label="模型分级 workflow">
+					<defs>
+						<linearGradient id="flow-03" x1="0" x2="1">
+							<stop offset="0" stop-color="#10a37f" />
+							<stop offset="1" stop-color="#1f6feb" />
+						</linearGradient>
+					</defs>
+					<path class="lesson-rail" d="M100 150 C230 54 356 246 486 150 S742 54 860 150" stroke="url(#flow-03)" />
+					<g class="lesson-node" transform="translate(100 150)">
+								<circle r="42" />
+								<text y="6">现象</text>
+							</g>
+<g class="lesson-node" transform="translate(360 150)">
+								<circle r="42" />
+								<text y="6">边界</text>
+							</g>
+<g class="lesson-node" transform="translate(610 150)">
+								<circle r="42" />
+								<text y="6">改动</text>
+							</g>
+<g class="lesson-node" transform="translate(860 150)">
+								<circle r="42" />
+								<text y="6">验证</text>
+							</g>
+					<g class="lesson-caption">
+						<text x="480" y="282">模型分级与 Arena：可见性不是只改模型表</text>
 					</g>
-					<g class="model-tier" transform="translate(305 35)">
-						<rect width="145" height="62" rx="8" />
-						<text x="72" y="38">GPT-5.5</text>
-					</g>
-					<g class="model-tier" transform="translate(490 35)">
-						<rect width="145" height="62" rx="8" />
-						<text x="72" y="38">Thinking</text>
-					</g>
-					<g class="model-tier" transform="translate(675 55)">
-						<rect width="145" height="62" rx="8" />
-						<text x="72" y="38">Pro</text>
-					</g>
-					<g class="model-tier model-tier--base" transform="translate(340 230)">
-						<rect width="220" height="64" rx="8" />
-						<text x="110" y="40">base: gpt-5.5</text>
-					</g>
-					<path class="model-link" d="M450 230 L192 117" />
-					<path class="model-link" d="M450 230 L378 97" />
-					<path class="model-link" d="M450 230 L562 97" />
-					<path class="model-link" d="M450 230 L748 117" />
 				</svg>
 			</section>
 
 			<section>
-				<h2>核心判断</h2>
-				<p>
-					模型下拉要稳定，必须同时改四类数据：模型 preset、普通用户 read 权限、全局 UI 默认值、用户个人 settings。否则当前账号看着正常，换一个普通账号或重启容器就可能丢。
-				</p>
+				<h2>这一节先解决什么</h2>
+				<p>模型下拉框不是一个静态列表。OpenWebUI 同时有 model 表、配置型 evaluation arena models、用户 settings、默认 pinned models、排序列表和权限 grant。只改其中一层，就会出现管理员能看、普通用户看不到，或者刷新后顺序又乱了。</p>
+<p>本项目要做的是一个接近 ChatGPT 的产品壳：用户不应该看见一堆上游内部模型名，而应该看到稳定、可解释的档位，比如 Instant、Thinking、Pro 等。</p>
+<p>Arena Model 的坑在于它不一定存在于普通 model 表里，而是配置型模型；普通用户可见性要看 <code>meta.access_grants</code>。这类问题如果只看 UI，会误以为前端下拉坏了。</p>
 			</section>
 
 			<section>
-				<h2>Arena 为什么单独处理</h2>
-				<p>
-					`Arena Model` 是评测配置模型，不完全等同于普通 `model` 表记录。普通用户能否看到它，关键在 `config.evaluation.arena.models[*].meta.access_grants`。默认没有公开读取权限时，管理员能看到，普通用户可能看不到。
-				</p>
-			</section>
-
-			<section>
-				<h2>四个落点</h2>
-				<div class="split-grid">
-					<div class="mini-panel">
-						<h3>Preset</h3>
-						<p>五档模型写入 `model` 表，非基座档位指向同一个 `base_model_id`。</p>
+				<h2>你要先看懂的边界</h2>
+				<div class="detail-grid">
+					<div class="detail-card">
+						<h3>用户现象</h3>
+						<p>用户看到的是体验问题：按钮点不动、文件下不来、图片跑题、模型不显示、刷新后问题消失。工程上不能只修表象，要追到触发链路。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>权限</h3>
-						<p>`access_grant` 给 `user:*:read`，普通用户才看得到。</p>
+					<div class="detail-card">
+						<h3>代码边界</h3>
+						<p>先判断它属于前端组件、后端路由、运行配置、数据持久化还是部署覆盖层。边界判断错了，修复就会漂移。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>默认值</h3>
-						<p>`default_models` 和 pinned/order 列表统一写成五档加 Arena。</p>
+					<div class="detail-card">
+						<h3>验收边界</h3>
+						<p>能编译只是第一层。真实验收还要看 API、浏览器行为、刷新后的持久化结果，以及是否误触发昂贵或危险工具。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>用户设置</h3>
-						<p>已有用户 settings 和新用户默认触发器都要更新。</p>
+					<div class="detail-card">
+						<h3>文档边界</h3>
+						<p>公开教程只写结构、方法和占位符；真实 token、域名、IP、账号、Cookie、服务器路径都不进入 GitHub Pages。</p>
 					</div>
 				</div>
 			</section>
 
 			<section>
-				<h2>验证方式</h2>
-				<pre><code>python fay-custom/scripts/apply-local-model-tiers.py --data-dir .local-data/open-webui
-curl -fsS http://127.0.0.1:8080/api/models -H "Authorization: Bearer $TOKEN"</code></pre>
-				<p>普通用户也应该看到五档模型和 `arena-model`，而不是只有管理员看到。</p>
+				<h2>关键文件地图</h2>
+				<ul><li><code>backend/open_webui/config.py</code>：默认 Arena model 和 access grants。</li>
+<li><code>fay-custom/scripts/apply-local-model-tiers.py</code>：本地模型分级写入脚本。</li>
+<li><code>fay-custom/server-overrides/open-webui/branding/brand_patch.py</code>：服务器启动前修正模型和品牌。</li>
+<li><code>fay-custom/server-overrides/open-webui/docker-compose.yml.example</code>：部署默认开关。</li></ul>
+				<p class="note">读代码时不要一上来全仓库搜索。先用这张地图定位层，再用 <code>rg</code> 查具体符号，最后才决定改哪个文件。</p>
 			</section>
+
+			<section>
+				<h2>手工复现流程</h2>
+				<ol><li>先列出用户应该看到的最终模型顺序，而不是直接翻 DB。</li>
+<li>把五档模型写成稳定 id 和显示名，底层 <code>base_model_id</code> 再指向真实上游模型。</li>
+<li>把 <code>DEFAULT_PINNED_MODELS</code>、<code>MODEL_ORDER_LIST</code>、Arena 开关和 DB 配置同步。</li>
+<li>给 Arena 配置型模型补 <code>user:*:read</code>，让普通用户能看到。</li>
+<li>用普通 user token 调 <code>/api/models</code>，不要只用 admin 页面目测。</li></ol>
+				<pre><code>git status --short
+git add backend/open_webui/config.py
+git diff --cached
+git diff --cached --check
+git commit -m &quot;feat(fay): 模型分级&quot;
+git push origin codex/fay-openwebui-custom</code></pre>
+			</section>
+
+			<section>
+				<h2>这一节背后的知识课</h2>
+				<ul><li>显示模型和上游模型是两层：前者是产品语言，后者是供应商路由。</li>
+<li>access grant 是“谁能看到/使用”的权限层，不能用 UI 隐藏代替。</li>
+<li>启动补丁适合处理运行态配置漂移，但必须反补到源码和部署模板里。</li>
+<li>模型默认值属于产品体验的一部分，不只是管理员偏好。</li></ul>
+				<p>真正要学会的不是这一组文件名，而是它背后的判断模式。下次换成别的项目时，文件会变，但“先分层、再改动、最后验证真实表面”的顺序不变。</p>
+			</section>
+
+			<section>
+				<h2>验证门禁</h2>
+				<ul><li>普通用户 <code>/api/models</code> 包含五档模型和 <code>arena-model</code>。</li>
+<li>compose 模板中 Arena 开关为预期值。</li>
+<li>模型排序列表和 pinned models 含 <code>arena-model</code>。</li>
+<li>启动补丁和本地脚本生成的配置一致。</li></ul>
+				<p class="note">门禁的意义是把“我觉得可以了”变成“证据显示可以了”。每个提交都应该有自己的最小门禁，而不是全仓库一次性跑到崩。</p>
+			</section>
+
+			<section>
+				<h2>常见坑和防复发</h2>
+				<ul><li>不要只改 model 表，忘记配置型 Arena。</li>
+<li>不要只用管理员账号验收模型可见性。</li>
+<li>不要把 display name 和真实 upstream id 混为一谈。</li>
+<li>不要让服务器启动补丁成为唯一真相。</li></ul>
+			</section>
+
+			<section>
+				<h2>给你自己的练习</h2>
+				<p>设计一个“学生版/老师版/专家版”三档模型下拉，写清每档 display name、base model、权限和默认排序。</p>
+			</section>
+
+			<nav class="lesson-pager" aria-label="lesson navigation">
+				<a class="pager-card" href="./02-gateway-admin.html"><span>上一节</span><strong>02. 网关控制页</strong></a>
+				<a class="pager-card pager-card--home" href="./index.html"><span>目录</span><strong>回到课程首页</strong></a>
+				<a class="pager-card" href="./04-branding-shell.html"><span>下一节</span><strong>04. 品牌壳</strong></a>
+			</nav>
 		</main>
 	</body>
 </html>

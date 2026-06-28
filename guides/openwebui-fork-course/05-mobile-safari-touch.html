@@ -3,82 +3,148 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>05. iOS Safari/PWA 单击与输入修复</title>
+		<title>iOS Safari/PWA 单击与输入修复</title>
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
 		<nav class="topnav">
 			<a href="./index.html">课程首页</a>
-			<span>05. iOS Safari/PWA 单击与输入修复</span>
+			<span>05. Safari 修复</span>
 		</nav>
 
-		<main class="article">
-			<p class="eyebrow">Mobile Safari</p>
-			<h1>不要补按钮，要修触摸链路</h1>
-			<p class="lead">
-				这一课对应移动端提交：从 preload、tooltip、tap bridge、编辑器焦点和遮罩关闭五层修复 iOS Safari/PWA 的单击问题。
-			</p>
+		<main class="article article--long">
+			<header class="lesson-header">
+				<p class="eyebrow">iOS Safari</p>
+				<h1>iOS Safari/PWA 单击与输入修复</h1>
+				<p class="lead">解决 iPhone Safari 里按钮要双击、输入框点不进去、侧栏遮罩不能点空白关闭等移动端交互问题。</p>
+				<div class="meta-strip">
+					<span>对应提交</span>
+					<strong>324482199</strong>
+				</div>
+			</header>
 
 			<section class="diagram-card">
-				<svg class="touch-stack" viewBox="0 0 900 330" role="img" aria-label="mobile touch fix stack">
-					<g class="touch-layer" transform="translate(120 40)">
-						<rect width="660" height="48" rx="8" />
-						<text x="330" y="31">SvelteKit preload: hover -> tap</text>
-					</g>
-					<g class="touch-layer" transform="translate(150 95)">
-						<rect width="600" height="48" rx="8" />
-						<text x="300" y="31">iOS tap bridge: touchend -> click</text>
-					</g>
-					<g class="touch-layer" transform="translate(180 150)">
-						<rect width="540" height="48" rx="8" />
-						<text x="270" y="31">Tooltip: touch devices destroy Tippy</text>
-					</g>
-					<g class="touch-layer" transform="translate(210 205)">
-						<rect width="480" height="48" rx="8" />
-						<text x="240" y="31">MessageInput: focus editor on touchstart</text>
-					</g>
-					<g class="touch-layer" transform="translate(240 260)">
-						<rect width="420" height="48" rx="8" />
-						<text x="210" y="31">Sidebar overlay: explicit close</text>
+				<svg class="lesson-map" viewBox="0 0 960 330" role="img" aria-label="Safari 修复 workflow">
+					<defs>
+						<linearGradient id="flow-05" x1="0" x2="1">
+							<stop offset="0" stop-color="#10a37f" />
+							<stop offset="1" stop-color="#1f6feb" />
+						</linearGradient>
+					</defs>
+					<path class="lesson-rail" d="M100 150 C230 54 356 246 486 150 S742 54 860 150" stroke="url(#flow-05)" />
+					<g class="lesson-node" transform="translate(100 150)">
+								<circle r="42" />
+								<text y="6">现象</text>
+							</g>
+<g class="lesson-node" transform="translate(360 150)">
+								<circle r="42" />
+								<text y="6">边界</text>
+							</g>
+<g class="lesson-node" transform="translate(610 150)">
+								<circle r="42" />
+								<text y="6">改动</text>
+							</g>
+<g class="lesson-node" transform="translate(860 150)">
+								<circle r="42" />
+								<text y="6">验证</text>
+							</g>
+					<g class="lesson-caption">
+						<text x="480" y="282">iOS Safari/PWA 单击与输入修复</text>
 					</g>
 				</svg>
 			</section>
 
 			<section>
-				<h2>核心判断</h2>
-				<p>
-					“每个按钮都要双击”不是某一个按钮的问题。第一下 tap 可能被 hover preload、tooltip focus 或编辑器容器吞掉。正确修法是把触摸链路分层收口，而不是继续给单个按钮补洞。
-				</p>
+				<h2>这一节先解决什么</h2>
+				<p>iOS Safari 的问题不能按桌面浏览器经验处理。很多时候第一下 tap 被 hover、focus、tooltip、preload 或 touch/click 顺序吃掉，用户看到的就是“每个按钮都要点两次”。</p>
+<p>本项目不是一个单 bug：从 preload hover、Tippy tooltip、iOS-only tap bridge、ProseMirror 输入框聚焦，到移动侧栏遮罩收起，都是同一类“触摸设备事件边界”问题。</p>
+<p>正确做法不是给某个按钮硬绑 click，而是分层修：先让触摸设备不创建会吞首击的 tooltip，再针对 iOS WebKit 加 bridge，再对富文本编辑器做组件级 focus。</p>
 			</section>
 
 			<section>
-				<h2>五层修复</h2>
-				<div class="split-grid">
-					<div class="mini-panel">
-						<h3>预加载</h3>
-						<p>`data-sveltekit-preload-data="tap"` 避免移动端首击只触发 hover preload。</p>
+				<h2>你要先看懂的边界</h2>
+				<div class="detail-grid">
+					<div class="detail-card">
+						<h3>用户现象</h3>
+						<p>用户看到的是体验问题：按钮点不动、文件下不来、图片跑题、模型不显示、刷新后问题消失。工程上不能只修表象，要追到触发链路。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>Tap Bridge</h3>
-						<p>只在 iOS WebKit 上启用，轻触可点击元素时触发一次真实 click。</p>
+					<div class="detail-card">
+						<h3>代码边界</h3>
+						<p>先判断它属于前端组件、后端路由、运行配置、数据持久化还是部署覆盖层。边界判断错了，修复就会漂移。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>Tooltip</h3>
-						<p>触摸设备不创建 Tippy，避免 tooltip 抢走首击。</p>
+					<div class="detail-card">
+						<h3>验收边界</h3>
+						<p>能编译只是第一层。真实验收还要看 API、浏览器行为、刷新后的持久化结果，以及是否误触发昂贵或危险工具。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>输入框</h3>
-						<p>在 `touchstart` capture 阶段 focus 编辑器，让光标和键盘真实出现。</p>
+					<div class="detail-card">
+						<h3>文档边界</h3>
+						<p>公开教程只写结构、方法和占位符；真实 token、域名、IP、账号、Cookie、服务器路径都不进入 GitHub Pages。</p>
 					</div>
 				</div>
 			</section>
 
 			<section>
-				<h2>验证方式</h2>
-				<pre><code>node --check static/__fay/openwebui-ios-tap-bridge.js
-curl -fsS http://127.0.0.1:8080/ | rg "preload-data=\\\"tap\\\"|openwebui-ios-tap-bridge"</code></pre>
-				<p>最终仍要用 iPhone Safari 和主屏幕 PWA 实机验收，因为桌面浏览器无法完全复现 iOS WebKit 的首击行为。</p>
+				<h2>关键文件地图</h2>
+				<ul><li><code>src/app.html</code>：<code>data-sveltekit-preload-data</code> 从 hover 调整到 tap。</li>
+<li><code>src/lib/components/common/Tooltip.svelte</code>：触摸设备不创建 Tippy 实例。</li>
+<li><code>static/__fay/openwebui-ios-tap-bridge.js</code>：iOS WebKit 首击桥接。</li>
+<li><code>src/lib/components/chat/MessageInput.svelte</code>：输入区域触摸聚焦编辑器。</li>
+<li><code>src/lib/components/layout/Sidebar.svelte</code>：移动端遮罩显式关闭。</li></ul>
+				<p class="note">读代码时不要一上来全仓库搜索。先用这张地图定位层，再用 <code>rg</code> 查具体符号，最后才决定改哪个文件。</p>
 			</section>
+
+			<section>
+				<h2>手工复现流程</h2>
+				<ol><li>先区分桌面正常、安卓正常、iOS Safari 异常，确认不是业务按钮本身坏了。</li>
+<li>把 hover preload 调整成 tap，减少首击被预加载链路占用。</li>
+<li>触摸环境下禁用 tooltip 实例，避免第一下 tap 只触发 tooltip。</li>
+<li>只在 iOS/iPadOS WebKit 上启用 tap bridge，并跳过输入框、编辑器、地图等区域。</li>
+<li>对 Tiptap/ProseMirror 输入框，在容器 touchstart capture 阶段主动 focus 编辑器。</li>
+<li>侧栏遮罩用明确 close 函数，不用 toggle，避免点空白区变成状态不确定。</li></ol>
+				<pre><code>git status --short
+git add src/app.html
+git diff --cached
+git diff --cached --check
+git commit -m &quot;feat(fay): Safari 修复&quot;
+git push origin codex/fay-openwebui-custom</code></pre>
+			</section>
+
+			<section>
+				<h2>这一节背后的知识课</h2>
+				<ul><li>移动端点击不是简单的 click；touchstart、touchend、pointer、focus、click 的顺序会影响最终行为。</li>
+<li>Tooltip 类库常用 hover/focus 触发，在触摸设备上容易吞掉首击。</li>
+<li>富文本编辑器有自己的 DOM 和 selection 状态，只 focus 外层容器不一定能弹键盘。</li>
+<li>遮罩关闭应该是 idempotent 的 close，不应该是 toggle。</li></ul>
+				<p>真正要学会的不是这一组文件名，而是它背后的判断模式。下次换成别的项目时，文件会变，但“先分层、再改动、最后验证真实表面”的顺序不变。</p>
+			</section>
+
+			<section>
+				<h2>验证门禁</h2>
+				<ul><li>iOS 触摸环境中 Tippy 实例数量为 0。</li>
+<li>单次 tap 按钮能打开面板，不需要第二次。</li>
+<li>点击输入区域出现插入光标并弹出键盘。</li>
+<li>侧栏打开后点右侧遮罩任意空白处收起。</li></ul>
+				<p class="note">门禁的意义是把“我觉得可以了”变成“证据显示可以了”。每个提交都应该有自己的最小门禁，而不是全仓库一次性跑到崩。</p>
+			</section>
+
+			<section>
+				<h2>常见坑和防复发</h2>
+				<ul><li>不要只在 desktop Chrome 验收移动端 bug。</li>
+<li>不要把所有 touchend 都强制 click，输入框和编辑器会被破坏。</li>
+<li>不要用 toggle 处理遮罩关闭。</li>
+<li>不要把用户实机复现当作缓存问题草草跳过。</li></ul>
+			</section>
+
+			<section>
+				<h2>给你自己的练习</h2>
+				<p>拿一个移动端按钮，画出 touchstart -&gt; touchend -&gt; click -&gt; focus 的事件顺序，再想想 tooltip 插在中间会发生什么。</p>
+			</section>
+
+			<nav class="lesson-pager" aria-label="lesson navigation">
+				<a class="pager-card" href="./04-branding-shell.html"><span>上一节</span><strong>04. 品牌壳</strong></a>
+				<a class="pager-card pager-card--home" href="./index.html"><span>目录</span><strong>回到课程首页</strong></a>
+				<a class="pager-card" href="./06-file-artifacts.html"><span>下一节</span><strong>06. 文件附件</strong></a>
+			</nav>
 		</main>
 	</body>
 </html>

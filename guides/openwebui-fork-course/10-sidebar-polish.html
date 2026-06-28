@@ -3,45 +3,146 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>10. 侧边栏分组标题要稳定可读</title>
+		<title>侧边栏分组标题：稳定、可读、不抢戏</title>
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
 		<nav class="topnav">
 			<a href="./index.html">课程首页</a>
-			<span>10. 侧边栏分组标题要稳定可读</span>
+			<span>10. 侧边栏</span>
 		</nav>
 
-		<main class="article">
-			<p class="eyebrow">Sidebar</p>
-			<h1>高频扫视区要安静清楚</h1>
-			<p class="lead">
-				这一课对应 sidebar polish 提交：用轻量脚本稳定侧边栏分区标题，而不改动上游侧栏结构。
-			</p>
+		<main class="article article--long">
+			<header class="lesson-header">
+				<p class="eyebrow">Sidebar</p>
+				<h1>侧边栏分组标题：稳定、可读、不抢戏</h1>
+				<p class="lead">让左侧栏的分组标题、今日/历史标签和当前聊天状态更接近稳定产品，而不是默认 OpenWebUI 的粗糙列表感。</p>
+				<div class="meta-strip">
+					<span>对应提交</span>
+					<strong>8a8cb5cd7</strong>
+				</div>
+			</header>
 
 			<section class="diagram-card">
-				<svg class="sidebar-map" viewBox="0 0 900 320" role="img" aria-label="sidebar polish map">
-					<rect class="sidebar-shell" x="90" y="42" width="230" height="236" rx="10" />
-					<rect class="sidebar-label" x="122" y="82" width="70" height="22" rx="6" />
-					<rect class="sidebar-row" x="122" y="118" width="150" height="24" rx="8" />
-					<rect class="sidebar-row" x="122" y="152" width="130" height="24" rx="8" />
-					<rect class="sidebar-label" x="122" y="198" width="70" height="22" rx="6" />
-					<rect class="sidebar-row" x="122" y="232" width="160" height="24" rx="8" />
-					<path class="sidebar-arrow" d="M350 160 H530" />
-					<g class="sidebar-note" transform="translate(560 98)">
-						<rect width="250" height="124" rx="8" />
-						<text x="125" y="48">只增强分区标题</text>
-						<text x="125" y="78">不改侧栏数据结构</text>
+				<svg class="lesson-map" viewBox="0 0 960 330" role="img" aria-label="侧边栏 workflow">
+					<defs>
+						<linearGradient id="flow-10" x1="0" x2="1">
+							<stop offset="0" stop-color="#10a37f" />
+							<stop offset="1" stop-color="#1f6feb" />
+						</linearGradient>
+					</defs>
+					<path class="lesson-rail" d="M100 150 C230 54 356 246 486 150 S742 54 860 150" stroke="url(#flow-10)" />
+					<g class="lesson-node" transform="translate(100 150)">
+								<circle r="42" />
+								<text y="6">现象</text>
+							</g>
+<g class="lesson-node" transform="translate(360 150)">
+								<circle r="42" />
+								<text y="6">边界</text>
+							</g>
+<g class="lesson-node" transform="translate(610 150)">
+								<circle r="42" />
+								<text y="6">改动</text>
+							</g>
+<g class="lesson-node" transform="translate(860 150)">
+								<circle r="42" />
+								<text y="6">验证</text>
+							</g>
+					<g class="lesson-caption">
+						<text x="480" y="282">侧边栏分组标题：稳定、可读、不抢戏</text>
 					</g>
 				</svg>
 			</section>
 
 			<section>
-				<h2>核心判断</h2>
-				<p>
-					这类视觉修补应该轻量、可撤、可观察：先稳定高频阅读层级，不把侧栏重构成另一套系统。
-				</p>
+				<h2>这一节先解决什么</h2>
+				<p>侧边栏是聊天产品每天都会看的信息架构。一个小标题是否稳定、当前项是否清楚、历史分组是否可扫读，会直接影响用户对产品是否“自己做出来了”的感受。</p>
+<p>这里的改动看起来偏 UI，但它实际上是信息密度设计：聊天列表不能像营销卡片，也不能像没整理过的数据库记录。它应该让用户快速知道今天聊了什么、当前在哪个会话、哪些是历史。</p>
+<p>侧边栏还牵涉移动端遮罩关闭。侧栏打开后，点右侧空白应该关闭，而不是只能再点顶部按钮。</p>
 			</section>
+
+			<section>
+				<h2>你要先看懂的边界</h2>
+				<div class="detail-grid">
+					<div class="detail-card">
+						<h3>用户现象</h3>
+						<p>用户看到的是体验问题：按钮点不动、文件下不来、图片跑题、模型不显示、刷新后问题消失。工程上不能只修表象，要追到触发链路。</p>
+					</div>
+					<div class="detail-card">
+						<h3>代码边界</h3>
+						<p>先判断它属于前端组件、后端路由、运行配置、数据持久化还是部署覆盖层。边界判断错了，修复就会漂移。</p>
+					</div>
+					<div class="detail-card">
+						<h3>验收边界</h3>
+						<p>能编译只是第一层。真实验收还要看 API、浏览器行为、刷新后的持久化结果，以及是否误触发昂贵或危险工具。</p>
+					</div>
+					<div class="detail-card">
+						<h3>文档边界</h3>
+						<p>公开教程只写结构、方法和占位符；真实 token、域名、IP、账号、Cookie、服务器路径都不进入 GitHub Pages。</p>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<h2>关键文件地图</h2>
+				<ul><li><code>src/lib/components/layout/Sidebar.svelte</code>：侧边栏结构、遮罩和点击关闭。</li>
+<li><code>static/__fay/openwebui-sidebar-polish.js</code>：服务器侧栏标签覆盖脚本。</li>
+<li><code>fay-custom/server-overrides/nginx/openwebui.conf.example</code>：覆盖资源映射。</li>
+<li><code>fay-custom/references/product-parity-roadmap.md</code>：侧栏属于工作区体验的一部分。</li></ul>
+				<p class="note">读代码时不要一上来全仓库搜索。先用这张地图定位层，再用 <code>rg</code> 查具体符号，最后才决定改哪个文件。</p>
+			</section>
+
+			<section>
+				<h2>手工复现流程</h2>
+				<ol><li>先观察侧边栏承担的信息：新聊天、搜索、工作区、分组、历史、当前项。</li>
+<li>分组标题用克制字号和稳定间距，不做夸张装饰。</li>
+<li>当前聊天项要有明确选中态，但不要压过列表内容。</li>
+<li>移动端侧栏遮罩绑定 close，不绑定 toggle。</li>
+<li>服务器上如果保留轻量覆盖脚本，要同步到源码快照和部署模板。</li></ol>
+				<pre><code>git status --short
+git add src/lib/components/layout/Sidebar.svelte
+git diff --cached
+git diff --cached --check
+git commit -m &quot;feat(fay): 侧边栏&quot;
+git push origin codex/fay-openwebui-custom</code></pre>
+			</section>
+
+			<section>
+				<h2>这一节背后的知识课</h2>
+				<ul><li>导航区域的设计目标是重复使用效率，不是一次性惊艳。</li>
+<li>侧栏属于操作密集 UI，卡片和大圆角要克制。</li>
+<li>遮罩是 modal/sheet 交互的一部分，点击遮罩通常表示关闭当前层。</li>
+<li>运行时覆盖脚本只能是过渡层，最终要回到源码或可追踪模板。</li></ul>
+				<p>真正要学会的不是这一组文件名，而是它背后的判断模式。下次换成别的项目时，文件会变，但“先分层、再改动、最后验证真实表面”的顺序不变。</p>
+			</section>
+
+			<section>
+				<h2>验证门禁</h2>
+				<ul><li>今日/历史分组标题稳定可读。</li>
+<li>当前聊天选中态清楚。</li>
+<li>移动端点右侧遮罩能关闭侧栏。</li>
+<li>覆盖脚本和源码版本没有互相打架。</li></ul>
+				<p class="note">门禁的意义是把“我觉得可以了”变成“证据显示可以了”。每个提交都应该有自己的最小门禁，而不是全仓库一次性跑到崩。</p>
+			</section>
+
+			<section>
+				<h2>常见坑和防复发</h2>
+				<ul><li>不要把侧栏做成装饰卡片墙。</li>
+<li>不要让遮罩点击变成状态 toggle。</li>
+<li>不要只在桌面宽屏验收侧栏。</li>
+<li>不要让旧服务器覆盖脚本压掉源码样式。</li></ul>
+			</section>
+
+			<section>
+				<h2>给你自己的练习</h2>
+				<p>把你每天会点的侧边栏动作列出来，再判断每个动作需要一眼看到、二级隐藏还是放到更多菜单。</p>
+			</section>
+
+			<nav class="lesson-pager" aria-label="lesson navigation">
+				<a class="pager-card" href="./09-chat-outline-typography.html"><span>上一节</span><strong>09. 大纲排版</strong></a>
+				<a class="pager-card pager-card--home" href="./index.html"><span>目录</span><strong>回到课程首页</strong></a>
+				<a class="pager-card" href="./11-refresh-shortcuts-cache.html"><span>下一节</span><strong>11. 刷新快捷键</strong></a>
+			</nav>
 		</main>
 	</body>
 </html>

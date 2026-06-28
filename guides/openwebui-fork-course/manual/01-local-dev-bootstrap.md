@@ -1,85 +1,71 @@
-# 01. 本地开发启动底座
+# 本地开发启动底座：先让源码可运行
 
 ## 目标
 
-把本机 OpenWebUI、dual API gateway、本地配置库和模型分级种子串成一条稳定启动链路。这样以后调试功能时，先在本机闭环验证，再决定是否构建镜像或同步到服务器。
+把 OpenWebUI 的本地源码、环境变量、启动脚本和本地数据目录整理成可重复启动的开发面。
 
-## 这次改动解决什么问题
+## 对应提交
 
-旧做法容易把本机调试和服务器隧道混在一起：启动 OpenWebUI 时默认去连服务器 gateway，PDF/RAG/TTS 配置可能被数据库里的旧值覆盖，模型列表也要靠手工点后台配置。
+52d08d5d3
 
-新的本地启动底座把这几件事拆清楚：
+## 为什么这一节重要
 
-- 默认启动本机 gateway，不再静默连服务器。
-- `.env.fay-local` 用 dotenv 解析器加载，避免 JSON 配置被 shell 解析坏。
-- 启动前把 PDF、MinerU、RAG、TTS、STT 配置同步进本地 `webui.db`。
-- 启动前应用 GPT-5.5 Auto、Instant、Thinking、Pro 等本地模型分级种子。
-- 停止脚本只清理自己管理的 screen、gateway、tunnel 和本地 uvicorn 进程。
+- 做大型定制前，第一件事不是改界面，而是保证本地源码可以稳定跑起来。如果每次启动都靠临时命令、临时端口、临时环境变量，那么后面的 UI bug、路由 bug、部署 bug都会混在一起。
+- 本项目曾经有旧会话目录、服务器运行态、源码 fork、热补丁目录等多个层次。启动底座的意义是把“我现在改的是哪份源码、跑的是哪份代码、数据在哪里”说清楚。
+- 本地开发底座也是后续版本管理的根。没有可重复本地启动，就无法判断一个提交是否真的可用，也无法在不碰服务器的情况下验证前端和后端变化。
+
+## 关键文件地图
+
+- `.env.fay-local.example` 或本地 env 模板：保存本地默认开关和安全默认值。
+- `fay-custom/scripts/`：放本地启动、同步、验证脚本。
+- `.local-data/`：承载本地运行数据和备份，避免误伤服务器数据卷。
+- `fay-custom/SOURCE_OF_TRUTH.md`：解释本地源码、服务器部署、运行数据卷的边界。
 
 ## 手工复现流程
 
-1. 准备本地 Python 环境：
+1. 确认当前目录是权威源码仓库，不在旧聊天窗口目录里改文件。
+2. 复制本地 env 模板，填入只适合本机的调试值；公开模板里只保留变量名和占位符。
+3. 启动后端和前端前，先确认端口没有被旧服务占用。
+4. 打开 `http://127.0.0.1:8080/health` 和 `/api/config`，确认当前页面来自本地源码。
+5. 把启动命令、验证命令和常见失败写入项目文档。
 
-   ```bash
-   uv venv --python 3.11 .venv
-   uv pip install --python .venv/bin/python -r backend/requirements.txt
-   ```
-
-2. 准备 `.env.fay-local`，把 OpenWebUI 的 OpenAI-compatible 地址指向本机 gateway：
-
-   ```text
-   OPENAI_API_BASE_URL=http://127.0.0.1:13280/v1
-   OPENAI_API_BASE_URLS=http://127.0.0.1:13280/v1
-   IMAGES_OPENAI_API_BASE_URL=http://127.0.0.1:13280/v1
-   IMAGES_EDIT_OPENAI_API_BASE_URL=http://127.0.0.1:13280/v1
-   ```
-
-3. 从模板生成本机 gateway 私有配置：
-
-   ```bash
-   mkdir -p .local-run
-   cp fay-custom/server-overrides/dual-api-gateway/config.example.json .local-run/gateway.config.private.json
-   ```
-
-4. 只在 `.local-run/gateway.config.private.json` 和 `.env.fay-local` 中填真实 key。不要把 key 写入 Git。
-
-5. 启动本机闭环：
-
-   ```bash
-   fay-custom/scripts/start-local-openwebui.sh --screen
-   ```
-
-6. 验证两个本机入口：
-
-   ```bash
-   curl -fsS http://127.0.0.1:13280/health
-   curl -fsS http://127.0.0.1:8080/health
-   ```
-
-7. 停止本机进程：
-
-   ```bash
-   fay-custom/scripts/stop-local-openwebui.sh
-   ```
-
-## 关键知识
-
-本地调试不能只看 `.env`。OpenWebUI 会把很多后台配置写进 `webui.db` 的 `config` 表。如果数据库里有旧配置，单纯改 `.env.fay-local` 可能没有效果。所以这次增加 `sync-local-rag-config.py`，把关键环境变量同步进配置库。
-
-模型分级也不能只靠前端展示。`apply-local-model-tiers.py` 会写入 `model`、`access_grant`、用户默认设置和新用户触发器，让普通用户打开页面时就能看到稳定的 GPT-5.5 菜单。
-
-如果需要和服务器旧 gateway 做只读对照，才显式使用：
+## 常用命令骨架
 
 ```bash
-LOCAL_GATEWAY_MODE=tunnel fay-custom/scripts/start-local-openwebui.sh --screen
+git status --short
+git add .env.fay-local.example 或本地 env 模板
+git diff --cached
+git diff --cached --check
+git commit -m "feat(fay): 本地开发启动"
+git push origin codex/fay-openwebui-custom
 ```
 
-默认不要用 tunnel 模式，否则本地源码改动和服务器运行态很容易混在一起。
+## 知识课
+
+- 前端 dev server、后端 API、生产 build 镜像是三种不同运行面，不能混成一个概念。
+- 本地 `.env` 和服务器 `.env` 不能互相复制；本地只负责开发便利，服务器负责正式运行安全。
+- OpenWebUI 的持久化数据会影响配置表现。很多“env 改了没生效”的问题，本质是数据库里的持久配置覆盖了 env。
+- 健康检查不等于功能验收，但它是所有功能验收的第一步。
 
 ## 验证门禁
 
-- `bash -n fay-custom/scripts/start-local-openwebui.sh fay-custom/scripts/stop-local-openwebui.sh`
-- `python -m py_compile fay-custom/scripts/sync-local-rag-config.py fay-custom/scripts/apply-local-model-tiers.py`
-- 本机 gateway `/health` 返回成功。
-- 本机 OpenWebUI `/health` 返回成功。
-- `git diff --cached --check` 通过后再提交。
+- `git remote -v` 确认 origin/upstream 没反。
+- `curl http://127.0.0.1:8080/health` 返回健康状态。
+- `curl http://127.0.0.1:8080/api/config` 能看到预期品牌和功能开关。
+- 启动日志不打印真实 token、cookie 或完整密钥。
+
+## 常见坑
+
+- 不要在旧目录里改出一套“看起来也能跑”的第二项目。
+- 不要把服务器热修当成本地源码完成。
+- 不要把真实 `.env` 放进 Git。
+- 不要用线上页面代替本地验收，除非当前任务就是部署验证。
+
+## 练习
+
+给自己画一张三层图：本地源码、运行进程、数据目录。以后每遇到一个 bug，先标出它落在哪一层。
+
+## 连续阅读
+
+- 上一节：00. 版本管理：私有 fork 的正确提交栈
+- 下一节：02. 网关控制页：状态刷新不能测试上游

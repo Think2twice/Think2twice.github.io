@@ -3,83 +3,146 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>08. 笔记捕获、数学渲染和导出</title>
+		<title>笔记捕获、数学渲染和导出</title>
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
 		<nav class="topnav">
 			<a href="./index.html">课程首页</a>
-			<span>08. 笔记捕获、数学渲染和导出</span>
+			<span>08. 笔记导出</span>
 		</nav>
 
-		<main class="article">
-			<p class="eyebrow">Notes</p>
-			<h1>别让笔记功能漂在 DOM 上</h1>
-			<p class="lead">
-				这一课对应笔记提交：把添加到笔记、数学公式和 PDF 导出放回源码，让它们随组件生命周期稳定工作。
-			</p>
+		<main class="article article--long">
+			<header class="lesson-header">
+				<p class="eyebrow">Notes</p>
+				<h1>笔记捕获、数学渲染和导出</h1>
+				<p class="lead">让回答能稳定添加到笔记，公式能正确渲染，导出 PDF/Markdown 时保持可读排版。</p>
+				<div class="meta-strip">
+					<span>对应提交</span>
+					<strong>2b656ebcd</strong>
+				</div>
+			</header>
 
 			<section class="diagram-card">
-				<svg class="note-flow" viewBox="0 0 900 320" role="img" aria-label="note capture flow">
-					<path class="note-flow__line" d="M110 160 H790" />
-					<g class="note-step" transform="translate(60 102)">
-						<rect width="160" height="116" rx="8" />
-						<text x="80" y="48">聊天回答</text>
-						<text x="80" y="76">Markdown</text>
-					</g>
-					<g class="note-step" transform="translate(265 102)">
-						<rect width="160" height="116" rx="8" />
-						<text x="80" y="48">原生按钮</text>
-						<text x="80" y="76">写入 Note</text>
-					</g>
-					<g class="note-step" transform="translate(470 102)">
-						<rect width="160" height="116" rx="8" />
-						<text x="80" y="48">KaTeX 节点</text>
-						<text x="80" y="76">保留源码</text>
-					</g>
-					<g class="note-step" transform="translate(675 102)">
-						<rect width="160" height="116" rx="8" />
-						<text x="80" y="48">打印/PDF</text>
-						<text x="80" y="76">稳定导出</text>
+				<svg class="lesson-map" viewBox="0 0 960 330" role="img" aria-label="笔记导出 workflow">
+					<defs>
+						<linearGradient id="flow-08" x1="0" x2="1">
+							<stop offset="0" stop-color="#10a37f" />
+							<stop offset="1" stop-color="#1f6feb" />
+						</linearGradient>
+					</defs>
+					<path class="lesson-rail" d="M100 150 C230 54 356 246 486 150 S742 54 860 150" stroke="url(#flow-08)" />
+					<g class="lesson-node" transform="translate(100 150)">
+								<circle r="42" />
+								<text y="6">现象</text>
+							</g>
+<g class="lesson-node" transform="translate(360 150)">
+								<circle r="42" />
+								<text y="6">边界</text>
+							</g>
+<g class="lesson-node" transform="translate(610 150)">
+								<circle r="42" />
+								<text y="6">改动</text>
+							</g>
+<g class="lesson-node" transform="translate(860 150)">
+								<circle r="42" />
+								<text y="6">验证</text>
+							</g>
+					<g class="lesson-caption">
+						<text x="480" y="282">笔记捕获、数学渲染和导出</text>
 					</g>
 				</svg>
 			</section>
 
 			<section>
-				<h2>核心判断</h2>
-				<p>
-					只要一个功能要长期存在，就应该回到组件和数据模型里。运行时脚本适合临时验证，不适合承载按钮、保存逻辑和可编辑公式。
-				</p>
+				<h2>这一节先解决什么</h2>
+				<p>笔记功能不是“把文本 append 到一个字段”那么简单。OpenWebUI 的 note 结构里 Markdown、HTML、JSON 位置不同；如果按猜测写入，就会出现看似成功但内容为空、公式重复、导出缺样式等问题。</p>
+<p>Fay 的使用方式是把长回答沉淀成可复习材料，所以笔记必须支持数学公式、代码块、表格和导出。否则它只是聊天收藏，不是学习资料系统。</p>
+<p>导出体验也要像正式产品：菜单语义清楚，下载动作真实发生，导出的 PDF 不应该丢公式、丢代码块或出现重复标题。</p>
 			</section>
 
 			<section>
-				<h2>四个落点</h2>
-				<div class="split-grid">
-					<div class="mini-panel">
-						<h3>原生入口</h3>
-						<p>聊天消息工具栏直接调用 Notes API，不再扫描 DOM 插按钮。</p>
+				<h2>你要先看懂的边界</h2>
+				<div class="detail-grid">
+					<div class="detail-card">
+						<h3>用户现象</h3>
+						<p>用户看到的是体验问题：按钮点不动、文件下不来、图片跑题、模型不显示、刷新后问题消失。工程上不能只修表象，要追到触发链路。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>每日笔记</h3>
-						<p>按日期聚合回答，用 marker 防止重复追加同一条消息。</p>
+					<div class="detail-card">
+						<h3>代码边界</h3>
+						<p>先判断它属于前端组件、后端路由、运行配置、数据持久化还是部署覆盖层。边界判断错了，修复就会漂移。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>公式源码</h3>
-						<p>KaTeX HTML 上保存原始 TeX，编辑和导出时都能恢复。</p>
+					<div class="detail-card">
+						<h3>验收边界</h3>
+						<p>能编译只是第一层。真实验收还要看 API、浏览器行为、刷新后的持久化结果，以及是否误触发昂贵或危险工具。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>导出排版</h3>
-						<p>打印 CSS 处理分页、表格、代码块和长公式。</p>
+					<div class="detail-card">
+						<h3>文档边界</h3>
+						<p>公开教程只写结构、方法和占位符；真实 token、域名、IP、账号、Cookie、服务器路径都不进入 GitHub Pages。</p>
 					</div>
 				</div>
 			</section>
 
 			<section>
-				<h2>验证方式</h2>
-				<pre><code>node --check static/__fay/openwebui-note-export.js
-node -e "/* Svelte parse ResponseMessage/RichTextInput/NoteEditor */"</code></pre>
-				<p>最终要用真实聊天回答测：添加、去重、打开笔记、编辑公式和导出 PDF 都算同一条链路。</p>
+				<h2>关键文件地图</h2>
+				<ul><li><code>src/lib/components/notes/</code>：笔记编辑、显示和导出入口。</li>
+<li><code>src/lib/components/chat/Messages/ResponseMessage.svelte</code>：添加到笔记按钮。</li>
+<li><code>src/lib/utils/note-math.ts</code>：公式渲染和源文本保留。</li>
+<li><code>static/__fay/openwebui-note-export.js</code>：导出增强脚本。</li></ul>
+				<p class="note">读代码时不要一上来全仓库搜索。先用这张地图定位层，再用 <code>rg</code> 查具体符号，最后才决定改哪个文件。</p>
 			</section>
+
+			<section>
+				<h2>手工复现流程</h2>
+				<ol><li>先用 API 抓一份真实 note detail，确认内容在 <code>data.content.md/html/json</code> 的哪一层。</li>
+<li>添加笔记时保留 Markdown 源，HTML 渲染只作为显示层，不覆盖源内容。</li>
+<li>公式渲染时给原始公式加 data 属性，避免导出时丢失或重复渲染。</li>
+<li>导出菜单按用户语言命名，PDF、Markdown、HTML 等动作明确分开。</li>
+<li>验证不要只看截图，还要检查 API 内容、DOM <code>.katex</code>、导出文件字节和可读性。</li></ol>
+				<pre><code>git status --short
+git add src/lib/components/notes/
+git diff --cached
+git diff --cached --check
+git commit -m &quot;feat(fay): 笔记导出&quot;
+git push origin codex/fay-openwebui-custom</code></pre>
+			</section>
+
+			<section>
+				<h2>这一节背后的知识课</h2>
+				<ul><li>富文本系统通常有源文本层和渲染层，二者不能互相覆盖。</li>
+<li>数学公式渲染要考虑 inline/block、转义、重复渲染和导出降级。</li>
+<li>导出不是复制 DOM，需要处理样式、分页、代码块和表格。</li>
+<li>真实数据结构优先于猜测字段名。</li></ul>
+				<p>真正要学会的不是这一组文件名，而是它背后的判断模式。下次换成别的项目时，文件会变，但“先分层、再改动、最后验证真实表面”的顺序不变。</p>
+			</section>
+
+			<section>
+				<h2>验证门禁</h2>
+				<ul><li>点击添加后，最近笔记的 <code>data.content.md</code> 含回答内容。</li>
+<li>页面 DOM 中出现 <code>.katex</code>，同时保留原始公式 source。</li>
+<li>导出 PDF 菜单能触发下载。</li>
+<li>导出文件包含标题、正文、公式、代码块和表格。</li></ul>
+				<p class="note">门禁的意义是把“我觉得可以了”变成“证据显示可以了”。每个提交都应该有自己的最小门禁，而不是全仓库一次性跑到崩。</p>
+			</section>
+
+			<section>
+				<h2>常见坑和防复发</h2>
+				<ul><li>不要按字段名猜 note 结构。</li>
+<li>不要只看视觉截图，忽略 API 持久化。</li>
+<li>不要把公式渲染后的 HTML 当作唯一源。</li>
+<li>不要让导出按钮变成预览按钮。</li></ul>
+			</section>
+
+			<section>
+				<h2>给你自己的练习</h2>
+				<p>给一个含公式、表格、代码块的回答设计笔记验收表：API 内容、页面 DOM、导出 PDF、导出 Markdown 各验什么。</p>
+			</section>
+
+			<nav class="lesson-pager" aria-label="lesson navigation">
+				<a class="pager-card" href="./07-image-generation-routing.html"><span>上一节</span><strong>07. 图片路由</strong></a>
+				<a class="pager-card pager-card--home" href="./index.html"><span>目录</span><strong>回到课程首页</strong></a>
+				<a class="pager-card" href="./09-chat-outline-typography.html"><span>下一节</span><strong>09. 大纲排版</strong></a>
+			</nav>
 		</main>
 	</body>
 </html>

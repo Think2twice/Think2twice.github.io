@@ -3,77 +3,147 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>12. Workspace seeds 要能重复安装和回滚</title>
+		<title>Workspace seeds：资源包要能重复安装和回滚</title>
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
 		<nav class="topnav">
 			<a href="./index.html">课程首页</a>
-			<span>12. Workspace seeds 要能重复安装和回滚</span>
+			<span>12. 工作区种子</span>
 		</nav>
 
-		<main class="article">
-			<p class="eyebrow">Workspace Seeds</p>
-			<h1>配置也要进版本管理</h1>
-			<p class="lead">
-				这一课对应 workspace seed 提交：把 prompts、skills、tools 和 action functions 变成可校验、可安装、可回滚的文件包。
-			</p>
+		<main class="article article--long">
+			<header class="lesson-header">
+				<p class="eyebrow">Workspace</p>
+				<h1>Workspace seeds：资源包要能重复安装和回滚</h1>
+				<p class="lead">把 Prompts、Skills、Tools、Action Functions 做成可重复安装的默认资源包，而不是让 Fay 在 UI 里一个个手工添加。</p>
+				<div class="meta-strip">
+					<span>对应提交</span>
+					<strong>34eac1f93</strong>
+				</div>
+			</header>
 
 			<section class="diagram-card">
-				<svg class="seed-flow" viewBox="0 0 900 320" role="img" aria-label="workspace seed flow">
-					<g class="seed-box" transform="translate(80 66)">
-						<rect width="170" height="74" rx="8" />
-						<text x="85" y="45">Prompts</text>
-					</g>
-					<g class="seed-box" transform="translate(80 180)">
-						<rect width="170" height="74" rx="8" />
-						<text x="85" y="45">Skills</text>
-					</g>
-					<g class="seed-box" transform="translate(320 66)">
-						<rect width="170" height="74" rx="8" />
-						<text x="85" y="45">Tools</text>
-					</g>
-					<g class="seed-box" transform="translate(320 180)">
-						<rect width="170" height="74" rx="8" />
-						<text x="85" y="45">Functions</text>
-					</g>
-					<path class="seed-arrow" d="M500 160 H610" />
-					<g class="seed-box seed-box--target" transform="translate(630 104)">
-						<rect width="190" height="112" rx="8" />
-						<text x="95" y="48">OpenWebUI API</text>
-						<text x="95" y="76">upsert / uninstall</text>
+				<svg class="lesson-map" viewBox="0 0 960 330" role="img" aria-label="工作区种子 workflow">
+					<defs>
+						<linearGradient id="flow-12" x1="0" x2="1">
+							<stop offset="0" stop-color="#10a37f" />
+							<stop offset="1" stop-color="#1f6feb" />
+						</linearGradient>
+					</defs>
+					<path class="lesson-rail" d="M100 150 C230 54 356 246 486 150 S742 54 860 150" stroke="url(#flow-12)" />
+					<g class="lesson-node" transform="translate(100 150)">
+								<circle r="42" />
+								<text y="6">现象</text>
+							</g>
+<g class="lesson-node" transform="translate(360 150)">
+								<circle r="42" />
+								<text y="6">边界</text>
+							</g>
+<g class="lesson-node" transform="translate(610 150)">
+								<circle r="42" />
+								<text y="6">改动</text>
+							</g>
+<g class="lesson-node" transform="translate(860 150)">
+								<circle r="42" />
+								<text y="6">验证</text>
+							</g>
+					<g class="lesson-caption">
+						<text x="480" y="282">Workspace seeds：资源包要能重复安装和回滚</text>
 					</g>
 				</svg>
 			</section>
 
 			<section>
-				<h2>核心判断</h2>
-				<p>
-					工作空间资源是产品能力的一部分。只存在数据库里的配置，不能复盘、不能 diff，也很难迁移。
-				</p>
+				<h2>这一节先解决什么</h2>
+				<p>OpenWebUI 的工作区能力很多，但如果每个提示词、技能、工具都靠手工点 UI 添加，项目很快不可复制。换机器、重建数据库、部署服务器时，资源就会丢或者版本不一致。</p>
+<p>种子包的关键不是“塞很多东西”，而是可控：哪些资源默认给普通用户读、哪些工具有执行风险、Action 是否全局显示、外部 OpenAPI/MCP 是否默认启用，都要有边界。</p>
+<p>本项目里 Action Functions 一开始全局挂载导致每条回复下面出现一排图标，这就是资源安装没有权限和 UI 策略的后果。</p>
 			</section>
 
 			<section>
-				<h2>安装器边界</h2>
-				<div class="split-grid">
-					<div class="mini-panel">
-						<h3>API 优先</h3>
-						<p>通过 OpenWebUI API 安装，不直接改数据库。</p>
+				<h2>你要先看懂的边界</h2>
+				<div class="detail-grid">
+					<div class="detail-card">
+						<h3>用户现象</h3>
+						<p>用户看到的是体验问题：按钮点不动、文件下不来、图片跑题、模型不显示、刷新后问题消失。工程上不能只修表象，要追到触发链路。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>可校验</h3>
-						<p>`--validate-only` 只读检查 seed 文件格式。</p>
+					<div class="detail-card">
+						<h3>代码边界</h3>
+						<p>先判断它属于前端组件、后端路由、运行配置、数据持久化还是部署覆盖层。边界判断错了，修复就会漂移。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>可回滚</h3>
-						<p>`--uninstall` 只删除 seed 包管理的资源。</p>
+					<div class="detail-card">
+						<h3>验收边界</h3>
+						<p>能编译只是第一层。真实验收还要看 API、浏览器行为、刷新后的持久化结果，以及是否误触发昂贵或危险工具。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>不污染</h3>
-						<p>Action functions 默认不全局启用。</p>
+					<div class="detail-card">
+						<h3>文档边界</h3>
+						<p>公开教程只写结构、方法和占位符；真实 token、域名、IP、账号、Cookie、服务器路径都不进入 GitHub Pages。</p>
 					</div>
 				</div>
 			</section>
+
+			<section>
+				<h2>关键文件地图</h2>
+				<ul><li><code>fay-custom/workspace-seeds/</code>：Prompts、Skills、Tools、Functions 源文件。</li>
+<li><code>fay-custom/scripts/install-workspace-seeds.py</code>：通过 OpenWebUI API upsert。</li>
+<li><code>fay-custom/workspace-seeds/tool-servers.example.json</code>：默认关闭的外部工具候选。</li>
+<li><code>fay-custom/LESSONS.md</code>：Action 默认不能全局挂载的规则。</li></ul>
+				<p class="note">读代码时不要一上来全仓库搜索。先用这张地图定位层，再用 <code>rg</code> 查具体符号，最后才决定改哪个文件。</p>
+			</section>
+
+			<section>
+				<h2>手工复现流程</h2>
+				<ol><li>先把资源分类：Prompt、Skill、Tool、Action Function、外部工具服务器。</li>
+<li>每个资源用文件表达，避免只存在于数据库。</li>
+<li>安装器走 API upsert，不直接改生产数据库。</li>
+<li>Prompts/Skills/Tools 给 <code>user:*:read</code>，Functions 默认为 <code>active=true, global=false</code>。</li>
+<li>先跑 <code>--validate-only</code>，再跑 <code>--dry-run</code>，最后才真实安装。</li>
+<li>安装前备份数据库，安装后用 API 或 DB 摘要验数量和权限。</li></ol>
+				<pre><code>git status --short
+git add fay-custom/workspace-seeds/
+git diff --cached
+git diff --cached --check
+git commit -m &quot;feat(fay): 工作区种子&quot;
+git push origin codex/fay-openwebui-custom</code></pre>
+			</section>
+
+			<section>
+				<h2>这一节背后的知识课</h2>
+				<ul><li>种子包是应用配置即代码的一种形式。</li>
+<li>工具和函数有执行风险，不能像提示词一样无脑公开。</li>
+<li>API upsert 比直接写 DB 更尊重应用自己的校验和迁移逻辑。</li>
+<li>默认关闭外部工具服务器，是为了避免上下文外发和额度风险。</li></ul>
+				<p>真正要学会的不是这一组文件名，而是它背后的判断模式。下次换成别的项目时，文件会变，但“先分层、再改动、最后验证真实表面”的顺序不变。</p>
+			</section>
+
+			<section>
+				<h2>验证门禁</h2>
+				<ul><li>validate-only 能解析所有资源。</li>
+<li>dry-run 显示将创建或更新哪些条目。</li>
+<li>安装后数量符合预期。</li>
+<li>Functions 的 <code>is_global=0</code>，不会污染每条消息动作栏。</li></ul>
+				<p class="note">门禁的意义是把“我觉得可以了”变成“证据显示可以了”。每个提交都应该有自己的最小门禁，而不是全仓库一次性跑到崩。</p>
+			</section>
+
+			<section>
+				<h2>常见坑和防复发</h2>
+				<ul><li>不要把 Tools/Functions 当成普通文档资源批量公开。</li>
+<li>不要直接改生产 DB 而不走 API。</li>
+<li>不要让 Action 默认全局挂载。</li>
+<li>不要启用外部工具服务器而不做白名单和审计。</li></ul>
+			</section>
+
+			<section>
+				<h2>给你自己的练习</h2>
+				<p>给一个团队设计 5 个默认 Prompt、3 个 Skill、2 个 Tool。写出谁能看、谁能执行、如何回滚。</p>
+			</section>
+
+			<nav class="lesson-pager" aria-label="lesson navigation">
+				<a class="pager-card" href="./11-refresh-shortcuts-cache.html"><span>上一节</span><strong>11. 刷新快捷键</strong></a>
+				<a class="pager-card pager-card--home" href="./index.html"><span>目录</span><strong>回到课程首页</strong></a>
+				<a class="pager-card" href="./13-fullsource-deployment.html"><span>下一节</span><strong>13. 全源码部署</strong></a>
+			</nav>
 		</main>
 	</body>
 </html>

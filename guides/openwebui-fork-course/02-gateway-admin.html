@@ -3,107 +3,146 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>02. 网关控制页与上游路由</title>
+		<title>网关控制页：状态刷新不能测试上游</title>
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
 		<nav class="topnav">
 			<a href="./index.html">课程首页</a>
-			<span>02. 网关控制页与上游路由</span>
+			<span>02. 网关控制页</span>
 		</nav>
 
-		<main class="article">
-			<p class="eyebrow">Gateway Policy</p>
-			<h1>把接口切换做成可控的管理员能力</h1>
-			<p class="lead">
-				这一课对应 gateway 管理提交：控制页不直接暴露密钥，刷新只读状态，只有手点测试才触发上游请求。
-			</p>
+		<main class="article article--long">
+			<header class="lesson-header">
+				<p class="eyebrow">Gateway Admin</p>
+				<h1>网关控制页：状态刷新不能测试上游</h1>
+				<p class="lead">把临时 gateway 控制入口迁入 OpenWebUI 管理后台，并把“读状态”和“测试接口”彻底分开。</p>
+				<div class="meta-strip">
+					<span>对应提交</span>
+					<strong>4f109cef3</strong>
+				</div>
+			</header>
 
 			<section class="diagram-card">
-				<svg class="gateway-map" viewBox="0 0 920 360" role="img" aria-label="gateway admin routing map">
+				<svg class="lesson-map" viewBox="0 0 960 330" role="img" aria-label="网关控制页 workflow">
 					<defs>
-						<marker id="arrowHead" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
-							<path d="M 0 0 L 10 5 L 0 10 z" fill="#1f6feb" />
-						</marker>
+						<linearGradient id="flow-02" x1="0" x2="1">
+							<stop offset="0" stop-color="#10a37f" />
+							<stop offset="1" stop-color="#1f6feb" />
+						</linearGradient>
 					</defs>
-					<g class="gateway-box" transform="translate(55 90)">
-						<rect width="190" height="90" rx="8" />
-						<text x="95" y="40">管理员页面</text>
-						<text x="95" y="66">/admin/gateway</text>
+					<path class="lesson-rail" d="M100 150 C230 54 356 246 486 150 S742 54 860 150" stroke="url(#flow-02)" />
+					<g class="lesson-node" transform="translate(100 150)">
+								<circle r="42" />
+								<text y="6">现象</text>
+							</g>
+<g class="lesson-node" transform="translate(360 150)">
+								<circle r="42" />
+								<text y="6">边界</text>
+							</g>
+<g class="lesson-node" transform="translate(610 150)">
+								<circle r="42" />
+								<text y="6">改动</text>
+							</g>
+<g class="lesson-node" transform="translate(860 150)">
+								<circle r="42" />
+								<text y="6">验证</text>
+							</g>
+					<g class="lesson-caption">
+						<text x="480" y="282">网关控制页：状态刷新不能测试上游</text>
 					</g>
-					<path class="gateway-arrow" d="M245 135 H365" />
-					<g class="gateway-box" transform="translate(365 90)">
-						<rect width="190" height="90" rx="8" />
-						<text x="95" y="40">OpenWebUI 后端</text>
-						<text x="95" y="66">/api/v1/fay/gateway</text>
-					</g>
-					<path class="gateway-arrow" d="M555 135 H675" />
-					<g class="gateway-box" transform="translate(675 90)">
-						<rect width="190" height="90" rx="8" />
-						<text x="95" y="40">dual API gateway</text>
-						<text x="95" y="66">admin API</text>
-					</g>
-					<path class="gateway-arrow gateway-arrow--down" d="M770 180 V255" />
-					<g class="gateway-box gateway-box--small" transform="translate(625 255)">
-						<rect width="120" height="56" rx="8" />
-						<text x="60" y="35">接口1</text>
-					</g>
-					<g class="gateway-box gateway-box--small" transform="translate(790 255)">
-						<rect width="120" height="56" rx="8" />
-						<text x="60" y="35">接口2</text>
-					</g>
-					<circle class="gateway-dot" cx="460" cy="135" r="9">
-						<animate attributeName="opacity" values="1;.25;1" dur="2.4s" repeatCount="indefinite" />
-					</circle>
 				</svg>
 			</section>
 
 			<section>
-				<h2>核心原则</h2>
-				<p>
-					接口切换是管理能力，不是聊天能力。页面刷新必须只是读取状态，不能偷偷测试接口一或接口二。测试上游属于会消耗额度、可能污染上游状态的动作，必须由用户明确点击。
-				</p>
+				<h2>这一节先解决什么</h2>
+				<p>网关控制页看起来只是一个管理页面，实际牵涉权限、服务器内网地址、上游接口、Cloudflare 错误和用户额度风险。一个刷新按钮如果顺手调用真实上游，就可能在用户没意识到时消耗接口额度。</p>
+<p>正确的产品设计是把状态读取做成低风险、只读、可自动刷新的动作；把接口测试做成明确的管理员手动动作。这样页面能常开，风险动作必须用户有意识地点。</p>
+<p>这也是后端边界设计课：前端页面不应该直接拼真实上游地址，OpenWebUI 后端负责鉴权和调用 gateway 管理接口，gateway 再只返回脱敏状态。</p>
 			</section>
 
 			<section>
-				<h2>为什么要放进 OpenWebUI 后台</h2>
-				<p>
-					独立 gateway 页面虽然能用，但它绕开了 OpenWebUI 的管理员体系。迁入 `/admin/gateway` 后，浏览器只和 OpenWebUI 后端说话，后端再把管理员 cookie 或 token 转发给 gateway 校验；真实 admin key 可以只留在服务器环境变量或本机私有配置里。
-				</p>
-			</section>
-
-			<section>
-				<h2>三类请求不要混</h2>
-				<div class="split-grid">
-					<div class="mini-panel">
-						<h3>普通聊天</h3>
-						<p>代表用户日常对话，可使用 active 上游和自动失败切换。</p>
+				<h2>你要先看懂的边界</h2>
+				<div class="detail-grid">
+					<div class="detail-card">
+						<h3>用户现象</h3>
+						<p>用户看到的是体验问题：按钮点不动、文件下不来、图片跑题、模型不显示、刷新后问题消失。工程上不能只修表象，要追到触发链路。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>图片请求</h3>
-						<p>默认优先 `image_preferred`，并且不应改变普通聊天 active。</p>
+					<div class="detail-card">
+						<h3>代码边界</h3>
+						<p>先判断它属于前端组件、后端路由、运行配置、数据持久化还是部署覆盖层。边界判断错了，修复就会漂移。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>Embedding</h3>
-						<p>服务 RAG 检索，成功失败也不应该改变普通聊天 active。</p>
+					<div class="detail-card">
+						<h3>验收边界</h3>
+						<p>能编译只是第一层。真实验收还要看 API、浏览器行为、刷新后的持久化结果，以及是否误触发昂贵或危险工具。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>管理测试</h3>
-						<p>只有点击“测试”按钮才触发，用于低频排查。</p>
+					<div class="detail-card">
+						<h3>文档边界</h3>
+						<p>公开教程只写结构、方法和占位符；真实 token、域名、IP、账号、Cookie、服务器路径都不进入 GitHub Pages。</p>
 					</div>
 				</div>
 			</section>
 
 			<section>
-				<h2>文件对应关系</h2>
-				<pre><code>backend/open_webui/routers/fay_gateway.py
-src/lib/apis/fayGateway.ts
-src/routes/(app)/admin/gateway/+page.svelte
-fay-custom/server-overrides/dual-api-gateway/gateway.py</code></pre>
-				<p>
-					读代码时按这个顺序看：前端页面发请求，前端 API client 包装，OpenWebUI 后端代理，gateway admin API 执行策略。
-				</p>
+				<h2>关键文件地图</h2>
+				<ul><li><code>src/routes/(app)/admin/gateway/</code>：管理员页面入口。</li>
+<li><code>backend/open_webui/routers/fay_gateway.py</code>：OpenWebUI 后端代理和权限检查。</li>
+<li><code>fay-custom/server-overrides/dual-api-gateway/</code>：服务器部署网络示例。</li>
+<li><code>fay-custom/LESSONS.md</code>：记录“刷新不能测试上游”的防复发规则。</li></ul>
+				<p class="note">读代码时不要一上来全仓库搜索。先用这张地图定位层，再用 <code>rg</code> 查具体符号，最后才决定改哪个文件。</p>
 			</section>
+
+			<section>
+				<h2>手工复现流程</h2>
+				<ol><li>先定义页面能做的动作：读取状态、切换模式、手动测试。不要把三者混在一个请求里。</li>
+<li>后端新增只读 status 接口，返回当前模式、接口标签、健康摘要，不返回 key、admin token 或完整配置。</li>
+<li>前端加载页面时只调用 status；切换和测试按钮单独放在需要管理员确认的区域。</li>
+<li>部署时配置容器内网地址，而不是让 OpenWebUI 容器访问自己的 <code>127.0.0.1</code>。</li>
+<li>验证未登录是 401，普通用户没有管理权限，管理员可以读状态。</li></ol>
+				<pre><code>git status --short
+git add src/routes/(app)/admin/gateway/
+git diff --cached
+git diff --cached --check
+git commit -m &quot;feat(fay): 网关控制页&quot;
+git push origin codex/fay-openwebui-custom</code></pre>
+			</section>
+
+			<section>
+				<h2>这一节背后的知识课</h2>
+				<ul><li>管理页的默认动作必须是安全动作。自动刷新、页面进入、tab 切换都不能触发真实上游测试。</li>
+<li>容器里的 <code>127.0.0.1</code> 指向容器自己，不是宿主机，也不是另一个容器；服务互调要用 Docker 网络名或显式内网地址。</li>
+<li>脱敏状态接口是系统运维里很重要的模式：它让你能观察系统，又不泄露系统。</li>
+<li>权限不只在前端隐藏按钮，必须在后端接口再校验。</li></ul>
+				<p>真正要学会的不是这一组文件名，而是它背后的判断模式。下次换成别的项目时，文件会变，但“先分层、再改动、最后验证真实表面”的顺序不变。</p>
+			</section>
+
+			<section>
+				<h2>验证门禁</h2>
+				<ul><li>未登录请求 <code>/api/v1/fay/gateway/status</code> 返回 401。</li>
+<li>管理员页面打开时只读 status，不触发 <code>/admin/test</code>。</li>
+<li>状态摘要不包含 key、token、password、admin 字段。</li>
+<li>服务器部署中 OpenWebUI 到 gateway 走内网地址。</li></ul>
+				<p class="note">门禁的意义是把“我觉得可以了”变成“证据显示可以了”。每个提交都应该有自己的最小门禁，而不是全仓库一次性跑到崩。</p>
+			</section>
+
+			<section>
+				<h2>常见坑和防复发</h2>
+				<ul><li>不要用 Cloudflare 502 这种外部现象直接判断 gateway 坏了，先查容器互调地址。</li>
+<li>不要在日志里打印完整 gateway 配置。</li>
+<li>不要让页面刷新等于“帮我测接口”。</li>
+<li>不要把兼容旧入口当成新的正式入口。</li></ul>
+			</section>
+
+			<section>
+				<h2>给你自己的练习</h2>
+				<p>把一个危险按钮拆成两个接口：一个只读状态，一个执行动作。写出每个接口允许在什么时候自动调用。</p>
+			</section>
+
+			<nav class="lesson-pager" aria-label="lesson navigation">
+				<a class="pager-card" href="./01-local-dev-bootstrap.html"><span>上一节</span><strong>01. 本地开发启动</strong></a>
+				<a class="pager-card pager-card--home" href="./index.html"><span>目录</span><strong>回到课程首页</strong></a>
+				<a class="pager-card" href="./03-model-tiers.html"><span>下一节</span><strong>03. 模型分级</strong></a>
+			</nav>
 		</main>
 	</body>
 </html>

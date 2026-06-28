@@ -3,80 +3,147 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>13. 全源码部署要把服务器覆盖模板收口</title>
+		<title>全源码部署：服务器覆盖模板要收口</title>
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
 		<nav class="topnav">
 			<a href="./index.html">课程首页</a>
-			<span>13. 全源码部署要把服务器覆盖模板收口</span>
+			<span>13. 全源码部署</span>
 		</nav>
 
-		<main class="article">
-			<p class="eyebrow">Deployment</p>
-			<h1>服务器补丁也要回到源码里</h1>
-			<p class="lead">
-				这一课对应部署模板提交：把 full-source 镜像、品牌启动补丁、Nginx、RAG/音频配置和网关网络示例脱敏入库。
-			</p>
+		<main class="article article--long">
+			<header class="lesson-header">
+				<p class="eyebrow">Deployment</p>
+				<h1>全源码部署：服务器覆盖模板要收口</h1>
+				<p class="lead">把服务器上的 full-source 镜像、compose、Nginx、品牌补丁、RAG/TTS/STT 配置和 gateway 网络示例脱敏回收到源码仓库。</p>
+				<div class="meta-strip">
+					<span>对应提交</span>
+					<strong>513e0aa9f</strong>
+				</div>
+			</header>
 
 			<section class="diagram-card">
-				<svg class="deploy-map" viewBox="0 0 900 340" role="img" aria-label="deployment map">
-					<g class="deploy-box" transform="translate(70 72)">
-						<rect width="180" height="88" rx="8" />
-						<text x="90" y="40">本地源码</text>
-						<text x="90" y="64">build + backend</text>
-					</g>
-					<path class="deploy-arrow" d="M260 116 H370" />
-					<g class="deploy-box" transform="translate(390 72)">
-						<rect width="180" height="88" rx="8" />
-						<text x="90" y="40">运行镜像</text>
-						<text x="90" y="64">fullsource</text>
-					</g>
-					<path class="deploy-arrow" d="M580 116 H690" />
-					<g class="deploy-box" transform="translate(710 72)">
-						<rect width="150" height="88" rx="8" />
-						<text x="75" y="40">HTTPS</text>
-						<text x="75" y="64">Nginx</text>
-					</g>
-					<g class="deploy-box deploy-box--quiet" transform="translate(190 218)">
-						<rect width="220" height="74" rx="8" />
-						<text x="110" y="44">branding patch</text>
-					</g>
-					<g class="deploy-box deploy-box--quiet" transform="translate(490 218)">
-						<rect width="220" height="74" rx="8" />
-						<text x="110" y="44">RAG / TTS / STT</text>
+				<svg class="lesson-map" viewBox="0 0 960 330" role="img" aria-label="全源码部署 workflow">
+					<defs>
+						<linearGradient id="flow-13" x1="0" x2="1">
+							<stop offset="0" stop-color="#10a37f" />
+							<stop offset="1" stop-color="#1f6feb" />
+						</linearGradient>
+					</defs>
+					<path class="lesson-rail" d="M100 150 C230 54 356 246 486 150 S742 54 860 150" stroke="url(#flow-13)" />
+					<g class="lesson-node" transform="translate(100 150)">
+								<circle r="42" />
+								<text y="6">现象</text>
+							</g>
+<g class="lesson-node" transform="translate(360 150)">
+								<circle r="42" />
+								<text y="6">边界</text>
+							</g>
+<g class="lesson-node" transform="translate(610 150)">
+								<circle r="42" />
+								<text y="6">改动</text>
+							</g>
+<g class="lesson-node" transform="translate(860 150)">
+								<circle r="42" />
+								<text y="6">验证</text>
+							</g>
+					<g class="lesson-caption">
+						<text x="480" y="282">全源码部署：服务器覆盖模板要收口</text>
 					</g>
 				</svg>
 			</section>
 
 			<section>
-				<h2>核心判断</h2>
-				<p>
-					服务器上长期存在的补丁，必须能从源码仓库重建。真正私密的是密钥和值，不是部署结构本身。
-				</p>
+				<h2>这一节先解决什么</h2>
+				<p>服务器上手工 patch 最危险的地方，是它会让项目出现两套真相：本地源码一套，服务器运行态一套。只要重建镜像、换机器或升级上游，就不知道哪些改动该带过去。</p>
+<p>全源码部署的目标是让服务器只是运行源码生成的交付物。真实密钥和数据卷留在服务器，结构、模板、补丁和验证规则回到仓库。</p>
+<p>这节课也是部署边界课：compose project 名、external volume、Nginx 缓存头、动态 API no-store、静态资源 immutable、gateway 内网地址，都要明确。</p>
 			</section>
 
 			<section>
-				<h2>四个边界</h2>
-				<div class="split-grid">
-					<div class="mini-panel">
-						<h3>源码产物</h3>
-						<p>镜像复制本地 `build/` 和 `backend/`，不靠服务器手工改文件。</p>
+				<h2>你要先看懂的边界</h2>
+				<div class="detail-grid">
+					<div class="detail-card">
+						<h3>用户现象</h3>
+						<p>用户看到的是体验问题：按钮点不动、文件下不来、图片跑题、模型不显示、刷新后问题消失。工程上不能只修表象，要追到触发链路。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>启动补丁</h3>
-						<p>品牌和模型分级在启动前自动修正。</p>
+					<div class="detail-card">
+						<h3>代码边界</h3>
+						<p>先判断它属于前端组件、后端路由、运行配置、数据持久化还是部署覆盖层。边界判断错了，修复就会漂移。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>脱敏变量</h3>
-						<p>模板只写变量名，真实 key 留在服务器 `.env`。</p>
+					<div class="detail-card">
+						<h3>验收边界</h3>
+						<p>能编译只是第一层。真实验收还要看 API、浏览器行为、刷新后的持久化结果，以及是否误触发昂贵或危险工具。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>正式入口</h3>
-						<p>Nginx 负责 HTTPS 和 `__fay` 补丁资源映射。</p>
+					<div class="detail-card">
+						<h3>文档边界</h3>
+						<p>公开教程只写结构、方法和占位符；真实 token、域名、IP、账号、Cookie、服务器路径都不进入 GitHub Pages。</p>
 					</div>
 				</div>
 			</section>
+
+			<section>
+				<h2>关键文件地图</h2>
+				<ul><li><code>fay-custom/server-overrides/open-webui/fullsource-runtime.Dockerfile</code>：复制 build/backend 的运行镜像。</li>
+<li><code>fay-custom/server-overrides/open-webui/docker-compose*.example</code>：脱敏 compose 模板。</li>
+<li><code>fay-custom/server-overrides/nginx/openwebui.conf.example</code>：Nginx 反代和缓存示例。</li>
+<li><code>fay-custom/server-overrides/open-webui/branding/brand_patch.py</code>：启动前品牌和模型补丁。</li></ul>
+				<p class="note">读代码时不要一上来全仓库搜索。先用这张地图定位层，再用 <code>rg</code> 查具体符号，最后才决定改哪个文件。</p>
+			</section>
+
+			<section>
+				<h2>手工复现流程</h2>
+				<ol><li>先在本地构建前端和后端产物，确认 build 版本。</li>
+<li>用 fullsource runtime Dockerfile 把源码产物复制进运行镜像。</li>
+<li>compose 模板只写变量名和占位符，真实 key 留在服务器 <code>.env</code>。</li>
+<li>固定 external volume 名，避免 compose project 名变化创建空数据卷。</li>
+<li>Nginx 对 <code>/_app/immutable/</code> 做长缓存，对 <code>/api/</code> 做 no-store。</li>
+<li>部署后做三向核对：本地源码、服务器 source-build、容器运行文件。</li></ol>
+				<pre><code>git status --short
+git add fay-custom/server-overrides/open-webui/fullsource-runtime.Dockerfile
+git diff --cached
+git diff --cached --check
+git commit -m &quot;feat(fay): 全源码部署&quot;
+git push origin codex/fay-openwebui-custom</code></pre>
+			</section>
+
+			<section>
+				<h2>这一节背后的知识课</h2>
+				<ul><li>Docker Compose project 名会影响卷和网络名，不确认就重建可能像“数据丢了”。</li>
+<li>全源码镜像应该包含完整 build/backend，不靠服务器 bind mount 拼半套。</li>
+<li>静态资源可以长缓存，登录态页面和 API 不能全站缓存。</li>
+<li>服务器补丁只有反补到源码模板里，才算长期治理完成。</li></ul>
+				<p>真正要学会的不是这一组文件名，而是它背后的判断模式。下次换成别的项目时，文件会变，但“先分层、再改动、最后验证真实表面”的顺序不变。</p>
+			</section>
+
+			<section>
+				<h2>验证门禁</h2>
+				<ul><li>容器 healthy，公网 <code>/health</code> 正常。</li>
+<li>公网 <code>/_app/version.json</code> 和容器 build version 一致。</li>
+<li>Nginx 配置语法通过，缓存头符合动态/静态边界。</li>
+<li>模板扫描不含真实 token、域名、IP、cookie 或密码。</li></ul>
+				<p class="note">门禁的意义是把“我觉得可以了”变成“证据显示可以了”。每个提交都应该有自己的最小门禁，而不是全仓库一次性跑到崩。</p>
+			</section>
+
+			<section>
+				<h2>常见坑和防复发</h2>
+				<ul><li>不要在服务器热改后忘记反补源码。</li>
+<li>不要让 compose 自动创建新空卷。</li>
+<li>不要把裸 IP:端口当正式交付入口。</li>
+<li>不要为了加速缓存登录态 HTML 或 API。</li></ul>
+			</section>
+
+			<section>
+				<h2>给你自己的练习</h2>
+				<p>写一份部署检查表，至少包含镜像、容器、数据卷、Nginx、缓存头、API config、前端版本七项。</p>
+			</section>
+
+			<nav class="lesson-pager" aria-label="lesson navigation">
+				<a class="pager-card" href="./12-workspace-seeds.html"><span>上一节</span><strong>12. 工作区种子</strong></a>
+				<a class="pager-card pager-card--home" href="./index.html"><span>目录</span><strong>回到课程首页</strong></a>
+				<a class="pager-card" href="./14-static-runtime-cleanup.html"><span>下一节</span><strong>14. 静态清理</strong></a>
+			</nav>
 		</main>
 	</body>
 </html>

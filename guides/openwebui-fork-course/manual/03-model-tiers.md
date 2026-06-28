@@ -1,84 +1,71 @@
-# 03. GPT-5.5 模型分级与 Arena 可见性
+# 模型分级与 Arena：可见性不是只改模型表
 
 ## 目标
 
-把模型下拉从“一个上游模型名”整理成更像产品的模型菜单：`GPT-5.5 Auto`、`GPT-5.5`、`GPT-5.5 Instant`、`GPT-5.5 Thinking`、`GPT-5.5 Pro`，并让普通用户也能看到 `Arena Model`。
+让普通用户也能看到 GPT-5.5 五档模型和 Arena Model，并把模型顺序、默认 pin、权限和部署模板统一。
 
-## 这次改动解决什么问题
+## 对应提交
 
-模型菜单不是前端文案。OpenWebUI 的可见模型由多个地方共同决定：
+01125a2eb
 
-- `model` 表中的模型 preset。
-- `access_grant` 是否允许普通用户读取。
-- 全局 `config.ui.default_models`、`default_pinned_models`、`model_order_list`。
-- 用户自己的 `settings` 和新用户默认设置。
-- Arena 模型不一定在 `model` 表里，它还存在于 `config.evaluation.arena.models`。
+## 为什么这一节重要
 
-所以如果只改页面文字，刷新、换账号、重启容器后很容易又回到旧状态。
+- 模型下拉框不是一个静态列表。OpenWebUI 同时有 model 表、配置型 evaluation arena models、用户 settings、默认 pinned models、排序列表和权限 grant。只改其中一层，就会出现管理员能看、普通用户看不到，或者刷新后顺序又乱了。
+- 本项目要做的是一个接近 ChatGPT 的产品壳：用户不应该看见一堆上游内部模型名，而应该看到稳定、可解释的档位，比如 Instant、Thinking、Pro 等。
+- Arena Model 的坑在于它不一定存在于普通 model 表里，而是配置型模型；普通用户可见性要看 `meta.access_grants`。这类问题如果只看 UI，会误以为前端下拉坏了。
+
+## 关键文件地图
+
+- `backend/open_webui/config.py`：默认 Arena model 和 access grants。
+- `fay-custom/scripts/apply-local-model-tiers.py`：本地模型分级写入脚本。
+- `fay-custom/server-overrides/open-webui/branding/brand_patch.py`：服务器启动前修正模型和品牌。
+- `fay-custom/server-overrides/open-webui/docker-compose.yml.example`：部署默认开关。
 
 ## 手工复现流程
 
-1. 先确定底层真实模型 ID，例如当前基座是：
+1. 先列出用户应该看到的最终模型顺序，而不是直接翻 DB。
+2. 把五档模型写成稳定 id 和显示名，底层 `base_model_id` 再指向真实上游模型。
+3. 把 `DEFAULT_PINNED_MODELS`、`MODEL_ORDER_LIST`、Arena 开关和 DB 配置同步。
+4. 给 Arena 配置型模型补 `user:*:read`，让普通用户能看到。
+5. 用普通 user token 调 `/api/models`，不要只用 admin 页面目测。
 
-   ```text
-   gpt-5.5
-   ```
-
-2. 为五个展示档位建立 preset：
-
-   ```text
-   gpt-5.5-auto
-   gpt-5.5
-   gpt-5.5-instant
-   gpt-5.5-thinking
-   gpt-5.5-pro
-   ```
-
-   其中 Auto/Instant/Thinking/Pro 可以把 `base_model_id` 指向 `gpt-5.5`。
-
-3. 给每个 preset 写 `access_grant`：
-
-   ```text
-   resource_type=model
-   resource_id=<model_id>
-   principal_type=user
-   principal_id=*
-   permission=read
-   ```
-
-4. 更新全局 UI 默认值：
-
-   ```text
-   default_models=gpt-5.5-auto
-   default_pinned_models=gpt-5.5-auto,gpt-5.5,gpt-5.5-instant,gpt-5.5-thinking,gpt-5.5-pro,arena-model
-   model_order_list=[同上]
-   ```
-
-5. 更新已有用户 settings，并给新用户加默认设置触发器。
-
-6. Arena 额外处理：在默认 Arena 配置的 `meta.access_grants` 中加入 `user:*:read`。否则管理员能看到，普通用户可能看不到。
-
-## 本地脚本入口
-
-本地启动底座已经把模型分级脚本接入启动流程：
+## 常用命令骨架
 
 ```bash
-fay-custom/scripts/apply-local-model-tiers.py --data-dir .local-data/open-webui
+git status --short
+git add backend/open_webui/config.py
+git diff --cached
+git diff --cached --check
+git commit -m "feat(fay): 模型分级"
+git push origin codex/fay-openwebui-custom
 ```
 
-这个脚本会 upsert 五档模型、写公开读取权限、清理旧模型 ID、更新用户默认设置，并安装新用户默认设置触发器。
+## 知识课
+
+- 显示模型和上游模型是两层：前者是产品语言，后者是供应商路由。
+- access grant 是“谁能看到/使用”的权限层，不能用 UI 隐藏代替。
+- 启动补丁适合处理运行态配置漂移，但必须反补到源码和部署模板里。
+- 模型默认值属于产品体验的一部分，不只是管理员偏好。
 
 ## 验证门禁
 
-- 普通用户请求 `/api/models` 能看到五档模型和 `arena-model`。
-- `gpt-5.5-auto` 是默认模型。
-- Auto/Instant/Thinking/Pro 的 `base_model_id` 指向 `gpt-5.5`。
-- 旧 ID `fay-chatgpt2api-gpt-5`、`fay-sub2api-gpt-5-5` 不再出现在用户默认选择里。
-- Arena 的 `meta.access_grants` 含 `user:*:read`。
+- 普通用户 `/api/models` 包含五档模型和 `arena-model`。
+- compose 模板中 Arena 开关为预期值。
+- 模型排序列表和 pinned models 含 `arena-model`。
+- 启动补丁和本地脚本生成的配置一致。
 
-## 不要做什么
+## 常见坑
 
-- 不要只改前端下拉文字。
-- 不要只给管理员配置模型。
-- 不要把 `arena-model` 当成普通 `model` 表记录处理完就结束。
-- 不要让每次容器重启又把五档 preset 变成 inactive。
+- 不要只改 model 表，忘记配置型 Arena。
+- 不要只用管理员账号验收模型可见性。
+- 不要把 display name 和真实 upstream id 混为一谈。
+- 不要让服务器启动补丁成为唯一真相。
+
+## 练习
+
+设计一个“学生版/老师版/专家版”三档模型下拉，写清每档 display name、base model、权限和默认排序。
+
+## 连续阅读
+
+- 上一节：02. 网关控制页：状态刷新不能测试上游
+- 下一节：04. ChatGPT 品牌壳：不是只换一个图标

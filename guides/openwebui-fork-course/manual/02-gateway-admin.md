@@ -1,92 +1,71 @@
-# 02. 网关控制页与上游路由
+# 网关控制页：状态刷新不能测试上游
 
 ## 目标
 
-把原本散落在独立 gateway 页面、服务器配置和临时热修里的接口切换能力迁回 OpenWebUI 源码。管理员在 `/admin/gateway` 里能查看当前状态、切换模式、手动测试接口；普通刷新不能偷偷调用上游模型。
+把临时 gateway 控制入口迁入 OpenWebUI 管理后台，并把“读状态”和“测试接口”彻底分开。
 
-## 这次改动解决什么问题
+## 对应提交
 
-旧做法有三个风险：
+4f109cef3
 
-- gateway 控制入口在 OpenWebUI 之外，权限和登录态容易割裂。
-- 管理页刷新如果顺手测试接口，会在 Fay 没有明确要求时消耗接口额度。
-- 图片生成、embedding、普通聊天都走同一套 active 切换，会让图片或 RAG 的一次请求把普通聊天默认接口改掉。
+## 为什么这一节重要
 
-新的设计把控制流分成三层：
+- 网关控制页看起来只是一个管理页面，实际牵涉权限、服务器内网地址、上游接口、Cloudflare 错误和用户额度风险。一个刷新按钮如果顺手调用真实上游，就可能在用户没意识到时消耗接口额度。
+- 正确的产品设计是把状态读取做成低风险、只读、可自动刷新的动作；把接口测试做成明确的管理员手动动作。这样页面能常开，风险动作必须用户有意识地点。
+- 这也是后端边界设计课：前端页面不应该直接拼真实上游地址，OpenWebUI 后端负责鉴权和调用 gateway 管理接口，gateway 再只返回脱敏状态。
 
-- OpenWebUI 后端路由：`/api/v1/fay/gateway/*`，只允许管理员访问。
-- OpenWebUI 前端页面：`/admin/gateway`，展示状态和按钮。
-- dual API gateway：提供 `/admin/status`、`/admin/mode`、`/admin/test`，并校验 OpenWebUI 管理员登录态或本地 admin key。
+## 关键文件地图
+
+- `src/routes/(app)/admin/gateway/`：管理员页面入口。
+- `backend/open_webui/routers/fay_gateway.py`：OpenWebUI 后端代理和权限检查。
+- `fay-custom/server-overrides/dual-api-gateway/`：服务器部署网络示例。
+- `fay-custom/LESSONS.md`：记录“刷新不能测试上游”的防复发规则。
 
 ## 手工复现流程
 
-1. 在后端新增 router：
+1. 先定义页面能做的动作：读取状态、切换模式、手动测试。不要把三者混在一个请求里。
+2. 后端新增只读 status 接口，返回当前模式、接口标签、健康摘要，不返回 key、admin token 或完整配置。
+3. 前端加载页面时只调用 status；切换和测试按钮单独放在需要管理员确认的区域。
+4. 部署时配置容器内网地址，而不是让 OpenWebUI 容器访问自己的 `127.0.0.1`。
+5. 验证未登录是 401，普通用户没有管理权限，管理员可以读状态。
 
-   ```text
-   backend/open_webui/routers/fay_gateway.py
-   ```
+## 常用命令骨架
 
-   它负责把 OpenWebUI 管理员请求转发给 gateway 的 admin API。服务器里通过 `FAY_GATEWAY_BASE_URL=http://dual-api-gateway:13280` 走 Docker 内网，本机默认走 `http://127.0.0.1:13280`。
+```bash
+git status --short
+git add src/routes/(app)/admin/gateway/
+git diff --cached
+git diff --cached --check
+git commit -m "feat(fay): 网关控制页"
+git push origin codex/fay-openwebui-custom
+```
 
-2. 在 `backend/open_webui/main.py` 注册 router：
+## 知识课
 
-   ```python
-   from open_webui.routers import fay_gateway
-   app.include_router(fay_gateway.router, prefix="/api/v1/fay/gateway", tags=["fay-gateway"])
-   ```
-
-3. 在前端新增 API client：
-
-   ```text
-   src/lib/apis/fayGateway.ts
-   ```
-
-   页面只调用 OpenWebUI 自己的 `/api/v1/fay/gateway/*`，不要让浏览器直接拿 gateway admin key。
-
-4. 在 Admin 导航加入口：
-
-   ```text
-   src/routes/(app)/admin/+layout.svelte
-   ```
-
-5. 新增页面：
-
-   ```text
-   src/routes/(app)/admin/gateway/+page.svelte
-   ```
-
-   刷新按钮只读状态；测试按钮必须用户手点。
-
-6. 在 gateway 本体里补管理员鉴权和路由策略：
-
-   ```text
-   fay-custom/server-overrides/dual-api-gateway/gateway.py
-   ```
-
-   关键点是 `require_admin()` 既支持本地 admin key，也支持把 OpenWebUI cookie/token 转发给 `openwebui_auth_url` 校验管理员身份。
-
-## 路由策略
-
-普通聊天沿用 gateway active 策略。图片请求和 embedding 请求是特殊流量：
-
-- 图片请求可优先走 `image_preferred`，默认不回退，避免污染官方 ChatGPT 历史或误用另一条接口。
-- embedding 请求可优先走 `embedding_preferred`，但不应该改变普通聊天 active。
-- 图片和 embedding 的成功或失败不更新普通聊天的 active 上游。
-
-这样 `/admin/gateway` 看到的“当前接口”仍代表普通聊天，不会被一次图片或 RAG 请求悄悄改掉。
+- 管理页的默认动作必须是安全动作。自动刷新、页面进入、tab 切换都不能触发真实上游测试。
+- 容器里的 `127.0.0.1` 指向容器自己，不是宿主机，也不是另一个容器；服务互调要用 Docker 网络名或显式内网地址。
+- 脱敏状态接口是系统运维里很重要的模式：它让你能观察系统，又不泄露系统。
+- 权限不只在前端隐藏按钮，必须在后端接口再校验。
 
 ## 验证门禁
 
-- `python -m py_compile backend/open_webui/routers/fay_gateway.py fay-custom/server-overrides/dual-api-gateway/gateway.py`
-- Svelte parse 能读取 `src/routes/(app)/admin/gateway/+page.svelte`。
-- TypeScript 能转译 `src/lib/apis/fayGateway.ts`。
-- 未登录请求 `/api/v1/fay/gateway/status` 应返回 401。
-- 管理员刷新 `/admin/gateway` 只读状态，不触发 `/admin/test`。
-- 只有点击“测试”按钮才允许发极小上游测试请求。
+- 未登录请求 `/api/v1/fay/gateway/status` 返回 401。
+- 管理员页面打开时只读 status，不触发 `/admin/test`。
+- 状态摘要不包含 key、token、password、admin 字段。
+- 服务器部署中 OpenWebUI 到 gateway 走内网地址。
 
-## 不要做什么
+## 常见坑
 
-- 不要把真实 gateway key 写进源码或教程。
-- 不要把公网域名当作 OpenWebUI 到 gateway 的默认内部地址。
-- 不要让页面自动轮询 `/admin/test`。
-- 不要把图片/RAG 请求的上游切换结果当成普通聊天 active。
+- 不要用 Cloudflare 502 这种外部现象直接判断 gateway 坏了，先查容器互调地址。
+- 不要在日志里打印完整 gateway 配置。
+- 不要让页面刷新等于“帮我测接口”。
+- 不要把兼容旧入口当成新的正式入口。
+
+## 练习
+
+把一个危险按钮拆成两个接口：一个只读状态，一个执行动作。写出每个接口允许在什么时候自动调用。
+
+## 连续阅读
+
+- 上一节：01. 本地开发启动底座：先让源码可运行
+- 下一节：03. 模型分级与 Arena：可见性不是只改模型表

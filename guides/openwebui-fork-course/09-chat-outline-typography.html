@@ -3,75 +3,146 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>09. 长对话要有用户问题大纲</title>
+		<title>长对话大纲与排版：用户问题才是目录</title>
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
 		<nav class="topnav">
 			<a href="./index.html">课程首页</a>
-			<span>09. 长对话要有用户问题大纲</span>
+			<span>09. 大纲排版</span>
 		</nav>
 
-		<main class="article">
-			<p class="eyebrow">Chat Reading</p>
-			<h1>复盘入口应该跟着问题走</h1>
-			<p class="lead">
-				这一课对应聊天阅读体验提交：用用户问题生成右侧大纲，并把正文标题排版调成适合长期阅读的工作文档密度。
-			</p>
+		<main class="article article--long">
+			<header class="lesson-header">
+				<p class="eyebrow">Reading UX</p>
+				<h1>长对话大纲与排版：用户问题才是目录</h1>
+				<p class="lead">给长聊天增加右侧用户问题大纲，并把助手回答标题字号压到适合阅读的层级。</p>
+				<div class="meta-strip">
+					<span>对应提交</span>
+					<strong>baeadf8a0</strong>
+				</div>
+			</header>
 
 			<section class="diagram-card">
-				<svg class="outline-map" viewBox="0 0 900 330" role="img" aria-label="chat outline map">
-					<rect class="outline-page" x="70" y="45" width="560" height="240" rx="8" />
-					<g class="outline-message" transform="translate(110 82)">
-						<rect width="360" height="34" rx="8" />
-						<text x="18" y="23">用户问题 1</text>
-					</g>
-					<g class="outline-message outline-message--answer" transform="translate(170 132)">
-						<rect width="400" height="56" rx="8" />
-						<text x="18" y="34">助手回答...</text>
-					</g>
-					<g class="outline-message" transform="translate(110 208)">
-						<rect width="380" height="34" rx="8" />
-						<text x="18" y="23">用户问题 2</text>
-					</g>
-					<g class="outline-rail" transform="translate(710 70)">
-						<line x1="90" y1="0" x2="90" y2="190" />
-						<rect x="0" y="18" width="150" height="30" rx="8" />
-						<rect x="0" y="126" width="150" height="30" rx="8" />
-						<text x="75" y="38">1. 用户问题</text>
-						<text x="75" y="146">2. 用户问题</text>
+				<svg class="lesson-map" viewBox="0 0 960 330" role="img" aria-label="大纲排版 workflow">
+					<defs>
+						<linearGradient id="flow-09" x1="0" x2="1">
+							<stop offset="0" stop-color="#10a37f" />
+							<stop offset="1" stop-color="#1f6feb" />
+						</linearGradient>
+					</defs>
+					<path class="lesson-rail" d="M100 150 C230 54 356 246 486 150 S742 54 860 150" stroke="url(#flow-09)" />
+					<g class="lesson-node" transform="translate(100 150)">
+								<circle r="42" />
+								<text y="6">现象</text>
+							</g>
+<g class="lesson-node" transform="translate(360 150)">
+								<circle r="42" />
+								<text y="6">边界</text>
+							</g>
+<g class="lesson-node" transform="translate(610 150)">
+								<circle r="42" />
+								<text y="6">改动</text>
+							</g>
+<g class="lesson-node" transform="translate(860 150)">
+								<circle r="42" />
+								<text y="6">验证</text>
+							</g>
+					<g class="lesson-caption">
+						<text x="480" y="282">长对话大纲与排版：用户问题才是目录</text>
 					</g>
 				</svg>
 			</section>
 
 			<section>
-				<h2>核心判断</h2>
-				<p>
-					聊天复盘的导航应该按“用户要解决的问题”组织。助手标题适合正文内部阅读，用户问题才是回到某一轮上下文的入口。
-				</p>
+				<h2>这一节先解决什么</h2>
+				<p>长对话真正难找的不是模型回答里的每个小标题，而是用户问过哪些问题、讨论从哪里转向哪里。大纲如果把助手标题也塞进去，会变成噪音目录。</p>
+<p>这个功能的核心判断是：聊天页面的导航对象应该是用户意图。用户想回到“我问五子棋小程序那一段”，不是回到助手回答里的某个 Markdown 二级标题。</p>
+<p>排版同理。聊天气泡内部不应该用页面 hero 级别的大标题；大字号会抢走整体页面层级，让聊天像文章营销页。</p>
 			</section>
 
 			<section>
-				<h2>三个落点</h2>
-				<div class="split-grid">
-					<div class="mini-panel">
-						<h3>用户轮次</h3>
-						<p>只抓用户消息，生成最多 60 条短标题。</p>
+				<h2>你要先看懂的边界</h2>
+				<div class="detail-grid">
+					<div class="detail-card">
+						<h3>用户现象</h3>
+						<p>用户看到的是体验问题：按钮点不动、文件下不来、图片跑题、模型不显示、刷新后问题消失。工程上不能只修表象，要追到触发链路。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>宽屏悬停</h3>
-						<p>默认显示短横线，hover 后展开标题，避免长期遮挡正文。</p>
+					<div class="detail-card">
+						<h3>代码边界</h3>
+						<p>先判断它属于前端组件、后端路由、运行配置、数据持久化还是部署覆盖层。边界判断错了，修复就会漂移。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>稳定排版</h3>
-						<p>标题字号固定，不随视口线性缩放，正文更容易扫读。</p>
+					<div class="detail-card">
+						<h3>验收边界</h3>
+						<p>能编译只是第一层。真实验收还要看 API、浏览器行为、刷新后的持久化结果，以及是否误触发昂贵或危险工具。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>轻量增强</h3>
-						<p>大纲不改变消息数据结构，只是阅读辅助层。</p>
+					<div class="detail-card">
+						<h3>文档边界</h3>
+						<p>公开教程只写结构、方法和占位符；真实 token、域名、IP、账号、Cookie、服务器路径都不进入 GitHub Pages。</p>
 					</div>
 				</div>
 			</section>
+
+			<section>
+				<h2>关键文件地图</h2>
+				<ul><li><code>src/lib/components/chat/ChatOutline.svelte</code>：右侧大纲组件。</li>
+<li><code>src/lib/components/chat/Messages.svelte</code>：消息区域与大纲联动。</li>
+<li><code>src/lib/components/chat/Messages/ResponseMessage.svelte</code>：回答 Markdown 标题样式。</li>
+<li><code>static/__fay/openwebui-chat-typography.css</code>：服务器覆盖快照。</li></ul>
+				<p class="note">读代码时不要一上来全仓库搜索。先用这张地图定位层，再用 <code>rg</code> 查具体符号，最后才决定改哪个文件。</p>
+			</section>
+
+			<section>
+				<h2>手工复现流程</h2>
+				<ol><li>先定义大纲收录对象：只收用户消息，不收助手回答标题。</li>
+<li>给用户问题生成短标题，长标题要截断但不能残字或遮挡。</li>
+<li>点击大纲项滚动到对应用户消息，当前项随滚动状态高亮。</li>
+<li>移动端不强塞右侧栏，避免遮挡聊天。</li>
+<li>回答内部 H1/H2/H3 统一降低字号，保持层级但不压过聊天主界面。</li></ol>
+				<pre><code>git status --short
+git add src/lib/components/chat/ChatOutline.svelte
+git diff --cached
+git diff --cached --check
+git commit -m &quot;feat(fay): 大纲排版&quot;
+git push origin codex/fay-openwebui-custom</code></pre>
+			</section>
+
+			<section>
+				<h2>这一节背后的知识课</h2>
+				<ul><li>信息架构里的目录应该服务用户找路，而不是展示所有可解析标题。</li>
+<li>聊天页面是工作界面，不是文章页面；标题字号必须受容器限制。</li>
+<li>滚动定位要考虑 sticky header、消息高度变化和动态加载。</li>
+<li>长文本截断要避免最后一个字被按钮或边框压住。</li></ul>
+				<p>真正要学会的不是这一组文件名，而是它背后的判断模式。下次换成别的项目时，文件会变，但“先分层、再改动、最后验证真实表面”的顺序不变。</p>
+			</section>
+
+			<section>
+				<h2>验证门禁</h2>
+				<ul><li>大纲只列用户问题。</li>
+<li>点击大纲能滚动到对应问题。</li>
+<li>长标题不残字、不溢出。</li>
+<li>助手回答标题看起来像聊天正文内层标题，而不是页面主标题。</li></ul>
+				<p class="note">门禁的意义是把“我觉得可以了”变成“证据显示可以了”。每个提交都应该有自己的最小门禁，而不是全仓库一次性跑到崩。</p>
+			</section>
+
+			<section>
+				<h2>常见坑和防复发</h2>
+				<ul><li>不要用短聊天误判大纲不存在。</li>
+<li>不要把助手所有 Markdown 标题都塞进目录。</li>
+<li>不要让移动端大纲遮挡输入框。</li>
+<li>不要用 viewport width 动态缩放字体。</li></ul>
+			</section>
+
+			<section>
+				<h2>给你自己的练习</h2>
+				<p>打开一段 20 轮聊天，手写出 5 个用户问题作为目录。你会发现它比助手标题更适合回看。</p>
+			</section>
+
+			<nav class="lesson-pager" aria-label="lesson navigation">
+				<a class="pager-card" href="./08-notes-math-export.html"><span>上一节</span><strong>08. 笔记导出</strong></a>
+				<a class="pager-card pager-card--home" href="./index.html"><span>目录</span><strong>回到课程首页</strong></a>
+				<a class="pager-card" href="./10-sidebar-polish.html"><span>下一节</span><strong>10. 侧边栏</strong></a>
+			</nav>
 		</main>
 	</body>
 </html>

@@ -3,108 +3,146 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>01. 本地开发启动底座</title>
+		<title>本地开发启动底座：先让源码可运行</title>
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
 		<nav class="topnav">
 			<a href="./index.html">课程首页</a>
-			<span>01. 本地开发启动底座</span>
+			<span>01. 本地开发启动</span>
 		</nav>
 
-		<main class="article">
-			<p class="eyebrow">Local Bootstrap</p>
-			<h1>把本机 OpenWebUI 跑成一条稳定链路</h1>
-			<p class="lead">
-				这一课对应本地启动底座提交：先让源码、gateway、配置库和模型种子在本机闭环，后面的功能修复才有可靠验证面。
-			</p>
+		<main class="article article--long">
+			<header class="lesson-header">
+				<p class="eyebrow">Local Runtime</p>
+				<h1>本地开发启动底座：先让源码可运行</h1>
+				<p class="lead">把 OpenWebUI 的本地源码、环境变量、启动脚本和本地数据目录整理成可重复启动的开发面。</p>
+				<div class="meta-strip">
+					<span>对应提交</span>
+					<strong>52d08d5d3</strong>
+				</div>
+			</header>
 
 			<section class="diagram-card">
-				<svg class="pipeline" viewBox="0 0 900 260" role="img" aria-label="local OpenWebUI bootstrap pipeline">
+				<svg class="lesson-map" viewBox="0 0 960 330" role="img" aria-label="本地开发启动 workflow">
 					<defs>
-						<linearGradient id="pipeLine" x1="0" x2="1">
+						<linearGradient id="flow-01" x1="0" x2="1">
 							<stop offset="0" stop-color="#10a37f" />
 							<stop offset="1" stop-color="#1f6feb" />
 						</linearGradient>
 					</defs>
-					<path class="pipeline__rail" d="M90 130 H810" />
-					<g class="pipeline__node" transform="translate(90 130)">
-						<circle r="34" />
-						<text y="7">env</text>
+					<path class="lesson-rail" d="M100 150 C230 54 356 246 486 150 S742 54 860 150" stroke="url(#flow-01)" />
+					<g class="lesson-node" transform="translate(100 150)">
+								<circle r="42" />
+								<text y="6">现象</text>
+							</g>
+<g class="lesson-node" transform="translate(360 150)">
+								<circle r="42" />
+								<text y="6">边界</text>
+							</g>
+<g class="lesson-node" transform="translate(610 150)">
+								<circle r="42" />
+								<text y="6">改动</text>
+							</g>
+<g class="lesson-node" transform="translate(860 150)">
+								<circle r="42" />
+								<text y="6">验证</text>
+							</g>
+					<g class="lesson-caption">
+						<text x="480" y="282">本地开发启动底座：先让源码可运行</text>
 					</g>
-					<g class="pipeline__node" transform="translate(270 130)">
-						<circle r="34" />
-						<text y="7">DB</text>
-					</g>
-					<g class="pipeline__node" transform="translate(450 130)">
-						<circle r="34" />
-						<text y="7">gateway</text>
-					</g>
-					<g class="pipeline__node" transform="translate(630 130)">
-						<circle r="34" />
-						<text y="7">models</text>
-					</g>
-					<g class="pipeline__node" transform="translate(810 130)">
-						<circle r="34" />
-						<text y="7">UI</text>
-					</g>
-					<circle class="runner" r="10">
-						<animateMotion dur="4.5s" repeatCount="indefinite" path="M90 130 H810" />
-					</circle>
 				</svg>
 			</section>
 
 			<section>
-				<h2>为什么先做启动底座</h2>
-				<p>
-					复杂产品的 bug 往往不是一个文件能解释的。OpenWebUI 的聊天、图片、RAG、语音和模型列表跨越前端、后端、数据库和外部接口。如果本地启动链路不稳定，每次修复都会变成“我到底在测源码、服务器，还是旧缓存”的混乱。
-				</p>
-				<p>
-					所以这次先建立一个原则：本机默认跑本机 gateway，配置写回本地数据库，模型菜单由脚本种下，服务器只作为之后的部署面和对照面。
-				</p>
+				<h2>这一节先解决什么</h2>
+				<p>做大型定制前，第一件事不是改界面，而是保证本地源码可以稳定跑起来。如果每次启动都靠临时命令、临时端口、临时环境变量，那么后面的 UI bug、路由 bug、部署 bug都会混在一起。</p>
+<p>本项目曾经有旧会话目录、服务器运行态、源码 fork、热补丁目录等多个层次。启动底座的意义是把“我现在改的是哪份源码、跑的是哪份代码、数据在哪里”说清楚。</p>
+<p>本地开发底座也是后续版本管理的根。没有可重复本地启动，就无法判断一个提交是否真的可用，也无法在不碰服务器的情况下验证前端和后端变化。</p>
 			</section>
 
 			<section>
-				<h2>四层结构</h2>
-				<div class="split-grid">
-					<div class="mini-panel">
-						<h3>源码层</h3>
-						<p>`start-local-openwebui.sh` 和 `stop-local-openwebui.sh` 是本地入口，负责启动顺序和进程边界。</p>
+				<h2>你要先看懂的边界</h2>
+				<div class="detail-grid">
+					<div class="detail-card">
+						<h3>用户现象</h3>
+						<p>用户看到的是体验问题：按钮点不动、文件下不来、图片跑题、模型不显示、刷新后问题消失。工程上不能只修表象，要追到触发链路。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>配置层</h3>
-						<p>`.env.fay-local` 保存本机环境变量，`sync-local-rag-config.py` 把关键项写进 `webui.db`。</p>
+					<div class="detail-card">
+						<h3>代码边界</h3>
+						<p>先判断它属于前端组件、后端路由、运行配置、数据持久化还是部署覆盖层。边界判断错了，修复就会漂移。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>接口层</h3>
-						<p>本机 gateway 监听 `127.0.0.1:13280`，避免默认依赖服务器隧道。</p>
+					<div class="detail-card">
+						<h3>验收边界</h3>
+						<p>能编译只是第一层。真实验收还要看 API、浏览器行为、刷新后的持久化结果，以及是否误触发昂贵或危险工具。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>产品层</h3>
-						<p>`apply-local-model-tiers.py` 写入 GPT-5.5 菜单和公开读取权限，让 UI 默认可用。</p>
+					<div class="detail-card">
+						<h3>文档边界</h3>
+						<p>公开教程只写结构、方法和占位符；真实 token、域名、IP、账号、Cookie、服务器路径都不进入 GitHub Pages。</p>
 					</div>
 				</div>
 			</section>
 
 			<section>
-				<h2>手工操作顺序</h2>
-				<ol class="steps">
-					<li>建 Python 虚拟环境，安装 `backend/requirements.txt`。</li>
-					<li>写 `.env.fay-local`，把 OpenWebUI 指向 `http://127.0.0.1:13280/v1`。</li>
-					<li>复制 `config.example.json` 到 `.local-run/gateway.config.private.json`，只在本机填真实 key。</li>
-					<li>运行 `fay-custom/scripts/start-local-openwebui.sh --screen`。</li>
-					<li>检查 `http://127.0.0.1:13280/health` 和 `http://127.0.0.1:8080/health`。</li>
-				</ol>
+				<h2>关键文件地图</h2>
+				<ul><li><code>.env.fay-local.example</code> 或本地 env 模板：保存本地默认开关和安全默认值。</li>
+<li><code>fay-custom/scripts/</code>：放本地启动、同步、验证脚本。</li>
+<li><code>.local-data/</code>：承载本地运行数据和备份，避免误伤服务器数据卷。</li>
+<li><code>fay-custom/SOURCE_OF_TRUTH.md</code>：解释本地源码、服务器部署、运行数据卷的边界。</li></ul>
+				<p class="note">读代码时不要一上来全仓库搜索。先用这张地图定位层，再用 <code>rg</code> 查具体符号，最后才决定改哪个文件。</p>
 			</section>
 
 			<section>
-				<h2>核心判断</h2>
-				<p>
-					`.env` 不是唯一真相。OpenWebUI 的后台配置会落进数据库，所以可靠做法是启动前同步数据库。模型菜单也不是单纯前端文字，它背后有 `model` 表、`access_grant` 权限和用户默认设置。
-				</p>
-				<pre><code>bash -n fay-custom/scripts/start-local-openwebui.sh fay-custom/scripts/stop-local-openwebui.sh
-python -m py_compile fay-custom/scripts/sync-local-rag-config.py fay-custom/scripts/apply-local-model-tiers.py</code></pre>
+				<h2>手工复现流程</h2>
+				<ol><li>确认当前目录是权威源码仓库，不在旧聊天窗口目录里改文件。</li>
+<li>复制本地 env 模板，填入只适合本机的调试值；公开模板里只保留变量名和占位符。</li>
+<li>启动后端和前端前，先确认端口没有被旧服务占用。</li>
+<li>打开 <code>http://127.0.0.1:8080/health</code> 和 <code>/api/config</code>，确认当前页面来自本地源码。</li>
+<li>把启动命令、验证命令和常见失败写入项目文档。</li></ol>
+				<pre><code>git status --short
+git add .env.fay-local.example 或本地 env 模板
+git diff --cached
+git diff --cached --check
+git commit -m &quot;feat(fay): 本地开发启动&quot;
+git push origin codex/fay-openwebui-custom</code></pre>
 			</section>
+
+			<section>
+				<h2>这一节背后的知识课</h2>
+				<ul><li>前端 dev server、后端 API、生产 build 镜像是三种不同运行面，不能混成一个概念。</li>
+<li>本地 <code>.env</code> 和服务器 <code>.env</code> 不能互相复制；本地只负责开发便利，服务器负责正式运行安全。</li>
+<li>OpenWebUI 的持久化数据会影响配置表现。很多“env 改了没生效”的问题，本质是数据库里的持久配置覆盖了 env。</li>
+<li>健康检查不等于功能验收，但它是所有功能验收的第一步。</li></ul>
+				<p>真正要学会的不是这一组文件名，而是它背后的判断模式。下次换成别的项目时，文件会变，但“先分层、再改动、最后验证真实表面”的顺序不变。</p>
+			</section>
+
+			<section>
+				<h2>验证门禁</h2>
+				<ul><li><code>git remote -v</code> 确认 origin/upstream 没反。</li>
+<li><code>curl http://127.0.0.1:8080/health</code> 返回健康状态。</li>
+<li><code>curl http://127.0.0.1:8080/api/config</code> 能看到预期品牌和功能开关。</li>
+<li>启动日志不打印真实 token、cookie 或完整密钥。</li></ul>
+				<p class="note">门禁的意义是把“我觉得可以了”变成“证据显示可以了”。每个提交都应该有自己的最小门禁，而不是全仓库一次性跑到崩。</p>
+			</section>
+
+			<section>
+				<h2>常见坑和防复发</h2>
+				<ul><li>不要在旧目录里改出一套“看起来也能跑”的第二项目。</li>
+<li>不要把服务器热修当成本地源码完成。</li>
+<li>不要把真实 <code>.env</code> 放进 Git。</li>
+<li>不要用线上页面代替本地验收，除非当前任务就是部署验证。</li></ul>
+			</section>
+
+			<section>
+				<h2>给你自己的练习</h2>
+				<p>给自己画一张三层图：本地源码、运行进程、数据目录。以后每遇到一个 bug，先标出它落在哪一层。</p>
+			</section>
+
+			<nav class="lesson-pager" aria-label="lesson navigation">
+				<a class="pager-card" href="./00-version-management.html"><span>上一节</span><strong>00. 版本管理</strong></a>
+				<a class="pager-card pager-card--home" href="./index.html"><span>目录</span><strong>回到课程首页</strong></a>
+				<a class="pager-card" href="./02-gateway-admin.html"><span>下一节</span><strong>02. 网关控制页</strong></a>
+			</nav>
 		</main>
 	</body>
 </html>

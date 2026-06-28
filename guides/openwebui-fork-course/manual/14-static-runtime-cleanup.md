@@ -1,59 +1,72 @@
-# 14. 清理旧静态描述文件
+# 静态描述文件清理：先确认动态路由接管
 
 ## 目标
 
-把已经由后端动态路由接管的 `manifest.json` 和 `opensearch.xml` 静态旧文件从 fork 中移走，避免浏览器读到过时品牌信息。
+删除已经由后端动态接口接管的旧 `manifest.json` 和 `opensearch.xml`，避免旧品牌描述继续被浏览器读取。
 
-## 这次改动解决什么问题
+## 对应提交
 
-在自定义品牌和全源码部署已经落地后，旧的静态描述文件会造成三个问题：
+66f8b06ea
 
-- 浏览器可能继续读取旧 manifest 或旧搜索配置。
-- 新旧品牌描述并存，排查 PWA 名称、搜索入口和缓存时容易看错对象。
-- Git diff 里长期混着无用描述文件，后续拆提交和回滚会变得不清楚。
+## 为什么这一节重要
 
-这次只删除确认已经由后端动态接口替代的旧文件：
+- 清理文件不是看见旧文件就删。这个项目里 `image-placeholder.png` 仍被富文本图片组件引用，Leaflet marker 图片也可能被地图组件使用。如果一股脑删除，就会制造新 bug。
+- 真正可以清理的是已经有动态路由接管的描述文件：`/manifest.json` 和 `/opensearch.xml`。它们的旧静态版本还写着旧品牌或空对象，留在仓库里只会让未来维护者困惑。
+- 这节课的价值在于“保守清理”：先找引用，再找替代入口，最后只删确认过的 tracked 文件。
 
-- `static/manifest.json`
-- `static/opensearch.xml`
+## 关键文件地图
 
-注意：`static/image-placeholder.png` 仍被富文本图片组件引用，Leaflet marker 图片仍可能被地图组件使用，`robots.txt` 也不是这次的品牌描述迁移目标，所以都不放进本提交。
+- `backend/open_webui/main.py`：动态 `/manifest.json` 和 `/opensearch.xml` 路由。
+- `src/app.html`：manifest 入口仍指向动态接口。
+- `static/manifest.json`：被删除的旧静态描述文件。
+- `static/opensearch.xml`：被删除的旧搜索描述文件。
 
 ## 手工复现流程
 
-1. 先确认当前品牌描述已经由后端动态路由接管：
+1. 用 `rg` 查所有候选文件名，确认谁仍被源码引用。
+2. 发现 `image-placeholder.png` 仍被编辑器引用，就从清理范围移出。
+3. 发现 marker 图片可能属于 Leaflet 默认资源，也从清理范围移出。
+4. 确认后端已经有 `/manifest.json` 和 `/opensearch.xml` 动态路由。
+5. 只 `git rm` 旧静态描述文件，不提交本地临时占位文件。
+6. 文档里记录为什么没有删除其他静态资源。
 
-   ```bash
-   rg -n "@app.get\\('/manifest.json'\\)|@app.get\\('/opensearch.xml'\\)" backend/open_webui/main.py
-   ```
+## 常用命令骨架
 
-2. 检查旧静态文件内容是否已经过时：
+```bash
+git status --short
+git add backend/open_webui/main.py
+git diff --cached
+git diff --cached --check
+git commit -m "feat(fay): 静态清理"
+git push origin codex/fay-openwebui-custom
+```
 
-   ```bash
-   git show HEAD:static/manifest.json
-   git show HEAD:static/opensearch.xml
-   ```
+## 知识课
 
-3. 如果后端动态接口已经负责返回品牌化内容，就从 Git 中删除旧静态描述文件：
-
-   ```bash
-   git rm static/manifest.json static/opensearch.xml
-   ```
-
-4. 不要把本地临时文件一起提交。比如调试时出现的空 `static/custom.css`、`static/loader.js`、`static/user-import.csv`，应该留在工作树外，等确认来源后再决定是否忽略或删除。
+- 删除文件前要证明“没有引用”或“已有权威替代”。
+- 静态描述文件和静态图片资源不是同一种风险。
+- 浏览器可能缓存旧 manifest/opensearch，所以动态响应要更可信。
+- 清理提交也需要文档，因为它解释的是边界判断。
 
 ## 验证门禁
 
-- 后端存在 `/manifest.json` 和 `/opensearch.xml` 动态路由。
-- `static/image-placeholder.png`、Leaflet marker 图片和 `robots.txt` 没有被误删。
-- `git diff --cached --check` 没有空白错误。
-- staged 文件里没有 `.env`、token、Cookie、数据库和本机私密路径。
-- 课程 HTML 可以被基础 HTML parser 读取。
+- `backend/open_webui/main.py` 存在两个动态路由。
+- `static/image-placeholder.png`、marker 图片、robots 没有被误删。
+- `git diff --cached --check` 通过。
+- 公开教程不含真实私密路径或凭据。
 
-## 背后的知识点
+## 常见坑
 
-静态描述文件清理不是简单删文件，而是在整理三层边界：
+- 不要把“旧”当成“无用”。
+- 不要把删除资源做成大扫除提交。
+- 不要顺手提交 0 字节本地临时文件。
+- 不要忘记解释为什么只删两个文件。
 
-- 源码入口：应用实际从哪里引用图标、manifest、搜索配置。
-- 部署入口：Nginx、Docker 和品牌补丁实际向浏览器暴露什么。
-- 浏览器缓存：用户看到的 favicon、PWA 名称和旧资源可能来自缓存，需要通过版本化资源和明确入口减少误判。
+## 练习
+
+从一个项目里挑 5 个静态文件，分别写出“仍被引用、已有替代、未知来源、可删除、必须保留”的判断证据。
+
+## 连续阅读
+
+- 上一节：13. 全源码部署：服务器覆盖模板要收口
+- 下一节：无

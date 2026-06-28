@@ -1,80 +1,73 @@
-# 07. 图片生成和图片编辑要走意图路由
+# 图片生成和编辑：先判定意图，再调用工具
 
 ## 目标
 
-让“生成图片”和“编辑当前上传图片”在 OpenWebUI 里变成稳定、可解释、可恢复的产品链路，而不是靠模型偶然调用工具。
+把图片生成、图片编辑、文件生成、旧附件 RAG 和当前上下文隔离放进统一路由策略，避免误触发和上下文污染。
 
-## 这次改动解决什么问题
+## 对应提交
 
-图片功能最容易出错的地方不是模型会不会画图，而是“这一轮到底该不该画图”：
+1223162ee
 
-- 用户只是分析图片时，不应该自动触发图片生成。
-- 用户上传图片并要求“改一下”时，应该把当前轮图片作为编辑输入。
-- 生成结果应该挂到当前消息附件里，刷新页面后仍然能看到。
-- 图片生成中要有明确状态，不要让用户以为页面卡住。
+## 为什么这一节重要
 
-新的链路把图片处理拆成四层：
+- “图”这个字不能直接等于图片生成。用户可能在说流程图、图形界面、截图分析、上传图片修改、基于当前聊天生成总结图，也可能是在要求生成 DOCX/PDF。工具路由如果靠关键词，会不断误触发。
+- 本项目采用更抽象的策略：先判断当前请求是不是文件产物、是不是明确图片生成、是不是基于上传图编辑、是不是需要旧附件检索、是不是只能用当前会话上下文。具体例子只作为回归样本，不作为长期规则。
+- 上下文隔离同样重要。图片上游如果只收到“按刚才说的生成一张图”，却没收到当前会话摘要，就可能借用上游账号记忆或其他会话内容乱补。
 
-- 意图层：判断当前轮是否明确要求生成或编辑图片。
-- 输入层：只取当前轮上传的图片，不偷拿历史对话里的旧图片。
-- 工具层：把单张或多张图片按后端 API 需要的格式传给图片编辑接口。
-- 展示层：把生成图归一化成 OpenWebUI 文件附件，并显示图片生成状态卡。
+## 关键文件地图
+
+- `backend/open_webui/utils/middleware.py`：工具意图路由和上下文隔离。
+- `fay-custom/scripts/check-tool-routing.py`：文件/图片/编辑路由回归。
+- `fay-custom/scripts/check-image-context-isolation.py`：当前会话上下文隔离回归。
+- `fay-custom/scripts/check-image-attachment-normalization.py`：生成图附件回捞回归。
 
 ## 手工复现流程
 
-1. 在消息预处理层增加图片意图判断。
+1. 先做文件产物判断：DOCX/PDF/PPTX/MD 等明确导出请求优先走文件工具。
+2. 再做图片生成判断：只有“生成图片、画一张、出图、海报、头像”等明确意图才开图片生成。
+3. 上传图或引用上图时，编辑词表覆盖重画、裁剪、调色、美化、换背景、修复、清晰化等真实口语。
+4. 旧附件是否检索交给路由判定，不靠枚举具体文件名。
+5. 图片 prompt 发送给上游前，构造 scoped prompt，包含当前 OpenWebUI 会话上下文和当前用户请求。
+6. 生成图返回后，规范化 file id，写入 `message.files` 和 `chat_file`，保证刷新后仍能显示。
 
-   ```text
-   backend/open_webui/utils/middleware.py
-   ```
+## 常用命令骨架
 
-   重点不是堆关键词，而是区分“看图/解释图”和“生成/编辑图”两个动作。
+```bash
+git status --short
+git add backend/open_webui/utils/middleware.py
+git diff --cached
+git diff --cached --check
+git commit -m "feat(fay): 图片路由"
+git push origin codex/fay-openwebui-custom
+```
 
-2. 对上传图片做当前轮作用域限制。
+## 知识课
 
-   ```text
-   current user message -> current files -> image edit payload
-   ```
-
-   这样用户问“这张图改成头像风格”时，只编辑刚上传的图；用户后续普通聊天时，不会被旧图误触发。
-
-3. 在内置图片工具里补编辑提示保护。
-
-   ```text
-   backend/open_webui/tools/builtin.py
-   ```
-
-   编辑图时给模型明确边界：保留主体、构图和主要元素，只执行用户明确提出的修改。
-
-4. 把生成图附件归一化。
-
-   ```text
-   backend/open_webui/utils/middleware.py
-   backend/open_webui/tools/builtin.py
-   ```
-
-   图片可能以 URL、file id、content type、message files 等多种形式出现，渲染前要统一成 `{ type: "image", url, name }`。
-
-5. 前端状态卡显示“图片正在生成”。
-
-   ```text
-   src/lib/components/chat/Messages/ResponseMessage/StatusHistory.svelte
-   src/lib/components/chat/Messages/ResponseMessage/StatusHistory/ImageGenerationStatusCard.svelte
-   ```
+- Tool router 是产品策略层，不是关键词 if-else。
+- 文件生成和图片生成都是资源型工具，默认应该保守触发。
+- 当前会话上下文要显式传给上游工具，不能指望上游自己知道“刚才”。
+- 实时事件丢失时，历史消息里的附件字段是恢复 UI 的关键。
 
 ## 验证门禁
 
-- `python -m py_compile backend/open_webui/tools/builtin.py backend/open_webui/utils/middleware.py backend/open_webui/routers/images.py`
-- Svelte parse：`StatusHistory.svelte` 和 `ImageGenerationStatusCard.svelte`
-- `python fay-custom/scripts/check-image-attachment-normalization.py`
-- `python fay-custom/scripts/check-image-context-isolation.py`
-- 问“解释这张图”时不生成新图。
-- 问“把这张图改成头像风格”时只使用当前轮上传图片。
-- 刷新页面后，生成图仍作为当前消息附件显示。
+- 文件请求不会同时打开图片生成。
+- 明确图片生成开关能强制进入图片路径。
+- 上传图 + 修改意图进入图片编辑。
+- 当前聊天总结图不会混入其他会话或官方账号记忆。
+- 生成图刷新后仍作为附件显示。
 
-## 不要做什么
+## 常见坑
 
-- 不要因为上下文里有图片，就自动调用图片工具。
-- 不要把历史消息里的图片拿来编辑当前轮。
-- 不要只在正文里插 Markdown 图片，必须同步成消息附件。
-- 不要把图片提交和笔记、聊天缓存、部署配置混在一起。
+- 不要因为用户举了一个例子，就把例子写成硬编码规则。
+- 不要只把最后一句用户话发给图片上游。
+- 不要让旧附件默认污染普通聊天。
+- 不要用真实上游图片生成做高频测试。
+
+## 练习
+
+写五句话：两句应该生成图片，两句应该生成文件，一句应该普通回答。然后设计一个路由表解释每句为什么走那条路。
+
+## 连续阅读
+
+- 上一节：06. 文件生成：必须变成真实附件
+- 下一节：08. 笔记捕获、数学渲染和导出

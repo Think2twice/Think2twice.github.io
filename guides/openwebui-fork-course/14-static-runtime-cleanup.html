@@ -3,76 +3,147 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>14. 清理旧静态描述文件</title>
+		<title>静态描述文件清理：先确认动态路由接管</title>
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
 		<nav class="topnav">
 			<a href="./index.html">课程首页</a>
-			<span>14. 清理旧静态描述文件</span>
+			<span>14. 静态清理</span>
 		</nav>
 
-		<main class="article">
-			<p class="eyebrow">Static Descriptors</p>
-			<h1>删文件之前，先确认谁还在引用它</h1>
-			<p class="lead">
-				这一课对应静态描述文件清理提交：`manifest.json` 和 `opensearch.xml` 已经由后端动态路由接管，旧 OpenWebUI 静态描述文件就应该从 fork 里退场。
-			</p>
+		<main class="article article--long">
+			<header class="lesson-header">
+				<p class="eyebrow">Static Descriptors</p>
+				<h1>静态描述文件清理：先确认动态路由接管</h1>
+				<p class="lead">删除已经由后端动态接口接管的旧 <code>manifest.json</code> 和 <code>opensearch.xml</code>，避免旧品牌描述继续被浏览器读取。</p>
+				<div class="meta-strip">
+					<span>对应提交</span>
+					<strong>66f8b06ea</strong>
+				</div>
+			</header>
 
 			<section class="diagram-card">
-				<svg class="cleanup-map" viewBox="0 0 900 360" role="img" aria-label="static cleanup map">
-					<g class="cleanup-ring" transform="translate(110 58)">
-						<circle cx="110" cy="110" r="96" />
-						<text x="110" y="94">前端入口</text>
-						<text x="110" y="122">layout / app</text>
-					</g>
-					<g class="cleanup-ring cleanup-ring--green" transform="translate(340 58)">
-						<circle cx="110" cy="110" r="96" />
-						<text x="110" y="94">后端动态</text>
-						<text x="110" y="122">main.py routes</text>
-					</g>
-					<g class="cleanup-ring cleanup-ring--gold" transform="translate(570 58)">
-						<circle cx="110" cy="110" r="96" />
-						<text x="110" y="94">浏览器缓存</text>
-						<text x="110" y="122">PWA / search</text>
-					</g>
-					<path class="cleanup-line" d="M250 168 H340" />
-					<path class="cleanup-line cleanup-line--green" d="M480 168 H570" />
-					<g class="cleanup-box" transform="translate(265 272)">
-						<rect width="370" height="58" rx="8" />
-						<text x="185" y="36">确认动态接管以后，再 git rm</text>
+				<svg class="lesson-map" viewBox="0 0 960 330" role="img" aria-label="静态清理 workflow">
+					<defs>
+						<linearGradient id="flow-14" x1="0" x2="1">
+							<stop offset="0" stop-color="#10a37f" />
+							<stop offset="1" stop-color="#1f6feb" />
+						</linearGradient>
+					</defs>
+					<path class="lesson-rail" d="M100 150 C230 54 356 246 486 150 S742 54 860 150" stroke="url(#flow-14)" />
+					<g class="lesson-node" transform="translate(100 150)">
+								<circle r="42" />
+								<text y="6">现象</text>
+							</g>
+<g class="lesson-node" transform="translate(360 150)">
+								<circle r="42" />
+								<text y="6">边界</text>
+							</g>
+<g class="lesson-node" transform="translate(610 150)">
+								<circle r="42" />
+								<text y="6">改动</text>
+							</g>
+<g class="lesson-node" transform="translate(860 150)">
+								<circle r="42" />
+								<text y="6">验证</text>
+							</g>
+					<g class="lesson-caption">
+						<text x="480" y="282">静态描述文件清理：先确认动态路由接管</text>
 					</g>
 				</svg>
 			</section>
 
 			<section>
-				<h2>核心判断</h2>
-				<p>
-					旧描述文件不是因为“看起来没用”才删除，而是因为前端入口仍保留，实际响应已经交给后端动态路由生成品牌化内容。
-				</p>
+				<h2>这一节先解决什么</h2>
+				<p>清理文件不是看见旧文件就删。这个项目里 <code>image-placeholder.png</code> 仍被富文本图片组件引用，Leaflet marker 图片也可能被地图组件使用。如果一股脑删除，就会制造新 bug。</p>
+<p>真正可以清理的是已经有动态路由接管的描述文件：<code>/manifest.json</code> 和 <code>/opensearch.xml</code>。它们的旧静态版本还写着旧品牌或空对象，留在仓库里只会让未来维护者困惑。</p>
+<p>这节课的价值在于“保守清理”：先找引用，再找替代入口，最后只删确认过的 tracked 文件。</p>
 			</section>
 
 			<section>
-				<h2>手工检查顺序</h2>
-				<div class="split-grid">
-					<div class="mini-panel">
-						<h3>先查路由</h3>
-						<p>确认 <code>main.py</code> 已经提供 manifest 和 opensearch 动态接口。</p>
+				<h2>你要先看懂的边界</h2>
+				<div class="detail-grid">
+					<div class="detail-card">
+						<h3>用户现象</h3>
+						<p>用户看到的是体验问题：按钮点不动、文件下不来、图片跑题、模型不显示、刷新后问题消失。工程上不能只修表象，要追到触发链路。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>再看旧内容</h3>
-						<p>静态 opensearch 里仍写着旧品牌时，就应该退出权威入口。</p>
+					<div class="detail-card">
+						<h3>代码边界</h3>
+						<p>先判断它属于前端组件、后端路由、运行配置、数据持久化还是部署覆盖层。边界判断错了，修复就会漂移。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>只删描述</h3>
-						<p>只删除 tracked 描述文件，不误删图片占位符、marker 和 robots。</p>
+					<div class="detail-card">
+						<h3>验收边界</h3>
+						<p>能编译只是第一层。真实验收还要看 API、浏览器行为、刷新后的持久化结果，以及是否误触发昂贵或危险工具。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>最后验证</h3>
-						<p>跑 diff 检查、HTML smoke 和 staged 文件私密路径扫描。</p>
+					<div class="detail-card">
+						<h3>文档边界</h3>
+						<p>公开教程只写结构、方法和占位符；真实 token、域名、IP、账号、Cookie、服务器路径都不进入 GitHub Pages。</p>
 					</div>
 				</div>
 			</section>
+
+			<section>
+				<h2>关键文件地图</h2>
+				<ul><li><code>backend/open_webui/main.py</code>：动态 <code>/manifest.json</code> 和 <code>/opensearch.xml</code> 路由。</li>
+<li><code>src/app.html</code>：manifest 入口仍指向动态接口。</li>
+<li><code>static/manifest.json</code>：被删除的旧静态描述文件。</li>
+<li><code>static/opensearch.xml</code>：被删除的旧搜索描述文件。</li></ul>
+				<p class="note">读代码时不要一上来全仓库搜索。先用这张地图定位层，再用 <code>rg</code> 查具体符号，最后才决定改哪个文件。</p>
+			</section>
+
+			<section>
+				<h2>手工复现流程</h2>
+				<ol><li>用 <code>rg</code> 查所有候选文件名，确认谁仍被源码引用。</li>
+<li>发现 <code>image-placeholder.png</code> 仍被编辑器引用，就从清理范围移出。</li>
+<li>发现 marker 图片可能属于 Leaflet 默认资源，也从清理范围移出。</li>
+<li>确认后端已经有 <code>/manifest.json</code> 和 <code>/opensearch.xml</code> 动态路由。</li>
+<li>只 <code>git rm</code> 旧静态描述文件，不提交本地临时占位文件。</li>
+<li>文档里记录为什么没有删除其他静态资源。</li></ol>
+				<pre><code>git status --short
+git add backend/open_webui/main.py
+git diff --cached
+git diff --cached --check
+git commit -m &quot;feat(fay): 静态清理&quot;
+git push origin codex/fay-openwebui-custom</code></pre>
+			</section>
+
+			<section>
+				<h2>这一节背后的知识课</h2>
+				<ul><li>删除文件前要证明“没有引用”或“已有权威替代”。</li>
+<li>静态描述文件和静态图片资源不是同一种风险。</li>
+<li>浏览器可能缓存旧 manifest/opensearch，所以动态响应要更可信。</li>
+<li>清理提交也需要文档，因为它解释的是边界判断。</li></ul>
+				<p>真正要学会的不是这一组文件名，而是它背后的判断模式。下次换成别的项目时，文件会变，但“先分层、再改动、最后验证真实表面”的顺序不变。</p>
+			</section>
+
+			<section>
+				<h2>验证门禁</h2>
+				<ul><li><code>backend/open_webui/main.py</code> 存在两个动态路由。</li>
+<li><code>static/image-placeholder.png</code>、marker 图片、robots 没有被误删。</li>
+<li><code>git diff --cached --check</code> 通过。</li>
+<li>公开教程不含真实私密路径或凭据。</li></ul>
+				<p class="note">门禁的意义是把“我觉得可以了”变成“证据显示可以了”。每个提交都应该有自己的最小门禁，而不是全仓库一次性跑到崩。</p>
+			</section>
+
+			<section>
+				<h2>常见坑和防复发</h2>
+				<ul><li>不要把“旧”当成“无用”。</li>
+<li>不要把删除资源做成大扫除提交。</li>
+<li>不要顺手提交 0 字节本地临时文件。</li>
+<li>不要忘记解释为什么只删两个文件。</li></ul>
+			</section>
+
+			<section>
+				<h2>给你自己的练习</h2>
+				<p>从一个项目里挑 5 个静态文件，分别写出“仍被引用、已有替代、未知来源、可删除、必须保留”的判断证据。</p>
+			</section>
+
+			<nav class="lesson-pager" aria-label="lesson navigation">
+				<a class="pager-card" href="./13-fullsource-deployment.html"><span>上一节</span><strong>13. 全源码部署</strong></a>
+				<a class="pager-card pager-card--home" href="./index.html"><span>目录</span><strong>回到课程首页</strong></a>
+				<span class="pager-card pager-card--disabled"><span>下一节</span><strong>已经是最后一节</strong></span>
+			</nav>
 		</main>
 	</body>
 </html>

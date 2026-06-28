@@ -3,60 +3,119 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Fay OpenWebUI Course</title>
+		<title>Fay OpenWebUI 改造课程</title>
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
-		<header class="hero">
+		<header class="hero hero--course">
 			<div class="hero__copy">
 				<p class="eyebrow">Private Fork Learning Track</p>
 				<h1>Fay OpenWebUI 改造课程</h1>
 				<p>
-					把一次真实的 OpenWebUI 产品化改造拆成工程提交、手工教程和知识课程。
+					这不是功能清单，而是一套从真实项目里拆出来的工程课程：每一节都对应一个提交、一个手工流程、一组代码边界和一套验证门禁。
 				</p>
 			</div>
-			<svg class="hero__map" viewBox="0 0 520 260" role="img" aria-label="commit stack diagram">
-				<defs>
-					<linearGradient id="rail" x1="0" x2="1">
-						<stop offset="0" stop-color="#10a37f" />
-						<stop offset="1" stop-color="#3b82f6" />
-					</linearGradient>
-				</defs>
-				<path d="M70 215 C150 110 230 140 300 68 S430 60 470 28" fill="none" stroke="url(#rail)" stroke-width="8" stroke-linecap="round" />
-				<g class="pulse"><circle cx="70" cy="215" r="13" /><circle cx="180" cy="132" r="13" /><circle cx="300" cy="68" r="13" /><circle cx="420" cy="50" r="13" /></g>
+			<svg class="hero__map" viewBox="0 0 620 320" role="img" aria-label="course map">
+				<path d="M70 250 C150 125 252 190 318 92 S488 66 552 34" fill="none" stroke="#1f6feb" stroke-width="8" stroke-linecap="round" />
+				<g class="pulse">
+					<circle cx="70" cy="250" r="14" />
+					<circle cx="205" cy="165" r="14" />
+					<circle cx="318" cy="92" r="14" />
+					<circle cx="455" cy="64" r="14" />
+					<circle cx="552" cy="34" r="14" />
+				</g>
 				<g class="labels">
-					<text x="42" y="246">source</text>
-					<text x="145" y="166">commit</text>
-					<text x="270" y="102">lesson</text>
-					<text x="382" y="84">private fork</text>
+					<text x="34" y="286">source</text>
+					<text x="165" y="202">commit</text>
+					<text x="282" y="130">lesson</text>
+					<text x="410" y="102">verify</text>
+					<text x="486" y="72">private fork</text>
 				</g>
 			</svg>
 		</header>
 
-		<main class="layout">
-			<section class="panel">
-				<h2>课程目录</h2>
-				<ol class="lesson-list">
-					<li><a href="./00-version-management.html">00. 版本管理：私有 fork 的正确提交栈</a></li>
-					<li><a href="./01-local-dev-bootstrap.html">01. 本地开发启动底座</a></li>
-					<li><a href="./02-gateway-admin.html">02. 网关控制页与上游路由</a></li>
-					<li><a href="./03-model-tiers.html">03. GPT-5.5 模型分级与 Arena 可见性</a></li>
-					<li><a href="./04-branding-shell.html">04. ChatGPT 品牌壳与 PWA 图标</a></li>
-					<li><a href="./05-mobile-safari-touch.html">05. iOS Safari/PWA 单击与输入修复</a></li>
-					<li><a href="./06-file-artifacts.html">06. 文件生成必须变成真实附件</a></li>
-					<li><a href="./07-image-generation-routing.html">07. 图片生成和图片编辑要走意图路由</a></li>
-					<li><a href="./08-notes-math-export.html">08. 笔记捕获、数学渲染和导出</a></li>
-					<li><a href="./09-chat-outline-typography.html">09. 长对话要有用户问题大纲</a></li>
-					<li><a href="./10-sidebar-polish.html">10. 侧边栏分组标题要稳定可读</a></li>
-					<li><a href="./11-refresh-shortcuts-cache.html">11. 刷新快捷键不能触发重新生成</a></li>
-					<li><a href="./12-workspace-seeds.html">12. Workspace seeds 要能重复安装和回滚</a></li>
-					<li><a href="./13-fullsource-deployment.html">13. 全源码部署要把服务器覆盖模板收口</a></li>
-					<li><a href="./14-static-runtime-cleanup.html">14. 清理旧静态描述文件</a></li>
-				</ol>
+		<main class="layout layout--wide">
+			<section class="panel panel--intro">
+				<h2>怎么读这套课程</h2>
+				<p>每一节都按同一个顺序展开：先讲用户现象和工程边界，再讲关键文件、手工复现、知识课、验证门禁和常见坑。你可以顺着读，也可以把它当成以后维护 OpenWebUI fork 的检修手册。</p>
+				<p>底部已经加了上一节、目录、下一节，不需要每次回到首页再找。</p>
 			</section>
-			<section class="panel panel--quiet">
-				<h2>学习方式</h2>
-				<p>每一课都对应一个或一组 Git 提交：先讲为什么，再讲手工怎么做，最后讲背后的前后端知识。</p>
+			<section class="lesson-catalog">
+				<a class="lesson-card" href="./00-version-management.html">
+					<span>00</span>
+					<strong>版本管理</strong>
+					<em>把已经混在一个工作树里的 OpenWebUI 定制，整理成一条能阅读、能回滚、能 cherry-pick 的私有提交栈。</em>
+				</a>
+<a class="lesson-card" href="./01-local-dev-bootstrap.html">
+					<span>01</span>
+					<strong>本地开发启动</strong>
+					<em>把 OpenWebUI 的本地源码、环境变量、启动脚本和本地数据目录整理成可重复启动的开发面。</em>
+				</a>
+<a class="lesson-card" href="./02-gateway-admin.html">
+					<span>02</span>
+					<strong>网关控制页</strong>
+					<em>把临时 gateway 控制入口迁入 OpenWebUI 管理后台，并把“读状态”和“测试接口”彻底分开。</em>
+				</a>
+<a class="lesson-card" href="./03-model-tiers.html">
+					<span>03</span>
+					<strong>模型分级</strong>
+					<em>让普通用户也能看到 GPT-5.5 五档模型和 Arena Model，并把模型顺序、默认 pin、权限和部署模板统一。</em>
+				</a>
+<a class="lesson-card" href="./04-branding-shell.html">
+					<span>04</span>
+					<strong>品牌壳</strong>
+					<em>把可见品牌从 Open WebUI 收口为 ChatGPT 风格，包括标题、favicon、PWA、manifest、opensearch、通知标题和启动画面。</em>
+				</a>
+<a class="lesson-card" href="./05-mobile-safari-touch.html">
+					<span>05</span>
+					<strong>Safari 修复</strong>
+					<em>解决 iPhone Safari 里按钮要双击、输入框点不进去、侧栏遮罩不能点空白关闭等移动端交互问题。</em>
+				</a>
+<a class="lesson-card" href="./06-file-artifacts.html">
+					<span>06</span>
+					<strong>文件附件</strong>
+					<em>让 DOCX、PDF、PPTX、XLSX、ZIP 等生成结果以 OpenWebUI 真实附件形式出现，而不是正文里的假路径或空白页。</em>
+				</a>
+<a class="lesson-card" href="./07-image-generation-routing.html">
+					<span>07</span>
+					<strong>图片路由</strong>
+					<em>把图片生成、图片编辑、文件生成、旧附件 RAG 和当前上下文隔离放进统一路由策略，避免误触发和上下文污染。</em>
+				</a>
+<a class="lesson-card" href="./08-notes-math-export.html">
+					<span>08</span>
+					<strong>笔记导出</strong>
+					<em>让回答能稳定添加到笔记，公式能正确渲染，导出 PDF/Markdown 时保持可读排版。</em>
+				</a>
+<a class="lesson-card" href="./09-chat-outline-typography.html">
+					<span>09</span>
+					<strong>大纲排版</strong>
+					<em>给长聊天增加右侧用户问题大纲，并把助手回答标题字号压到适合阅读的层级。</em>
+				</a>
+<a class="lesson-card" href="./10-sidebar-polish.html">
+					<span>10</span>
+					<strong>侧边栏</strong>
+					<em>让左侧栏的分组标题、今日/历史标签和当前聊天状态更接近稳定产品，而不是默认 OpenWebUI 的粗糙列表感。</em>
+				</a>
+<a class="lesson-card" href="./11-refresh-shortcuts-cache.html">
+					<span>11</span>
+					<strong>刷新快捷键</strong>
+					<em>修复 Command+R / Command+Shift+R 被聊天应用误当成重新生成的问题，并让聊天详情读取走 network-first。</em>
+				</a>
+<a class="lesson-card" href="./12-workspace-seeds.html">
+					<span>12</span>
+					<strong>工作区种子</strong>
+					<em>把 Prompts、Skills、Tools、Action Functions 做成可重复安装的默认资源包，而不是让 Fay 在 UI 里一个个手工添加。</em>
+				</a>
+<a class="lesson-card" href="./13-fullsource-deployment.html">
+					<span>13</span>
+					<strong>全源码部署</strong>
+					<em>把服务器上的 full-source 镜像、compose、Nginx、品牌补丁、RAG/TTS/STT 配置和 gateway 网络示例脱敏回收到源码仓库。</em>
+				</a>
+<a class="lesson-card" href="./14-static-runtime-cleanup.html">
+					<span>14</span>
+					<strong>静态清理</strong>
+					<em>删除已经由后端动态接口接管的旧 `manifest.json` 和 `opensearch.xml`，避免旧品牌描述继续被浏览器读取。</em>
+				</a>
 			</section>
 		</main>
 	</body>

@@ -3,90 +3,148 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>07. 图片生成和图片编辑要走意图路由</title>
+		<title>图片生成和编辑：先判定意图，再调用工具</title>
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
 		<nav class="topnav">
 			<a href="./index.html">课程首页</a>
-			<span>07. 图片生成和图片编辑要走意图路由</span>
+			<span>07. 图片路由</span>
 		</nav>
 
-		<main class="article">
-			<p class="eyebrow">Image Routing</p>
-			<h1>先判断该不该画，再把图画出来</h1>
-			<p class="lead">
-				这一课对应图片路由提交：把图片生成、图片编辑、附件恢复和状态提示连成一个可控闭环。
-			</p>
+		<main class="article article--long">
+			<header class="lesson-header">
+				<p class="eyebrow">Tool Routing</p>
+				<h1>图片生成和编辑：先判定意图，再调用工具</h1>
+				<p class="lead">把图片生成、图片编辑、文件生成、旧附件 RAG 和当前上下文隔离放进统一路由策略，避免误触发和上下文污染。</p>
+				<div class="meta-strip">
+					<span>对应提交</span>
+					<strong>1223162ee</strong>
+				</div>
+			</header>
 
 			<section class="diagram-card">
-				<svg class="image-router" viewBox="0 0 900 360" role="img" aria-label="image routing state machine">
+				<svg class="lesson-map" viewBox="0 0 960 330" role="img" aria-label="图片路由 workflow">
 					<defs>
-						<marker id="arrowImage" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-							<path d="M0,0 L0,6 L9,3 z" fill="#1f6feb" />
-						</marker>
+						<linearGradient id="flow-07" x1="0" x2="1">
+							<stop offset="0" stop-color="#10a37f" />
+							<stop offset="1" stop-color="#1f6feb" />
+						</linearGradient>
 					</defs>
-					<g class="router-node" transform="translate(60 120)">
-						<rect width="170" height="96" rx="8" />
-						<text x="85" y="42">用户当前轮</text>
-						<text x="85" y="68">文字 + 图片</text>
-					</g>
-					<path class="router-arrow" d="M230 168 H340" />
-					<g class="router-node router-node--decision" transform="translate(340 100)">
-						<path d="M95 0 L190 70 L95 140 L0 70 Z" />
-						<text x="95" y="62">明确要求</text>
-						<text x="95" y="88">生成/编辑?</text>
-					</g>
-					<path class="router-arrow" d="M530 150 C610 90 690 86 760 108" />
-					<path class="router-arrow router-arrow--muted" d="M530 190 C610 260 690 265 760 238" />
-					<g class="router-node" transform="translate(680 58)">
-						<rect width="170" height="96" rx="8" />
-						<text x="85" y="42">调用图片工具</text>
-						<text x="85" y="68">保存附件</text>
-					</g>
-					<g class="router-node router-node--quiet" transform="translate(680 210)">
-						<rect width="170" height="96" rx="8" />
-						<text x="85" y="42">普通回答</text>
-						<text x="85" y="68">不污染上下文</text>
+					<path class="lesson-rail" d="M100 150 C230 54 356 246 486 150 S742 54 860 150" stroke="url(#flow-07)" />
+					<g class="lesson-node" transform="translate(100 150)">
+								<circle r="42" />
+								<text y="6">现象</text>
+							</g>
+<g class="lesson-node" transform="translate(360 150)">
+								<circle r="42" />
+								<text y="6">边界</text>
+							</g>
+<g class="lesson-node" transform="translate(610 150)">
+								<circle r="42" />
+								<text y="6">改动</text>
+							</g>
+<g class="lesson-node" transform="translate(860 150)">
+								<circle r="42" />
+								<text y="6">验证</text>
+							</g>
+					<g class="lesson-caption">
+						<text x="480" y="282">图片生成和编辑：先判定意图，再调用工具</text>
 					</g>
 				</svg>
 			</section>
 
 			<section>
-				<h2>核心判断</h2>
-				<p>
-					图片功能的第一原则是门控：只有当前轮明确要求生成或编辑图片时才打开图片工具。上下文里有图片，只能说明“可能需要看图”，不能说明“应该画图”。
-				</p>
+				<h2>这一节先解决什么</h2>
+				<p>“图”这个字不能直接等于图片生成。用户可能在说流程图、图形界面、截图分析、上传图片修改、基于当前聊天生成总结图，也可能是在要求生成 DOCX/PDF。工具路由如果靠关键词，会不断误触发。</p>
+<p>本项目采用更抽象的策略：先判断当前请求是不是文件产物、是不是明确图片生成、是不是基于上传图编辑、是不是需要旧附件检索、是不是只能用当前会话上下文。具体例子只作为回归样本，不作为长期规则。</p>
+<p>上下文隔离同样重要。图片上游如果只收到“按刚才说的生成一张图”，却没收到当前会话摘要，就可能借用上游账号记忆或其他会话内容乱补。</p>
 			</section>
 
 			<section>
-				<h2>四个落点</h2>
-				<div class="split-grid">
-					<div class="mini-panel">
-						<h3>意图路由</h3>
-						<p>把生成、编辑、解释、引用图片拆开判断，避免分析图片时误触发生成。</p>
+				<h2>你要先看懂的边界</h2>
+				<div class="detail-grid">
+					<div class="detail-card">
+						<h3>用户现象</h3>
+						<p>用户看到的是体验问题：按钮点不动、文件下不来、图片跑题、模型不显示、刷新后问题消失。工程上不能只修表象，要追到触发链路。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>当前轮输入</h3>
-						<p>编辑图片时只读取当前用户消息里的上传图，不复用历史附件。</p>
+					<div class="detail-card">
+						<h3>代码边界</h3>
+						<p>先判断它属于前端组件、后端路由、运行配置、数据持久化还是部署覆盖层。边界判断错了，修复就会漂移。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>附件归一</h3>
-						<p>把 URL、文件 ID、content type 统一成消息可渲染的图片附件。</p>
+					<div class="detail-card">
+						<h3>验收边界</h3>
+						<p>能编译只是第一层。真实验收还要看 API、浏览器行为、刷新后的持久化结果，以及是否误触发昂贵或危险工具。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>状态可见</h3>
-						<p>图片生成时显示过程卡，失败时给出清楚的可恢复错误。</p>
+					<div class="detail-card">
+						<h3>文档边界</h3>
+						<p>公开教程只写结构、方法和占位符；真实 token、域名、IP、账号、Cookie、服务器路径都不进入 GitHub Pages。</p>
 					</div>
 				</div>
 			</section>
 
 			<section>
-				<h2>验证方式</h2>
-				<pre><code>python fay-custom/scripts/check-image-attachment-normalization.py
-python fay-custom/scripts/check-image-context-isolation.py</code></pre>
-				<p>真正的验收不是“出了一张图”，而是看图、改图、刷新恢复和非图片问题都走到了正确分支。</p>
+				<h2>关键文件地图</h2>
+				<ul><li><code>backend/open_webui/utils/middleware.py</code>：工具意图路由和上下文隔离。</li>
+<li><code>fay-custom/scripts/check-tool-routing.py</code>：文件/图片/编辑路由回归。</li>
+<li><code>fay-custom/scripts/check-image-context-isolation.py</code>：当前会话上下文隔离回归。</li>
+<li><code>fay-custom/scripts/check-image-attachment-normalization.py</code>：生成图附件回捞回归。</li></ul>
+				<p class="note">读代码时不要一上来全仓库搜索。先用这张地图定位层，再用 <code>rg</code> 查具体符号，最后才决定改哪个文件。</p>
 			</section>
+
+			<section>
+				<h2>手工复现流程</h2>
+				<ol><li>先做文件产物判断：DOCX/PDF/PPTX/MD 等明确导出请求优先走文件工具。</li>
+<li>再做图片生成判断：只有“生成图片、画一张、出图、海报、头像”等明确意图才开图片生成。</li>
+<li>上传图或引用上图时，编辑词表覆盖重画、裁剪、调色、美化、换背景、修复、清晰化等真实口语。</li>
+<li>旧附件是否检索交给路由判定，不靠枚举具体文件名。</li>
+<li>图片 prompt 发送给上游前，构造 scoped prompt，包含当前 OpenWebUI 会话上下文和当前用户请求。</li>
+<li>生成图返回后，规范化 file id，写入 <code>message.files</code> 和 <code>chat_file</code>，保证刷新后仍能显示。</li></ol>
+				<pre><code>git status --short
+git add backend/open_webui/utils/middleware.py
+git diff --cached
+git diff --cached --check
+git commit -m &quot;feat(fay): 图片路由&quot;
+git push origin codex/fay-openwebui-custom</code></pre>
+			</section>
+
+			<section>
+				<h2>这一节背后的知识课</h2>
+				<ul><li>Tool router 是产品策略层，不是关键词 if-else。</li>
+<li>文件生成和图片生成都是资源型工具，默认应该保守触发。</li>
+<li>当前会话上下文要显式传给上游工具，不能指望上游自己知道“刚才”。</li>
+<li>实时事件丢失时，历史消息里的附件字段是恢复 UI 的关键。</li></ul>
+				<p>真正要学会的不是这一组文件名，而是它背后的判断模式。下次换成别的项目时，文件会变，但“先分层、再改动、最后验证真实表面”的顺序不变。</p>
+			</section>
+
+			<section>
+				<h2>验证门禁</h2>
+				<ul><li>文件请求不会同时打开图片生成。</li>
+<li>明确图片生成开关能强制进入图片路径。</li>
+<li>上传图 + 修改意图进入图片编辑。</li>
+<li>当前聊天总结图不会混入其他会话或官方账号记忆。</li>
+<li>生成图刷新后仍作为附件显示。</li></ul>
+				<p class="note">门禁的意义是把“我觉得可以了”变成“证据显示可以了”。每个提交都应该有自己的最小门禁，而不是全仓库一次性跑到崩。</p>
+			</section>
+
+			<section>
+				<h2>常见坑和防复发</h2>
+				<ul><li>不要因为用户举了一个例子，就把例子写成硬编码规则。</li>
+<li>不要只把最后一句用户话发给图片上游。</li>
+<li>不要让旧附件默认污染普通聊天。</li>
+<li>不要用真实上游图片生成做高频测试。</li></ul>
+			</section>
+
+			<section>
+				<h2>给你自己的练习</h2>
+				<p>写五句话：两句应该生成图片，两句应该生成文件，一句应该普通回答。然后设计一个路由表解释每句为什么走那条路。</p>
+			</section>
+
+			<nav class="lesson-pager" aria-label="lesson navigation">
+				<a class="pager-card" href="./06-file-artifacts.html"><span>上一节</span><strong>06. 文件附件</strong></a>
+				<a class="pager-card pager-card--home" href="./index.html"><span>目录</span><strong>回到课程首页</strong></a>
+				<a class="pager-card" href="./08-notes-math-export.html"><span>下一节</span><strong>08. 笔记导出</strong></a>
+			</nav>
 		</main>
 	</body>
 </html>

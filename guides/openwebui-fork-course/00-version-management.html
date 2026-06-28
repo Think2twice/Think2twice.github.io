@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>00. 版本管理</title>
+		<title>版本管理：私有 fork 的正确提交栈</title>
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
@@ -12,71 +12,137 @@
 			<span>00. 版本管理</span>
 		</nav>
 
-		<main class="article">
-			<header>
+		<main class="article article--long">
+			<header class="lesson-header">
 				<p class="eyebrow">GitOps-lite</p>
-				<h1>私有 fork 的正确提交栈</h1>
-				<p class="lead">
-					当一个 OpenWebUI fork 已经累积大量定制时，最专业的做法不是把所有功能塞进一个提交，也不是维护十几个互相冲突的长期分支，而是整理成一条可阅读、可回滚、可 cherry-pick 的提交栈。
-				</p>
+				<h1>版本管理：私有 fork 的正确提交栈</h1>
+				<p class="lead">把已经混在一个工作树里的 OpenWebUI 定制，整理成一条能阅读、能回滚、能 cherry-pick 的私有提交栈。</p>
+				<div class="meta-strip">
+					<span>对应提交</span>
+					<strong>095a0c8d9 / 402fb1c5b / 7642da192</strong>
+				</div>
 			</header>
 
 			<section class="diagram-card">
-				<svg viewBox="0 0 760 250" role="img" aria-label="stacked commit workflow">
+				<svg class="lesson-map" viewBox="0 0 960 330" role="img" aria-label="版本管理 workflow">
 					<defs>
-						<marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
-							<path d="M0,0 L0,6 L9,3 z" fill="#1f6feb" />
-						</marker>
+						<linearGradient id="flow-00" x1="0" x2="1">
+							<stop offset="0" stop-color="#10a37f" />
+							<stop offset="1" stop-color="#1f6feb" />
+						</linearGradient>
 					</defs>
-					<g class="commit-flow">
-						<circle cx="80" cy="125" r="24" />
-						<circle cx="210" cy="125" r="24" />
-						<circle cx="340" cy="125" r="24" />
-						<circle cx="470" cy="125" r="24" />
-						<circle cx="600" cy="125" r="24" />
-						<path d="M104 125 H186 M234 125 H316 M364 125 H446 M494 125 H576" marker-end="url(#arrow)" />
-						<text x="45" y="180">base</text>
-						<text x="172" y="180">mobile</text>
-						<text x="300" y="180">files</text>
-						<text x="430" y="180">images</text>
-						<text x="553" y="180">private fork</text>
+					<path class="lesson-rail" d="M100 150 C230 54 356 246 486 150 S742 54 860 150" stroke="url(#flow-00)" />
+					<g class="lesson-node" transform="translate(100 150)">
+								<circle r="42" />
+								<text y="6">现象</text>
+							</g>
+<g class="lesson-node" transform="translate(360 150)">
+								<circle r="42" />
+								<text y="6">边界</text>
+							</g>
+<g class="lesson-node" transform="translate(610 150)">
+								<circle r="42" />
+								<text y="6">改动</text>
+							</g>
+<g class="lesson-node" transform="translate(860 150)">
+								<circle r="42" />
+								<text y="6">验证</text>
+							</g>
+					<g class="lesson-caption">
+						<text x="480" y="282">版本管理：私有 fork 的正确提交栈</text>
 					</g>
 				</svg>
 			</section>
 
 			<section>
-				<h2>为什么不每个功能一个长期分支</h2>
-				<p>
-					这个项目的功能互相依赖：移动端、图片、文件、笔记、网关、品牌、部署模板都会碰到共享文件。长期分支越多，冲突越多，最后反而不清楚哪一个分支代表真实产品。
-				</p>
+				<h2>这一节先解决什么</h2>
+				<p>这不是简单的“补几个 commit”。当功能已经跨过前端、后端、运行配置、部署模板和公开教程时，版本管理本身就变成产品治理的一部分。一个大提交会让以后无法判断哪次改动引入了 Safari 问题、哪次改动影响了文件附件、哪次改动只是教程更新。</p>
+<p>这个项目采用 stacked commits：每个提交都是前一个提交之上的增量，完整分支代表当前产品。它适合私有 fork，因为 Fay 需要自己维护一套完整体验；如果以后某个小功能适合贡献给上游，再从 upstream 新开干净分支，单独 cherry-pick 那一两个提交。</p>
+<p>长期保留一个功能一个 branch 听起来清楚，但在这个项目里会变成维护负担。模型分级、品牌、移动端、工具路由、部署模板都会共享同一批配置和组件。并行长期分支越多，冲突越多，最后反而不知道哪条线是“真的产品”。</p>
 			</section>
 
 			<section>
-				<h2>正确路线</h2>
-				<ol>
-					<li>保留官方 `upstream/main` 作为干净来源。</li>
-					<li>在私有 `origin/codex/fay-openwebui-custom` 上维护 Fay 的产品分支。</li>
-					<li>把当前工作树拆成一串逻辑 commit。</li>
-					<li>整体 push 到 private fork。</li>
-					<li>以后要给官方 PR 时，再从干净 upstream 分支 cherry-pick 单个功能。</li>
-				</ol>
+				<h2>你要先看懂的边界</h2>
+				<div class="detail-grid">
+					<div class="detail-card">
+						<h3>用户现象</h3>
+						<p>用户看到的是体验问题：按钮点不动、文件下不来、图片跑题、模型不显示、刷新后问题消失。工程上不能只修表象，要追到触发链路。</p>
+					</div>
+					<div class="detail-card">
+						<h3>代码边界</h3>
+						<p>先判断它属于前端组件、后端路由、运行配置、数据持久化还是部署覆盖层。边界判断错了，修复就会漂移。</p>
+					</div>
+					<div class="detail-card">
+						<h3>验收边界</h3>
+						<p>能编译只是第一层。真实验收还要看 API、浏览器行为、刷新后的持久化结果，以及是否误触发昂贵或危险工具。</p>
+					</div>
+					<div class="detail-card">
+						<h3>文档边界</h3>
+						<p>公开教程只写结构、方法和占位符；真实 token、域名、IP、账号、Cookie、服务器路径都不进入 GitHub Pages。</p>
+					</div>
+				</div>
 			</section>
 
 			<section>
-				<h2>手工操作</h2>
-				<pre><code>git branch backup/fay-split-before-YYYYMMDD-HHMMSS
-git add -p src/app.html
+				<h2>关键文件地图</h2>
+				<ul><li><code>fay-custom/references/commit-stack-plan.md</code>：记录提交拆分原则、当前栈和剩余本地文件。</li>
+<li><code>fay-custom/tutorials/course/</code>：每个功能对应一节课程。</li>
+<li><code>fay-custom/tutorials/manual/</code>：每个功能对应手工复现流程。</li>
+<li><code>backup/fay-split-before-20260628-224120</code>：拆分前安全点。</li></ul>
+				<p class="note">读代码时不要一上来全仓库搜索。先用这张地图定位层，再用 <code>rg</code> 查具体符号，最后才决定改哪个文件。</p>
+			</section>
+
+			<section>
+				<h2>手工复现流程</h2>
+				<ol><li>先创建备份分支，保证拆分失败时能回到原始大工作树。</li>
+<li>用 <code>git status --short</code> 和 <code>git diff --stat</code> 把改动按产品原因分组，而不是按文件扩展名分组。</li>
+<li>每组先 staged，再跑该组自己的验证门禁。门禁通过后 commit，然后立即 push 到私有 fork。</li>
+<li>每个提交都写一节对应教程，避免以后只看到代码而忘了当初为什么这么改。</li>
+<li>拆完后记录最终提交栈，并保留未确认来源的本地临时文件，不顺手提交。</li></ol>
+				<pre><code>git status --short
+git add fay-custom/references/commit-stack-plan.md
 git diff --cached
-git commit -m "feat(mobile): fix iOS Safari tap handling"
+git diff --cached --check
+git commit -m &quot;docs(fay): 版本管理&quot;
 git push origin codex/fay-openwebui-custom</code></pre>
 			</section>
 
 			<section>
-				<h2>本项目采用的规则</h2>
-				<p>
-					本项目采用 GitOps-lite：本地源码是唯一真相，服务器只是运行由源码生成的交付物，项目进度和错误教训写入三件套。
-				</p>
+				<h2>这一节背后的知识课</h2>
+				<ul><li><code>upstream</code> 是官方 OpenWebUI，<code>origin</code> 是 Fay 自己的 private fork；这两个 remote 的身份不要混。</li>
+<li>commit 是项目经验的最小叙事单位。好的 commit 不是越碎越好，而是每个提交都有一个清晰的产品理由。</li>
+<li>私有 fork 可以比 PR 分支承载更多定制，但仍然需要让历史可阅读。否则 fork 变成一次性拷贝，后续升级上游会很痛。</li>
+<li>文档和代码同提交，能把“怎么修”和“为什么修”绑在一起；教程单独晚写，很容易丢掉当时的判断过程。</li></ul>
+				<p>真正要学会的不是这一组文件名，而是它背后的判断模式。下次换成别的项目时，文件会变，但“先分层、再改动、最后验证真实表面”的顺序不变。</p>
 			</section>
+
+			<section>
+				<h2>验证门禁</h2>
+				<ul><li><code>gh repo view ... --json visibility,isPrivate</code> 确认 fork 是 private。</li>
+<li><code>git log --oneline --decorate</code> 确认本地 HEAD 和远程分支一致。</li>
+<li>每个功能提交前运行对应的语法、HTML、敏感信息和 diff 检查。</li>
+<li>最终只剩确认过不提交的本地临时文件。</li></ul>
+				<p class="note">门禁的意义是把“我觉得可以了”变成“证据显示可以了”。每个提交都应该有自己的最小门禁，而不是全仓库一次性跑到崩。</p>
+			</section>
+
+			<section>
+				<h2>常见坑和防复发</h2>
+				<ul><li>不要为了显得“功能很多”硬拆成无法独立解释的提交。</li>
+<li>不要把每个功能都做成长期分支，除非它真的准备独立发 PR。</li>
+<li>不要把公开教程和私有部署凭据混在一个页面里。</li>
+<li>不要在脏的 Pages 仓库里直接发布，先停下来确认无关改动。</li></ul>
+			</section>
+
+			<section>
+				<h2>给你自己的练习</h2>
+				<p>拿任意一个已有提交，问自己三句话：这个提交解决了什么用户问题？它能不能单独回滚？如果我要给上游提 PR，它是否足够干净？</p>
+			</section>
+
+			<nav class="lesson-pager" aria-label="lesson navigation">
+				<span class="pager-card pager-card--disabled"><span>上一节</span><strong>已经是第一节</strong></span>
+				<a class="pager-card pager-card--home" href="./index.html"><span>目录</span><strong>回到课程首页</strong></a>
+				<a class="pager-card" href="./01-local-dev-bootstrap.html"><span>下一节</span><strong>01. 本地开发启动</strong></a>
+			</nav>
 		</main>
 	</body>
 </html>

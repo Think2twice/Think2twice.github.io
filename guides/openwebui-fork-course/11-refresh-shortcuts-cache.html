@@ -3,80 +3,146 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>11. 刷新快捷键不能触发重新生成</title>
+		<title>刷新快捷键：页面刷新不能等于重新生成</title>
 		<link rel="stylesheet" href="./styles.css" />
 	</head>
 	<body>
 		<nav class="topnav">
 			<a href="./index.html">课程首页</a>
-			<span>11. 刷新快捷键不能触发重新生成</span>
+			<span>11. 刷新快捷键</span>
 		</nav>
 
-		<main class="article">
-			<p class="eyebrow">Refresh</p>
-			<h1>浏览器刷新键，应该还给浏览器</h1>
-			<p class="lead">
-				这一课对应刷新修复提交：把重新生成移到 `Command+Option+R`，同时让聊天缓存改成 network-first。
-			</p>
+		<main class="article article--long">
+			<header class="lesson-header">
+				<p class="eyebrow">Refresh</p>
+				<h1>刷新快捷键：页面刷新不能等于重新生成</h1>
+				<p class="lead">修复 Command+R / Command+Shift+R 被聊天应用误当成重新生成的问题，并让聊天详情读取走 network-first。</p>
+				<div class="meta-strip">
+					<span>对应提交</span>
+					<strong>090455bb7</strong>
+				</div>
+			</header>
 
 			<section class="diagram-card">
-				<svg class="refresh-flow" viewBox="0 0 900 320" role="img" aria-label="refresh shortcut flow">
-					<g class="refresh-key" transform="translate(80 90)">
-						<rect width="180" height="70" rx="10" />
-						<text x="90" y="43">⌘ R</text>
-					</g>
-					<path class="refresh-arrow" d="M265 125 H405" />
-					<g class="refresh-box" transform="translate(420 76)">
-						<rect width="180" height="98" rx="8" />
-						<text x="90" y="44">浏览器刷新</text>
-						<text x="90" y="70">应用不拦截</text>
-					</g>
-					<g class="refresh-key" transform="translate(80 198)">
-						<rect width="180" height="70" rx="10" />
-						<text x="90" y="43">⌘ ⌥ R</text>
-					</g>
-					<path class="refresh-arrow refresh-arrow--green" d="M265 233 H405" />
-					<g class="refresh-box" transform="translate(420 184)">
-						<rect width="180" height="98" rx="8" />
-						<text x="90" y="44">重新生成</text>
-						<text x="90" y="70">明确应用动作</text>
-					</g>
-					<g class="refresh-box refresh-box--quiet" transform="translate(660 120)">
-						<rect width="170" height="90" rx="8" />
-						<text x="85" y="40">Chat GET</text>
-						<text x="85" y="65">network-first</text>
+				<svg class="lesson-map" viewBox="0 0 960 330" role="img" aria-label="刷新快捷键 workflow">
+					<defs>
+						<linearGradient id="flow-11" x1="0" x2="1">
+							<stop offset="0" stop-color="#10a37f" />
+							<stop offset="1" stop-color="#1f6feb" />
+						</linearGradient>
+					</defs>
+					<path class="lesson-rail" d="M100 150 C230 54 356 246 486 150 S742 54 860 150" stroke="url(#flow-11)" />
+					<g class="lesson-node" transform="translate(100 150)">
+								<circle r="42" />
+								<text y="6">现象</text>
+							</g>
+<g class="lesson-node" transform="translate(360 150)">
+								<circle r="42" />
+								<text y="6">边界</text>
+							</g>
+<g class="lesson-node" transform="translate(610 150)">
+								<circle r="42" />
+								<text y="6">改动</text>
+							</g>
+<g class="lesson-node" transform="translate(860 150)">
+								<circle r="42" />
+								<text y="6">验证</text>
+							</g>
+					<g class="lesson-caption">
+						<text x="480" y="282">刷新快捷键：页面刷新不能等于重新生成</text>
 					</g>
 				</svg>
 			</section>
 
 			<section>
-				<h2>核心判断</h2>
-				<p>
-					用户按标准浏览器快捷键时，应用不应该抢这个键。应用动作可以有快捷键，但不能覆盖系统级肌肉记忆。
-				</p>
+				<h2>这一节先解决什么</h2>
+				<p>用户按 Command+R 的心智是“刷新页面”，不是“让模型重新回答一次”。如果浏览器快捷键被应用层抢掉，尤其在 Mac 上就会造成很强的不安全感：我只是刷新，为什么又消耗了一次请求？</p>
+<p>聊天详情缓存也会放大这个问题。页面刷新后如果先吃旧缓存，用户会看到第四个问题一会儿消失、一会儿回来，以为数据丢了。network-first 的意义是优先问服务器当前真实状态，再用缓存兜底。</p>
+<p>这节课的本质是快捷键和数据一致性。用户熟悉的系统快捷键要尊重；应用自己的重新生成应该换成更明确、不容易误触的组合。</p>
 			</section>
 
 			<section>
-				<h2>三个落点</h2>
-				<div class="split-grid">
-					<div class="mini-panel">
-						<h3>快捷键迁移</h3>
-						<p>重新生成移到 `Command+Option+R`。</p>
+				<h2>你要先看懂的边界</h2>
+				<div class="detail-grid">
+					<div class="detail-card">
+						<h3>用户现象</h3>
+						<p>用户看到的是体验问题：按钮点不动、文件下不来、图片跑题、模型不显示、刷新后问题消失。工程上不能只修表象，要追到触发链路。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>Shift 严格匹配</h3>
-						<p>没有声明 Shift 的快捷键不能吃掉 `Command+Shift+R`。</p>
+					<div class="detail-card">
+						<h3>代码边界</h3>
+						<p>先判断它属于前端组件、后端路由、运行配置、数据持久化还是部署覆盖层。边界判断错了，修复就会漂移。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>刷新放行</h3>
-						<p>`Command/Ctrl+R` 直接交还浏览器。</p>
+					<div class="detail-card">
+						<h3>验收边界</h3>
+						<p>能编译只是第一层。真实验收还要看 API、浏览器行为、刷新后的持久化结果，以及是否误触发昂贵或危险工具。</p>
 					</div>
-					<div class="mini-panel">
-						<h3>网络优先</h3>
-						<p>刷新后优先拿最新聊天，断网时才回退缓存。</p>
+					<div class="detail-card">
+						<h3>文档边界</h3>
+						<p>公开教程只写结构、方法和占位符；真实 token、域名、IP、账号、Cookie、服务器路径都不进入 GitHub Pages。</p>
 					</div>
 				</div>
 			</section>
+
+			<section>
+				<h2>关键文件地图</h2>
+				<ul><li><code>src/routes/(app)/+layout.svelte</code>：全局快捷键处理。</li>
+<li><code>src/lib/utils/shortcuts.ts</code>：快捷键定义和平台判断。</li>
+<li><code>static/__fay/openwebui-chat-cache.js</code>：聊天详情 network-first 补丁。</li>
+<li><code>fay-custom/tutorials/manual/11-refresh-shortcuts-cache.md</code>：手工流程记录。</li></ul>
+				<p class="note">读代码时不要一上来全仓库搜索。先用这张地图定位层，再用 <code>rg</code> 查具体符号，最后才决定改哪个文件。</p>
+			</section>
+
+			<section>
+				<h2>手工复现流程</h2>
+				<ol><li>列出浏览器系统快捷键：刷新、强刷、关闭标签、搜索等，应用层不要抢。</li>
+<li>把重新生成改到更明确的组合，比如 <code>Mod+Alt+R</code>。</li>
+<li>聊天详情读取改成 network-first：先拉服务器，失败再用缓存。</li>
+<li>刷新后检查问题列表和消息详情是否一致。</li>
+<li>把这个规则写进教程，因为它是桌面 Web App 的基本礼貌。</li></ol>
+				<pre><code>git status --short
+git add src/routes/(app)/+layout.svelte
+git diff --cached
+git diff --cached --check
+git commit -m &quot;feat(fay): 刷新快捷键&quot;
+git push origin codex/fay-openwebui-custom</code></pre>
+			</section>
+
+			<section>
+				<h2>这一节背后的知识课</h2>
+				<ul><li>Web 应用能监听键盘，但不能假装自己比浏览器更懂系统快捷键。</li>
+<li>缓存策略分 cache-first、network-first、stale-while-revalidate，不同页面适合不同策略。</li>
+<li>聊天消息是强一致感很高的数据，用户刷新时更想看到服务器真实状态。</li>
+<li>重新生成是高风险动作，应该有明确按钮或不易误触的快捷键。</li></ul>
+				<p>真正要学会的不是这一组文件名，而是它背后的判断模式。下次换成别的项目时，文件会变，但“先分层、再改动、最后验证真实表面”的顺序不变。</p>
+			</section>
+
+			<section>
+				<h2>验证门禁</h2>
+				<ul><li>Command+R 触发浏览器刷新，不触发重新生成。</li>
+<li>Command+Shift+R 仍是浏览器强刷语义。</li>
+<li>重新生成快捷键变为明确组合。</li>
+<li>刷新后最新问题不会短暂消失。</li></ul>
+				<p class="note">门禁的意义是把“我觉得可以了”变成“证据显示可以了”。每个提交都应该有自己的最小门禁，而不是全仓库一次性跑到崩。</p>
+			</section>
+
+			<section>
+				<h2>常见坑和防复发</h2>
+				<ul><li>不要把浏览器刷新快捷键占为应用快捷键。</li>
+<li>不要让 cache-first 管住聊天主数据。</li>
+<li>不要用“偶尔刷新回来”当作数据一致性没问题。</li>
+<li>不要让重新生成这种动作没有清晰触发边界。</li></ul>
+			</section>
+
+			<section>
+				<h2>给你自己的练习</h2>
+				<p>列出你常用的 10 个浏览器快捷键，标出哪些应用绝对不应该抢，哪些可以在编辑器焦点内覆盖。</p>
+			</section>
+
+			<nav class="lesson-pager" aria-label="lesson navigation">
+				<a class="pager-card" href="./10-sidebar-polish.html"><span>上一节</span><strong>10. 侧边栏</strong></a>
+				<a class="pager-card pager-card--home" href="./index.html"><span>目录</span><strong>回到课程首页</strong></a>
+				<a class="pager-card" href="./12-workspace-seeds.html"><span>下一节</span><strong>12. 工作区种子</strong></a>
+			</nav>
 		</main>
 	</body>
 </html>
