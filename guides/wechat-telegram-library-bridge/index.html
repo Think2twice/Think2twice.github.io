@@ -1,0 +1,1094 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>微信公众号到 Telegram 文件中转桥接教程</title>
+  <meta name="description" content="脱敏版教程：用微信公众号接收书名，用 Telegram Web 用户会话查询文件，并通过 24 小时缓存中转站返回下载链接。">
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f8f4ea;
+      --panel: #fffdf7;
+      --panel-strong: #fff7e7;
+      --ink: #1b2026;
+      --muted: #606b76;
+      --line: rgba(27, 32, 38, 0.18);
+      --line-strong: #1b2026;
+      --accent: #2f7f75;
+      --accent-soft: #e8f4ef;
+      --amber: #d99a2b;
+      --red: #b95245;
+      --blue: #4260a8;
+      --dark: #111821;
+      --shadow: 7px 7px 0 rgba(27, 32, 38, 0.16);
+      --radius: 8px;
+      --max: 1160px;
+      font-family: "Avenir Next", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, rgba(27,32,38,0.035) 1px, transparent 1px) 0 0 / 30px 30px,
+        linear-gradient(rgba(27,32,38,0.035) 1px, transparent 1px) 0 0 / 30px 30px,
+        radial-gradient(circle at 15% 12%, rgba(47,127,117,0.12), transparent 28%),
+        radial-gradient(circle at 88% 4%, rgba(217,154,43,0.16), transparent 28%),
+        var(--paper);
+      line-height: 1.72;
+    }
+
+    a {
+      color: var(--blue);
+      text-underline-offset: 4px;
+    }
+
+    code,
+    pre {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      font-size: 0.92em;
+    }
+
+    code {
+      padding: 0.12em 0.34em;
+      border-radius: 4px;
+      background: rgba(27, 32, 38, 0.08);
+    }
+
+    pre {
+      margin: 14px 0 0;
+      overflow-x: auto;
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: var(--radius);
+      background: #121821;
+      color: #fff8e8;
+      line-height: 1.55;
+    }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      border-bottom: 1px solid var(--line);
+      background: rgba(248, 244, 234, 0.92);
+      backdrop-filter: blur(14px);
+    }
+
+    .nav-inner {
+      width: min(var(--max), calc(100% - 32px));
+      min-height: 62px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 900;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border: 2px solid var(--line-strong);
+      background: var(--dark);
+      box-shadow: 4px 4px 0 var(--amber);
+      position: relative;
+      transform: rotate(-4deg);
+    }
+
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      left: 7px;
+      right: 7px;
+      height: 3px;
+      background: #f7d36d;
+    }
+
+    .brand-mark::before {
+      top: 10px;
+    }
+
+    .brand-mark::after {
+      bottom: 10px;
+    }
+
+    .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 14px;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .nav-links a {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      padding: 5px 0;
+    }
+
+    .nav-links a:hover,
+    .nav-links a:focus-visible {
+      border-color: var(--accent);
+      color: var(--accent);
+      outline: none;
+    }
+
+    header,
+    main,
+    footer {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    header {
+      padding: 56px 0 34px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(320px, 0.76fr);
+      gap: 32px;
+      align-items: end;
+    }
+
+    .eyebrow {
+      margin: 0 0 14px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.14;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 780px;
+      font-size: clamp(38px, 6.4vw, 76px);
+      font-weight: 950;
+    }
+
+    h2 {
+      font-size: clamp(28px, 3.4vw, 42px);
+    }
+
+    h3 {
+      font-size: 20px;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    ul,
+    ol {
+      padding-left: 1.3rem;
+    }
+
+    li {
+      margin: 7px 0;
+    }
+
+    .lead {
+      max-width: 720px;
+      margin: 22px 0 0;
+      color: #333b43;
+      font-size: clamp(18px, 2vw, 22px);
+    }
+
+    .hero-panel {
+      border: 2px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 247, 0.9);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .hero-panel strong {
+      display: block;
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+
+    .message-stack {
+      display: grid;
+      gap: 10px;
+    }
+
+    .bubble {
+      width: fit-content;
+      max-width: 100%;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      background: #ffffff;
+      font-size: 14px;
+    }
+
+    .bubble.user {
+      justify-self: end;
+      border-color: rgba(47, 127, 117, 0.45);
+      background: var(--accent-soft);
+    }
+
+    .bubble.service {
+      justify-self: start;
+    }
+
+    .bubble.link {
+      border-color: rgba(66, 96, 168, 0.45);
+      background: #edf2ff;
+      font-family: "SFMono-Regular", Consolas, monospace;
+    }
+
+    section {
+      margin: 26px 0;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 253, 247, 0.82);
+    }
+
+    .section-plain {
+      padding: 32px 0 6px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .section-title {
+      max-width: 780px;
+      margin-bottom: 18px;
+    }
+
+    .section-title p {
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .box {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fffdf7;
+      padding: 17px;
+    }
+
+    .box strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+    }
+
+    .box p {
+      color: var(--muted);
+    }
+
+    .box.ok {
+      border-left: 5px solid var(--accent);
+      background: #f4fbf7;
+    }
+
+    .box.warn {
+      border-left: 5px solid var(--amber);
+      background: #fff8e9;
+    }
+
+    .box.danger {
+      border-left: 5px solid var(--red);
+      background: #fff4ef;
+    }
+
+    .flow-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fffdf7;
+      padding: 18px;
+    }
+
+    .flow-svg {
+      width: 100%;
+      min-width: 760px;
+      height: auto;
+      display: block;
+    }
+
+    .flow-svg text {
+      fill: var(--ink);
+      font-family: "Avenir Next", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .flow-svg .small {
+      fill: var(--muted);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+      counter-reset: route;
+    }
+
+    .route-step {
+      display: grid;
+      grid-template-columns: 44px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fffdf7;
+    }
+
+    .route-step::before {
+      counter-increment: route;
+      content: counter(route);
+      display: inline-grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border: 2px solid var(--line-strong);
+      border-radius: 50%;
+      background: var(--panel-strong);
+      color: var(--ink);
+      font-weight: 900;
+    }
+
+    .route-step h3 {
+      margin-bottom: 4px;
+      font-size: 18px;
+    }
+
+    .route-step p {
+      color: var(--muted);
+    }
+
+    .state-lab {
+      display: grid;
+      grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.3fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .state-buttons {
+      display: grid;
+      gap: 9px;
+    }
+
+    button.state-button {
+      width: 100%;
+      min-height: 44px;
+      border: 2px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: var(--panel);
+      color: var(--ink);
+      font: inherit;
+      font-weight: 850;
+      text-align: left;
+      padding: 9px 12px;
+      cursor: pointer;
+      box-shadow: 3px 3px 0 rgba(27, 32, 38, 0.16);
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    button.state-button:hover,
+    button.state-button:focus-visible {
+      background: var(--panel-strong);
+      outline: none;
+    }
+
+    button.state-button:active {
+      transform: translate(1px, 1px);
+      box-shadow: 2px 2px 0 rgba(27, 32, 38, 0.16);
+    }
+
+    button.state-button[aria-pressed="true"] {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: #174941;
+    }
+
+    .state-card {
+      min-height: 330px;
+      border: 2px solid var(--line-strong);
+      border-radius: var(--radius);
+      background: #fffdf7;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .state-name {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(47, 127, 117, 0.35);
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #174941;
+      padding: 4px 10px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .state-card h3 {
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+
+    .state-card p {
+      color: #35404a;
+    }
+
+    .state-meta {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .state-meta div {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #ffffff;
+      padding: 12px;
+    }
+
+    .state-meta b {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .cache-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 0.8fr);
+      gap: 18px;
+      align-items: stretch;
+    }
+
+    .clock-card {
+      display: grid;
+      place-items: center;
+      min-height: 260px;
+      border: 2px solid var(--line-strong);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(135deg, rgba(47,127,117,0.12), transparent 54%),
+        #fffdf7;
+      box-shadow: var(--shadow);
+      text-align: center;
+      padding: 18px;
+    }
+
+    .clock-face {
+      width: 144px;
+      height: 144px;
+      border: 6px solid var(--line-strong);
+      border-radius: 50%;
+      position: relative;
+      margin-bottom: 14px;
+      background: #fff8e8;
+    }
+
+    .clock-face::before,
+    .clock-face::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 5px;
+      border-radius: 999px;
+      background: var(--accent);
+      transform-origin: bottom center;
+    }
+
+    .clock-face::before {
+      height: 48px;
+      transform: translate(-50%, -100%) rotate(35deg);
+    }
+
+    .clock-face::after {
+      height: 34px;
+      background: var(--amber);
+      transform: translate(-50%, -100%) rotate(120deg);
+    }
+
+    .clock-face span {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      font-size: 30px;
+      font-weight: 950;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .check-row {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fffdf7;
+      padding: 12px;
+    }
+
+    .check-row span:first-child {
+      display: inline-grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 950;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 14px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fffdf7;
+    }
+
+    .table th,
+    .table td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .table th {
+      background: var(--panel-strong);
+      font-weight: 900;
+    }
+
+    .table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .redaction-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      gap: 16px;
+    }
+
+    .footer {
+      padding: 26px 0 48px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+      }
+    }
+
+    @media (max-width: 880px) {
+      .nav-inner {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 12px 0;
+      }
+
+      .nav-links {
+        justify-content: flex-start;
+      }
+
+      header,
+      .state-lab,
+      .cache-panel,
+      .redaction-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      section {
+        padding: 22px;
+      }
+
+      .state-meta {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .nav-links {
+        gap: 9px;
+        font-size: 12px;
+      }
+
+      header {
+        padding-top: 34px;
+      }
+
+      h1 {
+        font-size: clamp(34px, 11vw, 48px);
+      }
+
+      section {
+        padding: 18px;
+      }
+
+      .route-step {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav" aria-label="页面导航">
+    <div class="nav-inner">
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>文件中转桥接教程</span>
+      </a>
+      <div class="nav-links">
+        <a href="#flow">流程</a>
+        <a href="#state">状态机</a>
+        <a href="#cache">24 小时缓存</a>
+        <a href="#avoid">弯路</a>
+        <a href="#verify">验证</a>
+      </div>
+    </div>
+  </nav>
+
+  <header id="top">
+    <div>
+      <p class="eyebrow">PUBLIC GUIDE</p>
+      <h1>微信公众号到 Telegram 文件中转桥接</h1>
+      <p class="lead">用公众号接收书名，用 Telegram Web 用户会话取回资源，再把文件放进 24 小时缓存链接。</p>
+    </div>
+    <aside class="hero-panel" aria-label="用户侧交互摘要">
+      <strong>用户看到的是一个异步对话，不是长时间等待。</strong>
+      <div class="message-stack">
+        <div class="bubble user">发送：书名</div>
+        <div class="bubble service">已收到，请稍后发送“结果”。</div>
+        <div class="bubble user">发送：结果</div>
+        <div class="bubble service">1. 示例书名 A<br>2. 示例书名 B</div>
+        <div class="bubble user">发送：1</div>
+        <div class="bubble link">https://bridge.example.com/d/&lt;id&gt;</div>
+      </div>
+    </aside>
+  </header>
+
+  <main>
+    <section class="section-plain" id="flow">
+      <div class="section-title">
+        <h2>正确路线先定下来</h2>
+        <p>这套桥接服务的核心不是“把文件硬塞回公众号”，而是把公众号做成入口，把 Telegram Web 做成查询执行层，把服务器缓存做成短期文件中转站。</p>
+      </div>
+      <div class="flow-wrap" aria-label="系统结构流程图">
+        <svg class="flow-svg" viewBox="0 0 980 310" role="img" aria-labelledby="flow-title flow-desc">
+          <title id="flow-title">微信公众号到 Telegram 文件中转桥接流程图</title>
+          <desc id="flow-desc">用户消息进入公众号回调，桥接服务调度 Telegram Web worker，文件进入 24 小时缓存，再返回下载链接。</desc>
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 5 L 0 10 z" fill="#1b2026"></path>
+            </marker>
+          </defs>
+          <rect x="10" y="34" width="142" height="74" rx="8" fill="#fff8e8" stroke="#1b2026" stroke-width="2"></rect>
+          <text x="81" y="66" text-anchor="middle">公众号用户</text>
+          <text class="small" x="81" y="88" text-anchor="middle">书名 / 编号 / 结果</text>
+
+          <rect x="210" y="34" width="148" height="74" rx="8" fill="#e8f4ef" stroke="#1b2026" stroke-width="2"></rect>
+          <text x="284" y="66" text-anchor="middle">微信回调</text>
+          <text class="small" x="284" y="88" text-anchor="middle">快速确认</text>
+
+          <rect x="416" y="34" width="150" height="74" rx="8" fill="#fffdf7" stroke="#1b2026" stroke-width="2"></rect>
+          <text x="491" y="66" text-anchor="middle">桥接主服务</text>
+          <text class="small" x="491" y="88" text-anchor="middle">状态 / 编号映射</text>
+
+          <rect x="624" y="34" width="150" height="74" rx="8" fill="#edf2ff" stroke="#1b2026" stroke-width="2"></rect>
+          <text x="699" y="66" text-anchor="middle">Telegram Web</text>
+          <text class="small" x="699" y="88" text-anchor="middle">用户会话 worker</text>
+
+          <rect x="828" y="34" width="142" height="74" rx="8" fill="#fff4ef" stroke="#1b2026" stroke-width="2"></rect>
+          <text x="899" y="66" text-anchor="middle">目标聊天</text>
+          <text class="small" x="899" y="88" text-anchor="middle">返回列表 / 文件</text>
+
+          <line x1="152" y1="71" x2="205" y2="71" stroke="#1b2026" stroke-width="2" marker-end="url(#arrow)"></line>
+          <line x1="358" y1="71" x2="411" y2="71" stroke="#1b2026" stroke-width="2" marker-end="url(#arrow)"></line>
+          <line x1="566" y1="71" x2="619" y2="71" stroke="#1b2026" stroke-width="2" marker-end="url(#arrow)"></line>
+          <line x1="774" y1="71" x2="823" y2="71" stroke="#1b2026" stroke-width="2" marker-end="url(#arrow)"></line>
+
+          <rect x="416" y="184" width="150" height="78" rx="8" fill="#fffdf7" stroke="#1b2026" stroke-width="2"></rect>
+          <text x="491" y="218" text-anchor="middle">24 小时缓存</text>
+          <text class="small" x="491" y="240" text-anchor="middle">/d/&lt;id&gt; 临时链接</text>
+
+          <path d="M 899 108 C 899 168, 588 138, 540 184" fill="none" stroke="#1b2026" stroke-width="2" marker-end="url(#arrow)"></path>
+          <path d="M 416 226 C 286 226, 222 166, 152 92" fill="none" stroke="#1b2026" stroke-width="2" marker-end="url(#arrow)"></path>
+          <text class="small" x="705" y="172" text-anchor="middle">文件下载后入缓存</text>
+          <text class="small" x="250" y="214" text-anchor="middle">公众号只返回 HTTPS 链接</text>
+        </svg>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>用户侧交互步骤</h2>
+        <p>公众号是被动回复通道，不能让用户卡在一次回调里等 Telegram 查询和文件下载。正确体验是“请求已接收，结果稍后取”。</p>
+      </div>
+      <div class="timeline">
+        <article class="route-step">
+          <div>
+            <h3>发送书名</h3>
+            <p>用户输入书名或关键词。服务立刻确认收到，并把查询任务交给后台执行。</p>
+          </div>
+        </article>
+        <article class="route-step">
+          <div>
+            <h3>取回结果</h3>
+            <p>用户发送“结果”。如果 Telegram 已返回列表，公众号展示编号、书名、作者、年份和格式。</p>
+          </div>
+        </article>
+        <article class="route-step">
+          <div>
+            <h3>选择编号</h3>
+            <p>用户点击“第 1 本”或直接回复 <code>1</code>。服务把编号映射回 Telegram 返回的资源命令。</p>
+          </div>
+        </article>
+        <article class="route-step">
+          <div>
+            <h3>请求文件</h3>
+            <p>Telegram Web worker 在目标聊天里发送对应命令，等待文件消息出现，并触发浏览器下载。</p>
+          </div>
+        </article>
+        <article class="route-step">
+          <div>
+            <h3>返回链接</h3>
+            <p>文件进入服务器缓存目录后，服务生成 <code>https://bridge.example.com/d/&lt;id&gt;</code> 这类 24 小时下载链接。</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="state">
+      <div class="section-title">
+        <h2>交互状态机</h2>
+        <p>把每次用户消息都放进状态机，能避免“刚发书名就索要文件”“编号过期还继续下载”“后台还没完成却返回空结果”等错位体验。</p>
+      </div>
+      <div class="state-lab">
+        <div class="state-buttons" aria-label="状态机模拟按钮">
+          <button class="state-button" type="button" data-state="idle" aria-pressed="true">等待书名</button>
+          <button class="state-button" type="button" data-state="searching" aria-pressed="false">查询中</button>
+          <button class="state-button" type="button" data-state="results" aria-pressed="false">列表可取</button>
+          <button class="state-button" type="button" data-state="file" aria-pressed="false">文件请求中</button>
+          <button class="state-button" type="button" data-state="link" aria-pressed="false">链接可取</button>
+          <button class="state-button" type="button" data-state="expired" aria-pressed="false">链接过期</button>
+        </div>
+        <article class="state-card" aria-live="polite">
+          <span class="state-name" id="stateName">等待书名</span>
+          <h3 id="stateTitle">只接收新的查询关键词</h3>
+          <p id="stateBody">用户还没有有效任务。此时收到普通文本就创建查询任务，收到“结果”则提示先发送书名。</p>
+          <div class="state-meta">
+            <div>
+              <b>公众号回复</b>
+              <span id="stateReply">请发送要查找的书名。</span>
+            </div>
+            <div>
+              <b>后台动作</b>
+              <span id="stateAction">无后台任务。</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="cache">
+      <div class="section-title">
+        <h2>为什么用 24 小时缓存中转站</h2>
+        <p>24 小时不是随便选的数字。它把用户当天下载、文件暴露时间、服务器存储压力和清理策略放在同一个可管理边界里。</p>
+      </div>
+      <div class="cache-panel">
+        <div class="grid-2">
+          <div class="box ok">
+            <strong>适配公众号限制</strong>
+            <p>公众号适合返回文本和链接，不适合稳定传递任意格式的大文件。</p>
+          </div>
+          <div class="box ok">
+            <strong>降低公开暴露面</strong>
+            <p>链接短期有效，过期后文件清理。公开页面也不需要暴露真实资源来源。</p>
+          </div>
+          <div class="box ok">
+            <strong>避免第三方文件站</strong>
+            <p>不依赖免费网盘、验证码页面或临时上传服务，链路更可控。</p>
+          </div>
+          <div class="box ok">
+            <strong>方便重新生成</strong>
+            <p>用户错过当天下载窗口，可以重新查询和选择编号，生成新的临时链接。</p>
+          </div>
+        </div>
+        <aside class="clock-card" aria-label="24 小时缓存说明">
+          <div>
+            <div class="clock-face"><span>24h</span></div>
+            <strong>短期可用，自动清理</strong>
+            <p>缓存目录只保留必要窗口，不做永久文件库。</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <h2>公开部署时只写占位符</h2>
+        <p>下面是公开教程可以展示的配置形态。真实域名、服务器地址、Token、账号和会话路径都必须由读者在自己的环境里替换。</p>
+      </div>
+      <div class="redaction-grid">
+        <div class="box">
+          <strong>示例环境变量</strong>
+          <pre><code>PUBLIC_BASE_URL=https://bridge.example.com
+WECHAT_TOKEN=&lt;TOKEN&gt;
+WECHAT_APP_ID=&lt;APP_ID&gt;
+WECHAT_APP_SECRET=&lt;APP_SECRET&gt;
+TELEGRAM_PROFILE=/srv/example/telegram-profile
+CACHE_TTL_HOURS=24</code></pre>
+        </div>
+        <div class="box">
+          <strong>示例反向代理</strong>
+          <pre><code>server_name bridge.example.com;
+
+location / {
+  proxy_pass http://bridge-service:8080;
+  proxy_set_header Host $host;
+  proxy_set_header X-Forwarded-Proto https;
+}</code></pre>
+        </div>
+      </div>
+      <div class="checklist">
+        <div class="check-row">
+          <span>✓</span>
+          <div><strong>公开文档只讲方法。</strong>真实资产只留在私有运行手册或部署环境中。</div>
+        </div>
+        <div class="check-row">
+          <span>✓</span>
+          <div><strong>示例链接统一使用 <code>example.com</code>。</strong>不要把真实下载链接当演示素材。</div>
+        </div>
+        <div class="check-row">
+          <span>✓</span>
+          <div><strong>截图和日志必须二次检查。</strong>出现账号、群名、Token、文件名敏感信息时不能发布。</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="avoid">
+      <div class="section-title">
+        <h2>不要再走的弯路</h2>
+        <p>这些坑看起来像捷径，实际会让链路更脆、更难排查，甚至把私密资产写进公开页面。</p>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>弯路</th>
+            <th>问题</th>
+            <th>替代做法</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>用 Bot Token 冒充真人输入框</td>
+            <td>Bot Token 只能控制那个 Bot 自己，不能代表用户在目标聊天里发消息。</td>
+            <td>使用已登录的 Telegram Web 用户会话，由 worker 操作真实聊天窗口。</td>
+          </tr>
+          <tr>
+            <td>让公众号直接发送任意文件</td>
+            <td>文件类型、大小和体验都不可控，失败时用户也很难恢复。</td>
+            <td>返回 24 小时 HTTPS 下载链接，让浏览器处理文件下载。</td>
+          </tr>
+          <tr>
+            <td>在微信回调里同步等到底</td>
+            <td>Telegram 查询和文件下载可能超过回调等待窗口，容易超时。</td>
+            <td>先确认收到，后台处理，用户再发送“结果”取当前状态。</td>
+          </tr>
+          <tr>
+            <td>把免费传文件网站当默认方案</td>
+            <td>外部站点可能加验证码、限速、改规则，也会扩大隐私风险。</td>
+            <td>服务器本地缓存，短期链接，过期清理。</td>
+          </tr>
+          <tr>
+            <td>按截图猜 Telegram 页面结构</td>
+            <td>页面样式变化会让截图判断失效，按钮和消息节点可能不在同一层。</td>
+            <td>用 DOM 和调试接口确认真实节点，再做选择器和回归测试。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="verify">
+      <div class="section-title">
+        <h2>上线前验证一条完整链路</h2>
+        <p>只看服务健康是不够的。要从公众号入口跑到下载链接返回，并确认链接真的能下载。</p>
+      </div>
+      <div class="grid-3">
+        <div class="box warn">
+          <strong>健康检查</strong>
+          <pre><code>curl -fsS https://bridge.example.com/healthz</code></pre>
+        </div>
+        <div class="box warn">
+          <strong>用户路径</strong>
+          <pre><code>发送书名
+等待 20-30 秒
+发送“结果”
+回复编号 1
+再次发送“结果”</code></pre>
+        </div>
+        <div class="box warn">
+          <strong>链接验证</strong>
+          <pre><code>curl -I https://bridge.example.com/d/&lt;id&gt;</code></pre>
+        </div>
+      </div>
+      <div class="checklist">
+        <div class="check-row">
+          <span>✓</span>
+          <div><strong>列表字段可读。</strong>至少能看到编号、书名、作者、年份和格式。</div>
+        </div>
+        <div class="check-row">
+          <span>✓</span>
+          <div><strong>编号映射稳定。</strong>回复 <code>1</code> 后请求的是列表里的第 1 个资源，不是上一轮残留结果。</div>
+        </div>
+        <div class="check-row">
+          <span>✓</span>
+          <div><strong>下载链接返回 200。</strong>过期后要给出明确提示，而不是空白页或服务器错误。</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>这是脱敏公开教程稿。示例域名、路径、Token 和文件 ID 都是占位符，真实部署时必须替换为自己的私有配置。</p>
+  </footer>
+
+  <script>
+    const states = {
+      idle: {
+        name: "等待书名",
+        title: "只接收新的查询关键词",
+        body: "用户还没有有效任务。此时收到普通文本就创建查询任务，收到“结果”则提示先发送书名。",
+        reply: "请发送要查找的书名。",
+        action: "无后台任务。"
+      },
+      searching: {
+        name: "查询中",
+        title: "后台正在等 Telegram 返回列表",
+        body: "公众号先回确认消息，主服务把书名交给 Telegram Web worker。用户过早发送“结果”时，返回继续等待的提示。",
+        reply: "已收到，请稍后发送“结果”。",
+        action: "向目标聊天发送查询词，监听结果消息。"
+      },
+      results: {
+        name: "列表可取",
+        title: "结果列表已经能展示",
+        body: "服务把 Telegram 返回的资源命令映射成公众号编号。用户可以回复数字，也可以点击编号入口。",
+        reply: "返回编号列表和下一页入口。",
+        action: "保存编号到资源命令的映射，等待用户选择。"
+      },
+      file: {
+        name: "文件请求中",
+        title: "编号已经转成资源请求",
+        body: "worker 在 Telegram Web 中发送对应资源命令，等待文件消息，并把下载文件交给主服务处理。",
+        reply: "已发送文件请求，请稍后发送“结果”。",
+        action: "监听文件消息，触发浏览器下载，移动到缓存目录。"
+      },
+      link: {
+        name: "链接可取",
+        title: "临时下载链接可以返回",
+        body: "文件已经进入缓存目录，主服务生成 24 小时有效的 /d/<id> 链接。用户应尽快下载。",
+        reply: "https://bridge.example.com/d/<id>",
+        action: "记录元数据和过期时间，等待清理任务。"
+      },
+      expired: {
+        name: "链接过期",
+        title: "旧文件已经被清理",
+        body: "缓存窗口结束后不再继续暴露文件。如果用户还需要，应重新发送书名并选择编号。",
+        reply: "链接已过期，请重新查询。",
+        action: "删除缓存文件和元数据，保留必要的脱敏日志。"
+      }
+    };
+
+    const buttons = document.querySelectorAll(".state-button");
+    const nameEl = document.getElementById("stateName");
+    const titleEl = document.getElementById("stateTitle");
+    const bodyEl = document.getElementById("stateBody");
+    const replyEl = document.getElementById("stateReply");
+    const actionEl = document.getElementById("stateAction");
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const key = button.dataset.state;
+        const item = states[key];
+        if (!item) return;
+        buttons.forEach((current) => current.setAttribute("aria-pressed", "false"));
+        button.setAttribute("aria-pressed", "true");
+        nameEl.textContent = item.name;
+        titleEl.textContent = item.title;
+        bodyEl.textContent = item.body;
+        replyEl.textContent = item.reply;
+        actionEl.textContent = item.action;
+      });
+    });
+  </script>
+</body>
+</html>

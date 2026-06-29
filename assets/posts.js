@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "微信公众号到 Telegram 文件中转桥接教程",
+    url: "./guides/wechat-telegram-library-bridge/",
+    archiveUrl: "../guides/wechat-telegram-library-bridge/",
+    date: "2026-06-29",
+    minutes: 18,
+    category: "部署",
+    node: "wechat-telegram-bridge",
+    level: "消息桥接 + 文件缓存 + 状态机",
+    tags: ["微信公众号", "Telegram", "文件中转", "Webhook"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "脱敏版教程：用微信公众号接收查询请求，用 Telegram Web 用户会话取回结果，再通过 24 小时缓存中转站返回下载链接。"
+  },
+  {
     title: "每日全景复盘：2026-06-28",
     url: "./daily-digests/2026-06-28/",
     archiveUrl: "../daily-digests/2026-06-28/",
