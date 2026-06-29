@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>OpenWebUI 源码治理：把热改变成可维护系统</title>
+  <style>
+    :root{--paper:#fbfaf6;--ink:#29251f;--muted:#716b61;--line:#ded8cb;--soft:#f1ece1;--green:#2f6f5e;--blue:#315f86;--red:#9b4a3f;--card:#fffdf8}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.72 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+    .wrap{max-width:1060px;margin:0 auto;padding:32px 20px 64px}a{color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(49,95,134,.3)}
+    header,.card{border:1px solid var(--line);background:var(--card);padding:20px}h1{font-size:38px;line-height:1.15;margin:8px 0 12px}h2{margin:34px 0 12px;font-size:24px}h3{margin:0 0 8px}.muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{margin-bottom:12px}.risk{border-left:4px solid var(--red)}.ok{border-left:4px solid var(--green)}
+    table{width:100%;border-collapse:collapse;background:var(--card)}th,td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:var(--soft)}
+    @media(max-width:840px){.grid{grid-template-columns:1fr}h1{font-size:30px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p><a href="../../">返回 2026-06-28 总账</a></p>
+      <h1>OpenWebUI 源码治理：把热改变成可维护系统</h1>
+      <p class="muted">今天 OpenWebUI 的关键不是单个 bug，而是治理方式：服务器热修、本地源码、覆盖快照、运行产物、进度表和公开课程必须回到同一条可追踪链路。</p>
+    </header>
+
+    <h2>今天同步的四类内容</h2>
+    <div class="grid">
+      <article class="card ok"><h3>MinerU / RAG</h3><p>服务器稳定配置沉淀到本地部署模板、说明和私有 env。公开材料只写配置形态，不泄露 key。</p></article>
+      <article class="card ok"><h3>视觉与品牌</h3><p>服务器品牌图标反补到本地静态资源；发现加载页实际吃运行产物后，补覆盖 build 输出并加版本参数。</p></article>
+      <article class="card ok"><h3>侧栏微调</h3><p>把服务器新增的 sidebar polish 文件补进源码静态资源和覆盖快照，并补 Nginx 脱敏示例。</p></article>
+      <article class="card ok"><h3>缓存与快捷键</h3><p>chat 详情从 cache-first 改为 network-first；Mac 刷新快捷键不再被重新生成动作抢走。</p></article>
+      <article class="card"><h3>课程资产</h3><p>OpenWebUI fork 课程扩写为长教程，补章节导航和验证门禁，并发布到 Pages。</p></article>
+      <article class="card risk"><h3>类型债</h3><p>项目级检查仍有大量既有类型错误，不能和本次小修混为一谈，需要单独清理线。</p></article>
+    </div>
+
+    <h2>治理判断</h2>
+    <table>
+      <tr><th>问题</th><th>这次判断</th><th>以后规则</th></tr>
+      <tr><td>服务器上能跑就算完成吗</td><td>不算。它只是已验证样本。</td><td>热改要反补源码、模板、进度、覆盖快照和运行产物。</td></tr>
+      <tr><td>为什么刷新后问题一会消失一会回来</td><td>cache-first 把旧 chat JSON 抢先渲染。</td><td>用户可见详情页默认 network-first，缓存只做网络失败兜底。</td></tr>
+      <tr><td>为什么品牌图标换了但加载页没换</td><td>实际服务吃的是 build / SvelteKit 输出里的旧产物。</td><td>改静态资源时必须核对实际 served URL 的哈希。</td></tr>
+      <tr><td>还能拆提交吗</td><td>可以，但不能靠想象拆；要按真实改动面和文件边界拆。</td><td>先列功能域，再用 Git diff/文件路径拆提交叙事。</td></tr>
+    </table>
+
+    <h2>阶段地图</h2>
+    <div class="grid">
+      <article class="card"><h3>阶段 1：服务器热修</h3><p>线上先跑通，但知识和补丁散在服务器。</p></article>
+      <article class="card"><h3>阶段 2：源码反补</h3><p>把热修搬回本地源码和模板。今天处于这一阶。</p></article>
+      <article class="card"><h3>阶段 3：提交栈整理</h3><p>按功能拆提交，让 fork 能作为项目经验展示。</p></article>
+      <article class="card"><h3>阶段 4：全源码部署</h3><p>用可构建、可回滚、可验证的源码部署替换旧 Docker 热补丁。</p></article>
+      <article class="card"><h3>阶段 5：上游贡献</h3><p>挑选通用功能做成最小 PR，不把个人品牌/私有配置带给上游。</p></article>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>408 学习闭环：单节回填到晚间发布</title>
+  <style>
+    :root { --paper:#fbfaf6; --ink:#29251f; --muted:#716b61; --line:#ded8cb; --soft:#f1ece1; --green:#2f6f5e; --blue:#315f86; --card:#fffdf8; }
+    *{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.72 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+    .wrap{max-width:980px;margin:0 auto;padding:32px 20px 64px} a{color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(49,95,134,.3)}
+    header,.card{border:1px solid var(--line);background:var(--card);padding:20px} h1{font-size:38px;line-height:1.15;margin:8px 0 12px} h2{margin:34px 0 12px;font-size:24px} h3{margin:0 0 8px;font-size:18px}.muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.card{margin-bottom:12px}.step{border-top:4px solid var(--green)} table{border-collapse:collapse;width:100%;background:var(--card)}td,th{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:var(--soft)}
+    @media(max-width:800px){.grid{grid-template-columns:1fr}h1{font-size:30px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p><a href="../../">返回 2026-06-28 总账</a></p>
+      <h1>408 学习闭环：单节回填到晚间发布</h1>
+      <p class="muted">今天 408 站点的关键变化不是又写了一节内容，而是工作方式切换：白天学习 chat 负责把问题写回小节，晚上 worker 负责把已经落盘的内容同步到正式站。</p>
+    </header>
+
+    <h2>三层职责</h2>
+    <div class="grid">
+      <article class="card step"><h3>白天：小节学习</h3><p>每学一节开一个 chat，定位到具体 README，把疑问、类比、图示、错题原因写到最合适的位置。</p></article>
+      <article class="card step"><h3>傍晚：错题沉淀</h3><p>错题不平铺进主讲义，必要时新建小节专用错题总结，并从主 README 加入口。</p></article>
+      <article class="card step"><h3>晚上：统一发布</h3><p>worker 只做 sync、构建、链接检查、部署和线上抽查，不重写教材、不 commit、不 push。</p></article>
+    </div>
+
+    <h2>今天的样本</h2>
+    <table>
+      <tr><th>样本</th><th>处理方式</th><th>沉淀价值</th></tr>
+      <tr><td>3.7 广域网：为什么 LAN/WAN 不只是范围不同</td><td>写成“局部共享问题 -> 远距离互联问题 -> 协议体系变化”的学习补洞。</td><td>以后遇到“主要差异”能从问题空间推答案，不只背选项。</td></tr>
+      <tr><td>3.7 错题组</td><td>新建错题总结，主 README 只放入口。</td><td>个人错题不会挤乱主讲义，但复习能从知识点回到错因。</td></tr>
+      <tr><td>晚间发布 worker</td><td>多条执行单元出现构建时序问题，一条成功发布，其余停在部署前。</td><td>证明“脏改动是输入，不是停止条件”；真正门禁是构建、链接和线上验收。</td></tr>
+    </table>
+
+    <h2>下一步规则候选</h2>
+    <div class="card">
+      <h3>给 408-readme worker 加互斥锁</h3>
+      <p>今天同时有多个自动化执行单元对同一站点目录跑 sync/build，产生了多个不同的瞬时缺文件错误。下一步应改成单入口 orchestrator 或文件锁：同一晚只允许一个发布链路写 `408-study-site`。</p>
+    </div>
+    <div class="card">
+      <h3>把构建 ENOENT 分成两类</h3>
+      <p>如果失败后源文件和同步文件都不存在，是真实缺文件；如果失败后文件存在，可能是构建和同步时序、public 复制或并发清理导致的瞬时缺失。两类不要混在一起修。</p>
+    </div>
+  </div>
+</body>
+</html>

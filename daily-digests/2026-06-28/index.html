@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>每日全景复盘：2026-06-28</title>
+  <style>
+    :root {
+      --paper: #fbfaf6;
+      --ink: #26241f;
+      --muted: #706b60;
+      --line: #ded8cb;
+      --soft: #f1ece1;
+      --green: #2f6f5e;
+      --blue: #315f86;
+      --red: #9b4a3f;
+      --gold: #9c7426;
+      --card: #fffdf8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background:
+        linear-gradient(90deg, rgba(49, 95, 134, .05) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(49, 95, 134, .04) 1px, transparent 1px),
+        var(--paper);
+      background-size: 28px 28px;
+      color: var(--ink);
+      font: 16px/1.72 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    a { color: var(--blue); text-decoration: none; border-bottom: 1px solid rgba(49,95,134,.25); }
+    a:hover { border-bottom-color: var(--blue); }
+    .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 20px 64px; }
+    header {
+      border: 1px solid var(--line);
+      background: rgba(255, 253, 248, .92);
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 22px;
+    }
+    .eyebrow { color: var(--green); font-weight: 700; font-size: 13px; letter-spacing: 0; }
+    h1 { margin: 6px 0 10px; font-size: clamp(30px, 5vw, 54px); line-height: 1.08; letter-spacing: 0; }
+    h2 { margin: 42px 0 14px; font-size: 26px; line-height: 1.22; letter-spacing: 0; }
+    h3 { margin: 0 0 8px; font-size: 18px; letter-spacing: 0; }
+    p { margin: 0 0 12px; }
+    .lead { font-size: 18px; color: var(--muted); max-width: 760px; }
+    .quick {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      align-content: start;
+    }
+    .metric {
+      border: 1px solid var(--line);
+      background: var(--soft);
+      padding: 14px;
+      min-height: 86px;
+    }
+    .metric b { display: block; font-size: 28px; line-height: 1; color: var(--green); }
+    .metric span { color: var(--muted); font-size: 13px; }
+    nav {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    nav a {
+      border: 1px solid var(--line);
+      background: var(--card);
+      padding: 8px 10px;
+      color: var(--ink);
+    }
+    section { margin-top: 34px; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .card, .ledger-item, .flow, .note {
+      border: 1px solid var(--line);
+      background: rgba(255,253,248,.95);
+      padding: 16px;
+    }
+    .ledger {
+      display: grid;
+      gap: 10px;
+    }
+    .ledger-item {
+      display: grid;
+      grid-template-columns: 92px 1fr 112px;
+      gap: 12px;
+      align-items: start;
+    }
+    .time { color: var(--green); font-weight: 700; font-size: 14px; }
+    .status {
+      justify-self: end;
+      color: var(--muted);
+      font-size: 13px;
+      border: 1px solid var(--line);
+      padding: 3px 8px;
+      background: var(--soft);
+      white-space: nowrap;
+    }
+    .tag { display: inline-block; color: var(--muted); font-size: 13px; margin-right: 6px; }
+    table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--line); }
+    th, td { border: 1px solid var(--line); padding: 10px; vertical-align: top; text-align: left; }
+    th { background: var(--soft); color: #3b362e; }
+    .map {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .stage {
+      border: 1px solid var(--line);
+      background: var(--card);
+      padding: 12px;
+      min-height: 116px;
+    }
+    .stage.current { border-color: var(--green); box-shadow: inset 0 4px 0 var(--green); }
+    .stage b { display: block; margin-bottom: 6px; }
+    .flow { display: grid; grid-template-columns: 110px 1fr; gap: 12px; }
+    .flow b { color: var(--green); }
+    .warn { border-left: 4px solid var(--red); }
+    .ok { border-left: 4px solid var(--green); }
+    .small { font-size: 14px; color: var(--muted); }
+    code { background: var(--soft); padding: 2px 5px; border: 1px solid var(--line); }
+    footer { margin-top: 44px; color: var(--muted); font-size: 14px; }
+    @media (max-width: 860px) {
+      header, .two, .grid, .map { grid-template-columns: 1fr; }
+      .ledger-item { grid-template-columns: 1fr; }
+      .status { justify-self: start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <div class="eyebrow">每日流水总账 + 全景图</div>
+        <h1>每日全景复盘：2026-06-28</h1>
+        <p class="lead">覆盖 2026-06-28 00:00 到 2026-06-29 早间可访问的 Codex 线程、自动化记录和本机项目变更。今天的主线是：408 学习站从搭建期进入使用期，OpenWebUI 从功能堆叠进入源码治理，公众号桥接从想法走到可测链路，公开教程从目录页升级成长文课程。</p>
+        <nav>
+          <a href="#ledger">今日流水总账</a>
+          <a href="#panorama">今日全景图</a>
+          <a href="#flows">高价值流程</a>
+          <a href="#cognition">认知替换表</a>
+          <a href="topics/study-automation-loop/">408 学习闭环</a>
+          <a href="projects/openwebui-source-governance/">OpenWebUI 治理</a>
+          <a href="projects/wechat-telegram-bridge/">公众号桥接</a>
+          <a href="topics/identity-tool-evaluation/">OSINT 工具评估</a>
+        </nav>
+      </div>
+      <div class="quick" aria-label="今日统计">
+        <div class="metric"><b>15</b><span>条可访问流水记录</span></div>
+        <div class="metric"><b>4</b><span>全景方向</span></div>
+        <div class="metric"><b>3</b><span>散沙主题页</span></div>
+        <div class="metric"><b>4</b><span>大石头专题页</span></div>
+      </div>
+    </header>
+
+    <section id="ledger">
+      <h2>今日流水总账</h2>
+      <div class="ledger">
+        <article class="ledger-item">
+          <div class="time">08:02</div>
+          <div>
+            <h3>发布 2026-06-27 每日复盘</h3>
+            <p><span class="tag">类型：自动化发布</span><span class="tag">归属：GitHub Pages</span></p>
+            <p>整理上一日 OpenWebUI、服务器、Agent 邮箱、AList、视频 Skill 和 408 主页体验，生成总账、主题页和专题页，推送到 Pages。线上入口和索引最终验证通过。</p>
+          </div>
+          <div class="status">已发布</div>
+        </article>
+
+        <article class="ledger-item">
+          <div class="time">11:48</div>
+          <div>
+            <h3>408 学习站切换到“单小节回填 + 晚间统一发布”</h3>
+            <p><span class="tag">类型：学习工作流</span><span class="tag">归属：<a href="topics/study-automation-loop/">408 学习闭环</a></span></p>
+            <p>把“每学一节新建 chat 讨论疑问”抽成白天回填 README、晚上统一同步发布的流程；同时把 3.7 广域网的 LAN/WAN 协议差异补洞写入本地小节。</p>
+          </div>
+          <div class="status">已落地</div>
+        </article>
+
+        <article class="ledger-item">
+          <div class="time">16:48</div>
+          <div>
+            <h3>3.7 广域网错题沉淀</h3>
+            <p><span class="tag">类型：错题复盘</span><span class="tag">归属：<a href="topics/study-automation-loop/">408 学习闭环</a></span></p>
+            <p>针对 5 道 3.7 错题新建错题总结，并在主 README 增加入口。核心错因从“单题背答案”归纳为“广域网整体画像不稳”和“PPP 服务边界词没有抓牢”。</p>
+          </div>
+          <div class="status">本地完成</div>
+        </article>
+
+        <article class="ledger-item">
+          <div class="time">19:01</div>
+          <div>
+            <h3>公众号到 Telegram Bot 桥接</h3>
+            <p><span class="tag">类型：服务搭建</span><span class="tag">归属：<a href="projects/wechat-telegram-bridge/">公众号桥接</a>
+          <a href="topics/identity-tool-evaluation/">OSINT 工具评估</a></span></p>
+            <p>从空项目搭了公众号回调服务、Telegram webhook、服务器部署、DNS/反代/HTTPS、后台验证与本地测试。中途出现 token 安全、微信字段限制、Computer Use 快捷键不稳、证书巡检跑偏等问题，最后主链路转向 Telegram Web 登录态。</p>
+          </div>
+          <div class="status">主链路可测</div>
+        </article>
+
+        <article class="ledger-item">
+          <div class="time">22:28</div>
+          <div>
+            <h3>OpenWebUI 服务器改动反补本地源码</h3>
+            <p><span class="tag">类型：源码治理</span><span class="tag">归属：<a href="projects/openwebui-source-governance/">OpenWebUI 治理</a></span></p>
+            <p>读取旧线程和项目进度，做服务器只读对账，把 MinerU/PDF 配置、RAG 兜底策略、左侧栏微调、品牌图标和 splash 运行产物补回本地源码线。没有把私密 key 写入公开仓库。</p>
+          </div>
+          <div class="status">本地同步</div>
+        </article>
+
+        <article class="ledger-item">
+          <div class="time">22:28</div>
+          <div>
+            <h3>OpenWebUI 刷新丢问题和快捷键误触发定位</h3>
+            <p><span class="tag">类型：故障排查</span><span class="tag">归属：<a href="projects/openwebui-source-governance/">OpenWebUI 治理</a></span></p>
+            <p>确认“第四问第一次刷新消失、第二次刷新恢复”来自 chat 详情缓存先返回旧数据；同时全局快捷键把 Mac 刷新组合键误匹配为重新生成。改为 network-first，并把浏览器刷新快捷键交还浏览器。</p>
+          </div>
+          <div class="status">已修本地</div>
+        </article>
+
+        <article class="ledger-item">
+          <div class="time">23:00</div>
+          <div>
+            <h3>408 晚间发布 worker 首次运行</h3>
+            <p><span class="tag">类型：自动化发布</span><span class="tag">归属：<a href="topics/study-automation-loop/">408 学习闭环</a></span></p>
+            <p>多个执行单元同时触发，出现几类 VitePress 构建时序/复制错误；其中一条链路重跑后通过 sync、链接检查、部署和线上抽查，完成正式站更新。失败线程也都按规则停在部署前并写入记忆。</p>
+          </div>
+          <div class="status">部分成功</div>
+        </article>
+
+        <article class="ledger-item">
+          <div class="time">23:00</div>
+          <div>
+            <h3>408 发布线程：public/quiz 生成物不稳定</h3>
+            <p><span class="tag">类型：自动化发布阻断</span><span class="tag">归属：<a href="topics/study-automation-loop/">408 学习闭环</a></span></p>
+            <p>一条晚间发布线 sync 成功，但 VitePress 构建连续报刚生成的 quiz/public 文件缺失；失败后复查文件存在，优先判断为复制/清理时序问题，未部署。</p>
+          </div>
+          <div class="status">已阻断</div>
+        </article>
+
+        <article class="ledger-item">
+          <div class="time">23:00</div>
+          <div>
+            <h3>408 发布线程：数据结构专题页输出失败</h3>
+            <p><span class="tag">类型：自动化发布阻断</span><span class="tag">归属：<a href="topics/study-automation-loop/">408 学习闭环</a></span></p>
+            <p>另一条发布线在数据结构第 8 章专题页输出阶段失败，按规则停在部署前，并把阻断原因写入自动化记忆。</p>
+          </div>
+          <div class="status">已阻断</div>
+        </article>
+
+        <article class="ledger-item">
+          <div class="time">23:00</div>
+          <div>
+            <h3>408 发布线程：public 图片读取失败</h3>
+            <p><span class="tag">类型：自动化发布阻断</span><span class="tag">归属：<a href="topics/study-automation-loop/">408 学习闭环</a></span></p>
+            <p>一条发布线构建时报 public 图片缺失，但源目录、public 目录和 dist 中均能复查到文件，进一步指向构建期间的生成物稳定性问题。</p>
+          </div>
+          <div class="status">已阻断</div>
+        </article>
+
+        <article class="ledger-item">
+          <div class="time">23:01</div>
+          <div>
+            <h3>408 发布线程：组成原理页面读取失败</h3>
+            <p><span class="tag">类型：自动化发布阻断</span><span class="tag">归属：<a href="topics/study-automation-loop/">408 学习闭环</a></span></p>
+            <p>一条发布线在组成原理页面读取阶段失败，失败后源文件和同步后文件都存在；下一步应排查 sync 与 build 的时序处理。</p>
+          </div>
+          <div class="status">已阻断</div>
+        </article>
+
+        <article class="ledger-item">
+          <div class="time">00:00</div>
+          <div>
+            <h3>OpenWebUI 私有 fork 课程扩成长教程</h3>
+            <p><span class="tag">类型：公开教程</span><span class="tag">归属：GitHub Pages</span></p>
+            <p>用户指出课程每节过短、缺上下节导航。15 个正文页扩成长教程，补工程背景、关键文件地图、手工复现、验证门禁、常见坑和练习，并发布到 Pages。</p>
+          </div>
+          <div class="status">已发布</div>
+        </article>
+
+        <article class="ledger-item">
+          <div class="time">03:28</div>
+          <div>
+            <h3>Aliens_eye 本地试跑与价值边界判断</h3>
+            <p><span class="tag">类型：工具评估</span><span class="tag">归属：<a href="topics/tool-pages-sand/">工具与 Pages 散沙</a></span></p>
+            <p>拉取并本地运行 Aliens_eye，确认它是用户名 OSINT 命令行工具，不是服务器 Web 服务；分别跑英文 handle 和中文用户名全站扫描，输出 HTML/CSV/MD/JSON 报告，并指出中文场景误报多、只能作粗筛。</p>
+          </div>
+          <div class="status">已试跑</div>
+        </article>
+
+        <article class="ledger-item">
+          <div class="time">09:00</div>
+          <div>
+            <h3>公众号桥接继续补 5 秒限制和编号命令</h3>
+            <p><span class="tag">类型：服务体验修正</span><span class="tag">归属：<a href="projects/wechat-telegram-bridge/">公众号桥接</a>
+          <a href="topics/identity-tool-evaluation/">OSINT 工具评估</a></span></p>
+            <p>早间继续处理微信被动回复时间限制：计划改成秒回“已开始查询”、后台查 Telegram Web，再让用户发“结果”或编号取书籍命令。当前记录来自同一可访问线程的后续事件。</p>
+          </div>
+          <div class="status">进行中</div>
+        </article>
+
+        <article class="ledger-item">
+          <div class="time">09:40</div>
+          <div>
+            <h3>生成 2026-06-28 全景复盘</h3>
+            <p><span class="tag">类型：本次自动化</span><span class="tag">归属：GitHub Pages</span></p>
+            <p>读取规则、自动化记忆、会话 JSONL、项目状态和 Pages 仓库，按流水账、散沙、专题、全景图、认知替换表生成本页。</p>
+          </div>
+          <div class="status">本页产物</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="sand">
+      <h2>散沙合集</h2>
+      <div class="two">
+        <article class="card">
+          <h3><a href="topics/study-automation-loop/">408 学习闭环与发布工序</a></h3>
+          <p>把“单节学习补洞”“错题复盘”“晚间同步发布”拆成三个角色，避免白天学习 chat 顺手部署，也避免晚上 worker 改教材正文。</p>
+        </article>
+        <article class="card">
+          <h3><a href="topics/tool-pages-sand/">工具评估与 Pages 小流程</a></h3>
+          <p>沉淀 OSINT 小工具本地试跑、Pages 长教程发布、课程页面验收、缓存延迟和公开页脱敏这类小流程。</p>
+        </article>
+        <article class="card">
+          <h3><a href="topics/identity-tool-evaluation/">身份扫描工具评估</a></h3>
+          <p>补充沉淀 Aliens_eye 这类用户名扫描工具的可信度边界：报告可以给线索，但不能直接当身份判断证据。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="rocks">
+      <h2>大石头专题</h2>
+      <div class="two">
+        <article class="card">
+          <h3><a href="projects/openwebui-source-governance/">OpenWebUI 源码治理</a></h3>
+          <p>服务器热改不再只是“线上能用”，而要反补本地源码、模板、进度表、运行产物和验证规则。</p>
+        </article>
+        <article class="card">
+          <h3><a href="projects/wechat-telegram-bridge/">公众号桥接服务</a></h3>
+          <p>从“微信收消息转 Telegram”升级为一个需要超时策略、菜单/意图路由、登录态维护和安全边界的桥接系统。</p>
+        </article>
+        <article class="card">
+          <h3><a href="projects/408-study-feedback-loop/">408 从小节疑问到正式站发布</a></h3>
+          <p>补充专题页，用更短的项目复盘形式记录 408 学习 - 回填 - 构建 - 验收 - 再学习的闭环。</p>
+        </article>
+        <article class="card">
+          <h3><a href="projects/openwebui-course-assets/">OpenWebUI 课程资产化</a></h3>
+          <p>补充专题页，聚焦私有 fork 经验如何从薄目录页改造成可阅读、可复现、可练习的长教程。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="panorama">
+      <h2>今日全景图</h2>
+      <div class="grid">
+        <article class="card">
+          <h3>408 学习站：从搭建期进入使用期</h3>
+          <p><b>昨天做了什么：</b>确立白天单节回填、晚上统一发布；3.7 错题进入小节资产；晚间发布 worker 首次跑出成功与阻塞样本。</p>
+          <div class="map">
+            <div class="stage">零散问答</div>
+            <div class="stage">小节 README 回填</div>
+            <div class="stage current">晚间发布闭环</div>
+            <div class="stage">错题驱动复习系统</div>
+          </div>
+          <p><b>下一步：</b>修 408 发布 worker 的并发/时序问题，让失败线程不要互相制造假 ENOENT。</p>
+        </article>
+        <article class="card">
+          <h3>OpenWebUI：从功能堆叠进入源码治理</h3>
+          <p><b>昨天做了什么：</b>把服务器上的 MinerU/RAG、品牌图标、sidebar polish、缓存策略和快捷键问题反补回源码线。</p>
+          <div class="map">
+            <div class="stage">服务器热修</div>
+            <div class="stage current">源码反补</div>
+            <div class="stage">提交栈整理</div>
+            <div class="stage">全源码部署替换旧 Docker</div>
+          </div>
+          <p><b>下一步：</b>按功能边界拆提交，不把所有改动压成一个不可复盘的大提交。</p>
+        </article>
+        <article class="card">
+          <h3>公众号桥接：从能通到能用</h3>
+          <p><b>昨天做了什么：</b>部署服务、接 Telegram Web、验证公众号模拟请求；也暴露了微信 5 秒回复、命令链接不可点和 Computer Use 表单输入不稳。</p>
+          <div class="map">
+            <div class="stage">回调接通</div>
+            <div class="stage current">后台查询 + 编号取结果</div>
+            <div class="stage">菜单/意图路由</div>
+            <div class="stage">可维护服务</div>
+          </div>
+          <p><b>下一步：</b>把“普通聊天”和“取资源”分开，不让每句 hello 都触发昂贵查询。</p>
+        </article>
+        <article class="card">
+          <h3>公开教程：从展示页进入可学习课程</h3>
+          <p><b>昨天做了什么：</b>OpenWebUI fork 课程从薄卡片扩写成 15 篇长教程，并补上下节导航、验证门禁和练习。</p>
+          <div class="map">
+            <div class="stage">目录页</div>
+            <div class="stage current">长教程</div>
+            <div class="stage">交互沙盒</div>
+            <div class="stage">课程模板/Skill</div>
+          </div>
+          <p><b>下一步：</b>后续同类教程先定义“每节应该滚几屏、必须含哪些学习块”，再生成 HTML。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="flows">
+      <h2>今日高价值流程</h2>
+      <div class="grid">
+        <article class="flow ok"><b>触发</b><p>学习 chat 里出现小节疑问或错题。</p><b>动作</b><p>先定位学科/章节/小节，写回对应 README 或错题总结，晚上再统一发布。</p><b>验证</b><p>README 链接存在，晚间 worker 跑 sync、构建、链接检查、部署和线上抽查。</p></article>
+        <article class="flow ok"><b>触发</b><p>服务器已验证的 OpenWebUI 热改需要长期保留。</p><b>动作</b><p>先只读对账服务器，再反补源码、模板、覆盖快照和进度表。</p><b>验证</b><p>文件哈希、语法、模板解析、运行产物路径和实际服务 URL 一起检查。</p></article>
+        <article class="flow warn"><b>触发</b><p>需要用 Computer Use 填复杂网页后台表单。</p><b>动作</b><p>优先使用页面元素值设置或空表单重填，不依赖 <code>cmd+a</code> 清空字段。</p><b>验证</b><p>字段限制、后台真实校验、服务端运行配置一致，尤其不要把长 token 贴到页面或公开材料。</p></article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Git / GitHub / GitHub Pages</h2>
+      <div class="two">
+        <article class="note ok">
+          <h3>Pages 发布</h3>
+          <p>OpenWebUI fork 课程已发布并验证线上新版内容、底部导航和页面高度。每日复盘继续保持 Archive 可见、首页隐藏。</p>
+        </article>
+        <article class="note">
+          <h3>提交粒度</h3>
+          <p>OpenWebUI 已经积累大量功能，后续重点是按功能反向整理提交栈：先列修改面，再拆出可解释的课程/PR 叙事。</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Skill / 自动化</h2>
+      <div class="two">
+        <article class="note ok">
+          <h3>408-readme</h3>
+          <p>新增晚间发布 worker：只发布已有 README/assets/题库改动，不改正文、不 commit、不 push。首次运行证明流程可行，但并发执行会产生噪声。</p>
+        </article>
+        <article class="note">
+          <h3>OpenWebUI Skill</h3>
+          <p>OpenWebUI 任务继续依赖项目 Skill 和进度表，先识别权威源码、服务器部署和覆盖快照三层，再决定改哪一层。</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>HTML 设计规则</h2>
+      <p>今日 Pages 课程返工说明：公开教程不能只做“漂亮目录”，每节需要有足够正文密度、上下节导航、验证入口和复盘价值。每日复盘页继续使用纸面风格，第一屏直接给流水总账入口和全景图，不做营销封面。</p>
+    </section>
+
+    <section id="cognition">
+      <h2>认知替换表</h2>
+      <table>
+        <thead>
+          <tr><th>主题</th><th>旧有认知</th><th>新认知</th><th>旧行为</th><th>新行为</th><th>触发证据</th><th>下一步验证</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>408 学习站</td>
+            <td>网站搭好就是项目完成。</td>
+            <td>真正的完成是学习时能持续回填、晚上能稳定发布、错题能回到小节。</td>
+            <td>把站点建设当一次性工程。</td>
+            <td>把白天学习 chat 和晚间发布 worker 分层。</td>
+            <td>3.7 学习补洞、错题总结和晚间发布自动化同日出现。</td>
+            <td>下一晚先修发布 worker 并发噪声，再观察是否能稳定发布。</td>
+          </tr>
+          <tr>
+            <td>OpenWebUI 改造</td>
+            <td>服务器上能跑的补丁就是可用成果。</td>
+            <td>能长期维护的成果必须反补源码、模板、文档、运行产物和验证规则。</td>
+            <td>线上热修后靠记忆接着改。</td>
+            <td>每次服务器变化都做只读对账和源码化记录。</td>
+            <td>MinerU/RAG、品牌图标、splash、chat 缓存同日被反补。</td>
+            <td>按功能拆提交，准备全源码部署替换旧部署。</td>
+          </tr>
+          <tr>
+            <td>公众号桥接</td>
+            <td>用户发消息后转给 Telegram，再原样返回就够了。</td>
+            <td>公众号有 5 秒回复、文本命令不可点击、菜单/意图路由、安全凭据和登录态维护问题。</td>
+            <td>把桥接当简单转发。</td>
+            <td>改成快速确认、后台查询、编号映射、结果缓存。</td>
+            <td>微信测试“没收到”、Telegram 命令链接不能在公众号里等价点击。</td>
+            <td>完成编号命令回归测试，再设计“取资源”入口按钮。</td>
+          </tr>
+          <tr>
+            <td>工具评估</td>
+            <td>站点数量多的 OSINT 工具就可能很强。</td>
+            <td>工具价值取决于目标人群是否真的在这些公开平台留下同名账号。</td>
+            <td>被 840 个站点数量吸引。</td>
+            <td>用本地报告看误报、错误率、高置信项和适用边界。</td>
+            <td>Aliens_eye 中文用户名扫描高错误/误判明显。</td>
+            <td>以后工具评估先定义目标场景，再决定是否继续投入。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>待写入规则</h2>
+      <ul>
+        <li>网页后台表单控制：不要默认依赖系统快捷键清空输入框；优先元素级设值、空表单重填或逐字删除。</li>
+        <li>408 晚间发布：同一 automation 不应并发跑多个学科线程互相写同一站点目录；需要互斥锁或单入口 orchestrator。</li>
+        <li>OpenWebUI runtime patch：任何缓存类补丁都必须写明是 network-first、cache-first 还是 fallback-only，并用刷新场景验证。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>待 Fay 确认</h2>
+      <ul>
+        <li>公众号桥接：是否把“取资源”做成公众号菜单/关键词入口，而不是所有文本都触发查询。</li>
+        <li>OpenWebUI：本地修好的缓存与快捷键是否需要立刻同步到线上旧部署，还是等全源码部署时一起切。</li>
+        <li>408：晚间 worker 的并发运行是否保留多线程观察，还是改成单线程锁定发布。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>资料覆盖与脱敏说明</h2>
+      <p>本页使用了本机可访问的 Codex JSONL 会话、`session_index.jsonl`、相关项目 Git 状态、自动化输出和 Pages 仓库文件。未访问完整 ChatGPT Atlas 云端聊天历史；截图和附件只作为本机 Codex 记录中的可见线索使用。公开页已脱敏：不写真实服务器 IP、后台 token、Bot token、微信配置 token、个人账号、私密路径细节或可复用凭据。涉及真实服务的地方统一写成“正式站”“服务器”“公众号后台”“Telegram Bot”。</p>
+    </section>
+
+    <footer>
+      <p>生成时间：2026-06-29 09:40 Asia/Shanghai。本文是弱公开复盘页，供 Fay 回看流程和阶段，不作为对外部署手册。</p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>公众号桥接服务：从回调接通到可用入口</title>
+  <style>
+    :root{--paper:#fbfaf6;--ink:#29251f;--muted:#716b61;--line:#ded8cb;--soft:#f1ece1;--green:#2f6f5e;--blue:#315f86;--red:#9b4a3f;--card:#fffdf8}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.72 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+    .wrap{max-width:1040px;margin:0 auto;padding:32px 20px 64px}a{color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(49,95,134,.3)}
+    header,.card{border:1px solid var(--line);background:var(--card);padding:20px}h1{font-size:38px;line-height:1.15;margin:8px 0 12px}h2{margin:34px 0 12px;font-size:24px}.muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.card{margin-bottom:12px}.risk{border-left:4px solid var(--red)}.ok{border-left:4px solid var(--green)}
+    ol{padding-left:22px}table{border-collapse:collapse;width:100%;background:var(--card)}td,th{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top}th{background:var(--soft)}
+    @media(max-width:800px){.grid{grid-template-columns:1fr}h1{font-size:30px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p><a href="../../">返回 2026-06-28 总账</a></p>
+      <h1>公众号桥接服务：从回调接通到可用入口</h1>
+      <p class="muted">这条线最容易被低估：看起来只是“微信消息转 Telegram”，实际包含公众号被动回复限制、Telegram Web 登录态、菜单/意图路由、凭据安全、网页后台操作可靠性和服务维护。</p>
+    </header>
+
+    <h2>今天已经跑通的东西</h2>
+    <div class="grid">
+      <article class="card ok"><h3>服务骨架</h3><p>本地项目生成微信 GET 验证、POST 收消息、统一 reply、Telegram webhook、Docker 部署配置和测试。</p></article>
+      <article class="card ok"><h3>公网入口</h3><p>服务部署到服务器本地端口，通过 DNS、Nginx、HTTPS 暴露给公众号后台。公开页不记录真实配置值。</p></article>
+      <article class="card ok"><h3>Telegram Web relay</h3><p>后续改成使用 Telegram Web 登录态，以“用户身份”把查询转给目标 Bot，再把回复带回公众号。</p></article>
+      <article class="card risk"><h3>未完成体验</h3><p>微信被动回复不能等太久，Telegram 命令链接也不能原样变成微信可点击命令，需要后台查询和编号映射。</p></article>
+    </div>
+
+    <h2>关键限制</h2>
+    <table>
+      <tr><th>限制</th><th>今天暴露的现象</th><th>正确处理</th></tr>
+      <tr><td>公众号被动回复时间短</td><td>真实查询超过限制时，用户会感觉“啥也没收到”。</td><td>秒回“已开始查询”，后台继续处理，结果缓存后让用户发“结果”查看。</td></tr>
+      <tr><td>Telegram 命令链接不能原样搬到微信</td><td>Telegram 里的蓝色命令在微信文本里不会自动触发。</td><td>把命令抽成编号，用户回数字后服务器代发对应命令。</td></tr>
+      <tr><td>普通聊天不等于资源查询</td><td>用户发 hello 不应该也触发取书流程。</td><td>做菜单/按钮/关键词路由，先判断意图再查。</td></tr>
+      <tr><td>网页后台表单不适合靠系统快捷键</td><td>在微信后台填表时，快捷键发出系统提示音但没有改字段。</td><td>用元素级设值、空表单重填或逐字删除，不把 cmd+a 当可靠手段。</td></tr>
+    </table>
+
+    <h2>推荐下一版形态</h2>
+    <ol>
+      <li>公众号菜单里放“查询资源”。只有点击菜单或使用明确关键词时才进入查询模式。</li>
+      <li>用户输入书名后，服务立即回复“已开始查询”。</li>
+      <li>后台把书名转给 Telegram Web relay，解析返回列表，把命令映射成编号。</li>
+      <li>用户发“结果”拿列表，发“1/2/3”触发对应 Telegram 命令。</li>
+      <li>缓存最近一次查询上下文，设置过期时间，避免数字命令串到旧结果。</li>
+    </ol>
+  </div>
+</body>
+</html>

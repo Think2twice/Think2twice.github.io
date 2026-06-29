@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>工具与 Pages 散沙：试跑、发布、验收</title>
+  <style>
+    :root{--paper:#fbfaf6;--ink:#29251f;--muted:#716b61;--line:#ded8cb;--soft:#f1ece1;--green:#2f6f5e;--blue:#315f86;--card:#fffdf8}
+    *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.72 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+    .wrap{max-width:980px;margin:0 auto;padding:32px 20px 64px}a{color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(49,95,134,.3)}
+    header,.card{border:1px solid var(--line);background:var(--card);padding:20px}h1{font-size:38px;line-height:1.15;margin:8px 0 12px}h2{margin:34px 0 12px;font-size:24px}.muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}.card{margin-bottom:12px}ol{padding-left:22px}@media(max-width:760px){.grid{grid-template-columns:1fr}h1{font-size:30px}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <p><a href="../../">返回 2026-06-28 总账</a></p>
+      <h1>工具与 Pages 散沙：试跑、发布、验收</h1>
+      <p class="muted">今天的小工具和 Pages 工作都不算大项目，但它们有共同点：先定义目标场景，再跑真实输出，再用结果判断工具是否值得继续投入。</p>
+    </header>
+
+    <h2>Aliens_eye 试跑结论</h2>
+    <div class="grid">
+      <article class="card"><h3>它是什么</h3><p>Python 命令行用户名扫描工具，可以本地安装或 Docker 运行，输出 JSON、CSV、HTML、Markdown 报告。它不是需要部署的网页服务。</p></article>
+      <article class="card"><h3>它不是什么</h3><p>它不是“找一个普通人真实社交账号”的可靠系统。中文平台、封闭社交、反爬和同名误判会让结果噪声很大。</p></article>
+      <article class="card"><h3>适合场景</h3><p>开发者 handle、开源社区用户名、品牌名占用、粗略 OSINT 候选列表。</p></article>
+      <article class="card"><h3>不适合场景</h3><p>找国内真实社交轨迹、证明某账号属于某个人、直接把 Found 当证据。</p></article>
+    </div>
+
+    <h2>Pages 课程返工规则</h2>
+    <div class="card">
+      <ol>
+        <li>教程页不能只有目录卡片，正文要能解释“为什么这么做”。</li>
+        <li>每节至少包含工程背景、关键文件、操作流程、验证门禁、常见坑和练习。</li>
+        <li>长课程必须有上一节、目录、下一节，不让读者每次回目录重进。</li>
+        <li>发布后不只看 Git 提交，还要在线验证新版标志、页面高度、导航和 200 状态。</li>
+      </ol>
+    </div>
+
+    <h2>今天可以沉淀的小规则</h2>
+    <div class="card">
+      <p>判断工具是否“垃圾”之前，先把场景说清楚：如果场景是中文真实社交账号追踪，Aliens_eye 很弱；如果场景是英文开发者 handle 粗筛，它还有用。工具评估不看功能列表长度，先看目标人群和数据源是否匹配。</p>
+    </div>
+  </div>
+</body>
+</html>
