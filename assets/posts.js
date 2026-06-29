@@ -30,21 +30,6 @@ window.LEARNING_POSTS = [
     excerpt: "把一次 OpenWebUI 私有 fork 改造拆成可回看的课程：版本管理、网关、模型分级、品牌壳、Safari 修复、文件附件、工具路由、笔记、刷新快捷键、工作区 seeds、全源码部署和静态描述文件清理。"
   },
   {
-    title: "每日全景复盘：2026-06-28",
-    url: "./daily-digests/2026-06-28/",
-    archiveUrl: "../daily-digests/2026-06-28/",
-    date: "2026-06-28",
-    minutes: 24,
-    category: "每日复盘",
-    node: "panorama",
-    level: "流水总账 + 全景图",
-    tags: ["每日复盘", "Codex", "方法论"],
-    featured: false,
-    homeVisible: false,
-    art: "browser",
-    excerpt: "整理 2026-06-28 全天到 2026-06-29 早间的 14 条可访问记录：408 学习反馈闭环、公众号查询桥接、OpenWebUI 课程资产化、OSINT 工具评估和每日复盘发布系统。"
-  },
-  {
     title: "每日全景复盘：2026-06-27",
     url: "./daily-digests/2026-06-27/",
     archiveUrl: "../daily-digests/2026-06-27/",
