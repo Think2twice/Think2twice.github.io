@@ -42,7 +42,7 @@ window.LEARNING_POSTS = [
     featured: false,
     homeVisible: false,
     art: "browser",
-    excerpt: "把一次 OpenWebUI 私有 fork 改造拆成可回看的课程：版本管理、网关、模型分级、品牌壳、Safari 修复、文件附件、工具路由、笔记、刷新快捷键、工作区 seeds、全源码部署和静态描述文件清理。"
+    excerpt: "把一次 OpenWebUI 私有 fork 改造拆成可回看的课程：版本管理、网关、模型分级、品牌壳、Safari 修复、文件附件、工具路由、笔记、刷新快捷键、工作区 seeds、全源码部署、静态描述文件清理，以及文档大纲与图层式重排。"
   },
   {
     title: "每日全景复盘：2026-06-27",

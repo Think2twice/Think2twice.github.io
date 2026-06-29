@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>文档大纲与图层式重排：从笔记目录到通用编辑器模式</title>
+		<link rel="stylesheet" href="./styles.css" />
+	</head>
+	<body>
+		<nav class="topnav">
+			<a href="./index.html">课程首页</a>
+			<span>15. 文档大纲</span>
+		</nav>
+
+		<main class="article article--long">
+			<header class="lesson-header">
+				<p class="eyebrow">Document UX</p>
+				<h1>文档大纲与图层式重排：从笔记目录到通用编辑器模式</h1>
+				<p class="lead">把笔记里的 h1/h2/h3 做成可跳转、可跟随、可多选删除、可拖动重排的大纲面板，并把这套模式抽象成以后设计任何文档软件都能复用的编辑器方法。</p>
+				<div class="meta-strip">
+					<span>对应提交</span>
+					<strong>本轮功能提交：笔记大纲、聊天大纲第二轮修复、PDF 当前附件兜底</strong>
+				</div>
+			</header>
+
+			<section class="diagram-card">
+				<svg class="lesson-map" viewBox="0 0 960 330" role="img" aria-label="文档大纲 workflow">
+					<defs>
+						<linearGradient id="flow-15" x1="0" x2="1">
+							<stop offset="0" stop-color="#10a37f" />
+							<stop offset="1" stop-color="#1f6feb" />
+						</linearGradient>
+					</defs>
+					<path class="lesson-rail" d="M100 150 C230 54 356 246 486 150 S742 54 860 150" stroke="url(#flow-15)" />
+					<g class="lesson-node" transform="translate(100 150)">
+								<circle r="42" />
+								<text y="6">现象</text>
+							</g>
+<g class="lesson-node" transform="translate(360 150)">
+								<circle r="42" />
+								<text y="6">边界</text>
+							</g>
+<g class="lesson-node" transform="translate(610 150)">
+								<circle r="42" />
+								<text y="6">改动</text>
+							</g>
+<g class="lesson-node" transform="translate(860 150)">
+								<circle r="42" />
+								<text y="6">验证</text>
+							</g>
+					<g class="lesson-caption">
+						<text x="480" y="282">文档大纲与图层式重排：从笔记目录到通用编辑器模式</text>
+					</g>
+				</svg>
+			</section>
+
+			<section>
+				<h2>这一节先解决什么</h2>
+				<p>文档大纲不是一个“目录列表”。在真正的写作、学习、设计软件里，大纲承担的是结构编辑：用户不只要跳到某个标题，还要理解层级、调整顺序、删除一整个小节，并且这些动作必须和正文内容同步。</p>
+<p>这套模式一通百通。Obsidian、Notion、Word、Xcode symbol outline、Figma 图层、Photoshop 图层面板，本质都在解决同一个问题：把复杂内容拆成可扫读、可定位、可操作的结构树。区别只在对象是标题、图层、函数、画板还是组件。</p>
+<p>OpenWebUI 的笔记编辑器基于 TipTap/ProseMirror。正确做法不是在 DOM 里随便找 h1/h2/h3，而是从编辑器文档模型里读取 heading 节点的位置 <code>pos</code>、层级 <code>level</code> 和 <code>nodeSize</code>。这样大纲点击、滚动跟随、删除范围、拖动排序都能落到真实文档位置。</p>
+			</section>
+
+			<section>
+				<h2>你要先看懂的边界</h2>
+				<div class="detail-grid">
+					<div class="detail-card">
+						<h3>用户现象</h3>
+						<p>用户看到的是体验问题：按钮点不动、文件下不来、图片跑题、模型不显示、刷新后问题消失。工程上不能只修表象，要追到触发链路。</p>
+					</div>
+					<div class="detail-card">
+						<h3>代码边界</h3>
+						<p>先判断它属于前端组件、后端路由、运行配置、数据持久化还是部署覆盖层。边界判断错了，修复就会漂移。</p>
+					</div>
+					<div class="detail-card">
+						<h3>验收边界</h3>
+						<p>能编译只是第一层。真实验收还要看 API、浏览器行为、刷新后的持久化结果，以及是否误触发昂贵或危险工具。</p>
+					</div>
+					<div class="detail-card">
+						<h3>文档边界</h3>
+						<p>公开教程只写结构、方法和占位符；真实 token、域名、IP、账号、Cookie、服务器路径都不进入 GitHub Pages。</p>
+					</div>
+				</div>
+			</section>
+
+			<section>
+				<h2>关键文件地图</h2>
+				<ul><li><code>src/lib/components/notes/NoteOutline.svelte</code>：笔记大纲核心组件，负责扫描 heading、active 跟随、点击跳转、多选、右键删除和拖动排序。</li>
+<li><code>src/lib/components/notes/NoteEditor.svelte</code>：在笔记顶部工具栏新增“大纲”按钮，并把右侧面板切换到 NoteOutline。</li>
+<li><code>src/lib/components/chat/ChatOutline.svelte</code>：聊天大纲第二轮修复，从完整 <code>history.currentId</code> 分支取用户问题，而不是只看当前渲染窗口。</li>
+<li><code>src/lib/components/chat/Messages.svelte</code>：点击聊天大纲旧问题时先展开完整消息分支，再滚动到目标。</li>
+<li><code>src/lib/components/chat/Messages/ContentRenderer.svelte</code>：历史 HTML/SVG artifact 只读渲染时不再自动打开右侧预览。</li></ul>
+				<p class="note">读代码时不要一上来全仓库搜索。先用这张地图定位层，再用 <code>rg</code> 查具体符号，最后才决定改哪个文件。</p>
+			</section>
+
+			<section>
+				<h2>手工复现流程</h2>
+				<ol><li>先确定大纲对象：本轮笔记只收 <code>h1/h2/h3</code>，聊天只收用户提问；不要把所有可见文本都塞进大纲。</li>
+<li>从编辑器模型扫描标题：遍历 ProseMirror doc，记录 heading 的 <code>pos</code>、<code>level</code>、<code>nodeSize</code> 和清洗后的标题文本。</li>
+<li>给每个标题生成稳定 id，例如 <code>fay-note-heading-${noteId}-${pos}</code>，并把标题位置作为后续跳转、删除和拖动的唯一依据。</li>
+<li>点击大纲项时，通过 <code>editor.view.nodeDOM(pos)</code> 或 <code>domAtPos()</code> 找到正文 heading DOM，再 <code>scrollIntoView()</code>；这比 querySelector 文本更可靠。</li>
+<li>滚动正文时，遍历大纲项对应 DOM，选择最接近容器顶部阈值的标题作为 active，让目录跟着正文变化。</li>
+<li>右键删除小节时，计算当前标题到下一个同级或更高级标题之前的范围；删除一级标题会带走它下面的二级/三级内容，删除二级标题只带走该二级段落。</li>
+<li>Ctrl/Command 多选时，先合并重叠 section range，再从后往前删除，避免前面的删除动作改变后面的位置。</li>
+<li>拖动排序时，把被拖动小节 slice 出来，从文档里删除原范围，再按投放位置插回；投放到目标上半区表示 before，下半区表示 after。</li>
+<li>拖动前调用版本快照函数，例如 <code>insertNoteVersion(note)</code>，让用户误删或误拖后可以回退。</li>
+<li>给大纲项加数据标记，例如 <code>data-fay-note-outline</code>、<code>data-dragging</code>、<code>data-drop-placement</code>，方便构建产物和线上页面验证。</li></ol>
+				<pre><code>git status --short
+git add src/lib/components/notes/NoteOutline.svelte
+git diff --cached
+git diff --cached --check
+git commit -m &quot;feat(fay): 文档大纲&quot;
+git push origin codex/fay-openwebui-custom</code></pre>
+			</section>
+
+			<section>
+				<h2>这一节背后的知识课</h2>
+				<ul><li>大纲有两种形态：导航大纲和结构编辑大纲。导航大纲只负责跳转，结构编辑大纲还要能移动、删除、折叠或重组内容。</li>
+<li>像 Photoshop 图层一样的体验，本质是“结构树 + 选中态 + 拖放排序 + 批量操作 + 可回退历史”。把这个抽象掌握后，标题大纲、图层面板、文件树、章节目录都能用同一套思路设计。</li>
+<li>不要用标题文本当唯一标识。文档里可能有重复标题，用户也可能改标题文字；编辑器位置和节点范围才是操作依据。</li>
+<li>删除小节不是删除标题一行，而是删除标题管辖的整段内容。范围边界通常是“下一个同级或更高级标题”。</li>
+<li>拖动排序必须考虑位置偏移。先删除原位置会改变后续插入点，所以要根据被删除范围是否在插入点之前来调整 <code>insertAt</code>。</li>
+<li>多选拖动要保持原文档顺序，不要按用户点击顺序重排；否则一组小节拖过去会自己乱序。</li>
+<li>任何结构性编辑都应该有快照或 undo。没有回退能力的大纲重排，会让用户不敢用。</li></ul>
+				<p>真正要学会的不是这一组文件名，而是它背后的判断模式。下次换成别的项目时，文件会变，但“先分层、再改动、最后验证真实表面”的顺序不变。</p>
+			</section>
+
+			<section>
+				<h2>验证门禁</h2>
+				<ul><li>笔记工具栏出现“大纲”按钮，点击后右侧打开大纲面板。</li>
+<li>大纲只列 <code>h1/h2/h3</code>，并按层级缩进。</li>
+<li>点击大纲项能跳转到正文对应标题。</li>
+<li>滚动正文时，大纲 active 项会同步变化。</li>
+<li>右键大纲项能删除对应小节，多选后能批量删除。</li>
+<li>拖动大纲项能移动对应正文小节，before/after 投放线显示正确。</li>
+<li>一级标题拖动会带走下属小节，二级/三级标题只移动自己的范围。</li>
+<li>拖动和删除前会写入笔记版本快照。</li>
+<li>聊天大纲能累计完整分支里的所有用户问题，不再被当前渲染窗口截断。</li>
+<li>历史 HTML/SVG 消息刷新后不会自动弹开 artifact 预览。</li></ul>
+				<p class="note">门禁的意义是把“我觉得可以了”变成“证据显示可以了”。每个提交都应该有自己的最小门禁，而不是全仓库一次性跑到崩。</p>
+			</section>
+
+			<section>
+				<h2>常见坑和防复发</h2>
+				<ul><li>不要只从 DOM 里找标题文本；富文本编辑器里的真实结构在 ProseMirror 文档模型里。</li>
+<li>不要把大纲做成只能跳转的目录，却宣称已经支持结构编辑。</li>
+<li>不要删除标题时只删标题本身，应该删它管辖的小节范围。</li>
+<li>不要让拖拽排序没有投放线，用户不知道会放到前面还是后面。</li>
+<li>不要让多选拖动按点击顺序重排，必须按文档原顺序移动。</li>
+<li>不要忘记版本快照；大纲重排属于高风险编辑动作。</li>
+<li>不要把聊天大纲从虚拟渲染窗口取数，否则旧消息被分页隐藏后，大纲就会丢项。</li></ul>
+			</section>
+
+			<section>
+				<h2>给你自己的练习</h2>
+				<p>设计一个“论文编辑器”的大纲面板：它至少要支持章节跳转、当前章节高亮、拖动调整章节顺序、删除整节、批量移动和撤销。然后再把同一套模型套到 Photoshop 图层、Figma 页面列表或代码符号树上。</p>
+			</section>
+
+			<nav class="lesson-pager" aria-label="lesson navigation">
+				<a class="pager-card" href="./14-static-runtime-cleanup.html"><span>上一节</span><strong>14. 静态清理</strong></a>
+				<a class="pager-card pager-card--home" href="./index.html"><span>目录</span><strong>回到课程首页</strong></a>
+				<span class="pager-card pager-card--disabled"><span>下一节</span><strong>已经是最后一节</strong></span>
+			</nav>
+		</main>
+	</body>
+</html>
