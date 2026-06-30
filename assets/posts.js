@@ -15,6 +15,21 @@ window.LEARNING_POSTS = [
     excerpt: "脱敏版教程：用微信公众号接收查询请求，用 Telegram Web 用户会话取回结果，再通过 24 小时缓存中转站返回下载链接。"
   },
   {
+    title: "每日全景复盘：2026-06-29",
+    url: "./daily-digests/2026-06-29/",
+    archiveUrl: "../daily-digests/2026-06-29/",
+    date: "2026-06-29",
+    minutes: 24,
+    category: "每日复盘",
+    node: "panorama",
+    level: "流水总账 + 全景图",
+    tags: ["每日复盘", "Codex", "方法论"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "整理 2026-06-29 到 2026-06-30 早间的 18 条可访问流水记录：OpenWebUI 大纲与图片工作台、公众号桥接、408 发布门禁、Pages 教程、服务器和工具排查。"
+  },
+  {
     title: "每日全景复盘：2026-06-28",
     url: "./daily-digests/2026-06-28/",
     archiveUrl: "../daily-digests/2026-06-28/",
