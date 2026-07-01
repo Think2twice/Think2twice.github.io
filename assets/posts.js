@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "每日全景复盘：2026-06-30",
+    url: "./daily-digests/2026-06-30/",
+    archiveUrl: "../daily-digests/2026-06-30/",
+    date: "2026-06-30",
+    minutes: 22,
+    category: "每日复盘",
+    node: "panorama",
+    level: "流水总账 + 全景图",
+    tags: ["每日复盘", "Codex", "方法论"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "整理 2026-06-30 到 2026-07-01 早间的 13 条可访问流水记录：公众号桥接、WorkBuddy 云桌面、408 发布门禁、视频显示规则和每日复盘发布链路。"
+  },
+  {
     title: "微信公众号到 Telegram 文件中转桥接教程",
     url: "./guides/wechat-telegram-library-bridge/",
     archiveUrl: "../guides/wechat-telegram-library-bridge/",
