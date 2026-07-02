@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "每日全景复盘：2026-07-01",
+    url: "./daily-digests/2026-07-01/",
+    archiveUrl: "../daily-digests/2026-07-01/",
+    date: "2026-07-01",
+    minutes: 24,
+    category: "每日复盘",
+    node: "panorama",
+    level: "流水总账 + 全景图",
+    tags: ["每日复盘", "Codex", "方法论"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "整理 2026-07-01 到 2026-07-02 早间的 15 条可访问流水记录：AList 媒体库扫描治理、FreeLLMAPI 安全边界、408 发布门禁、视频显示规则和每日复盘自动化。"
+  },
+  {
     title: "每日全景复盘：2026-06-30",
     url: "./daily-digests/2026-06-30/",
     archiveUrl: "../daily-digests/2026-06-30/",
