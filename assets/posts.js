@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "邮箱验证码登录：Resend、SMTP 与卡片邮件接入指南",
+    url: "./guides/email-verification-auth/",
+    archiveUrl: "../guides/email-verification-auth/",
+    date: "2026-07-03",
+    minutes: 14,
+    category: "部署",
+    node: "auth-email",
+    level: "账号体系 + 事务邮件",
+    tags: ["登录注册", "邮箱验证码", "Resend", "Vercel"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "脱敏版教程：给已有登录注册项目补上邮箱验证码、Resend SMTP、域名发信、卡片式验证码邮件和正式域名验证。"
+  },
+  {
     title: "每日全景复盘：2026-07-01",
     url: "./daily-digests/2026-07-01/",
     archiveUrl: "../daily-digests/2026-07-01/",
