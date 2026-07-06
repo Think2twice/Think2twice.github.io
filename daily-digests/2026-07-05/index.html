@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>每日全景复盘：2026-07-05</title>
+  <style>
+    :root{color-scheme:light;--paper:#fbfaf6;--ink:#24211d;--muted:#6d665d;--line:#ded5c5;--card:#fffdf8;--soft:#f2ebdf;--teal:#2f6f6a;--blue:#315f86;--gold:#9b762f;--red:#974d45;--violet:#61558a}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(90deg,rgba(49,95,134,.045) 1px,transparent 1px),linear-gradient(0deg,rgba(47,111,106,.04) 1px,transparent 1px),var(--paper);background-size:28px 28px;color:var(--ink);font:16px/1.72 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;letter-spacing:0}
+    a{color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(49,95,134,.3)}.wrap{max-width:1180px;margin:0 auto;padding:24px 18px 68px}.top{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;align-items:stretch}.hero,.panel,.card,.cell{border:1px solid var(--line);background:rgba(255,253,248,.96);box-shadow:0 16px 40px rgba(56,45,28,.06);border-radius:8px}.hero{padding:24px}.eyebrow{font-size:13px;color:var(--teal);font-weight:700}.hero h1{font-size:clamp(28px,4vw,44px);line-height:1.12;margin:8px 0 12px}.lead{font-size:17px;color:#3f3a33;max-width:760px}.nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.nav a,.tag{border:1px solid var(--line);background:var(--soft);padding:6px 10px;border-radius:999px;font-size:13px;color:#3c3832}
+    .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:16px}.stat{border:1px solid var(--line);background:var(--card);padding:14px;border-radius:8px}.stat b{font-size:26px;display:block}.stat span{color:var(--muted);font-size:13px}
+    section{margin-top:22px}.section-head{display:flex;justify-content:space-between;gap:16px;align-items:end;border-bottom:2px solid #2b2924;padding-bottom:8px}.section-head h2{margin:0;font-size:24px}.section-head p{margin:0;color:var(--muted);max-width:620px}.ledger{display:grid;gap:10px;margin-top:14px}.ledger-row{display:grid;grid-template-columns:82px 1.05fr 1.15fr 94px;gap:10px;align-items:stretch}.cell{padding:12px}.time{font-weight:800;color:var(--teal)}.status{font-weight:700;color:var(--blue);text-align:center}.muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}.grid.two{grid-template-columns:repeat(2,1fr)}.card{padding:16px}.card h3{margin:0 0 8px;font-size:18px}.flow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}.flow div{border-left:4px solid var(--teal);background:#f8f2e8;padding:10px;border-radius:6px}.timeline{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}.step{border:1px solid var(--line);background:#fdf8ef;padding:10px;border-radius:8px;text-align:center;font-size:13px;min-height:58px}.step.active{border-color:var(--teal);background:#e9f3ef;font-weight:700}.table-wrap{overflow-x:auto}.cog{width:100%;border-collapse:collapse;margin-top:14px;background:var(--card);border:1px solid var(--line)}.cog th,.cog td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top;min-width:120px}.cog th{background:#efe5d3}.note{border-left:5px solid var(--gold);background:#fff7e4;padding:14px;border-radius:8px;margin-top:12px}.svgbox{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px}code{background:#f3eadb;border:1px solid var(--line);padding:1px 4px;border-radius:4px}footer{margin-top:30px;color:var(--muted);font-size:14px}
+    @media(max-width:900px){.top,.grid,.grid.two,.flow{grid-template-columns:1fr}.ledger-row{grid-template-columns:1fr}.status{text-align:left}.section-head{display:block}.timeline{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <header class="hero">
+      <div class="eyebrow">每日全景复盘 / 2026-07-05</div>
+      <h1>每日全景复盘：2026-07-05</h1>
+      <p class="lead">覆盖 2026-07-05 00:00 到 2026-07-06 08:02（Asia/Shanghai）本机可访问的 Codex 线程、项目文件和自动化记忆。本日主线不是“新开很多小任务”，而是 408 学习站从同步缺口、表格题修复、晚间发布门禁到部署阻断的连续暴露；每日复盘自动化也进入同日并行和缺页复核阶段。</p>
+      <nav class="nav">
+        <a href="#ledger">今日流水总账</a><a href="#sand">散沙合集</a><a href="#projects">大石头专题</a><a href="#panorama">今日全景图</a><a href="#stage">阶段判断</a><a href="#cognition">认知替换表</a><a href="#flows">今日高价值流程</a><a href="#git">Git/GitHub/GitHub Pages</a><a href="#skills">Skill/自动化</a><a href="#html-rules">HTML 设计规则</a><a href="#rules">待写入规则</a><a href="#confirm">待 Fay 确认</a><a href="#coverage">资料覆盖与脱敏说明</a>
+      </nav>
+    </header>
+    <aside class="panel stats">
+      <div class="stat"><b>10</b><span>条可访问流水</span></div>
+      <div class="stat"><b>2</b><span>散沙主题</span></div>
+      <div class="stat"><b>1</b><span>大石头专题</span></div>
+      <div class="stat"><b>4</b><span>全景方向</span></div>
+    </aside>
+  </div>
+
+  <section id="ledger">
+    <div class="section-head"><h2>今日流水总账</h2><p>每个可访问线程都留一条脱敏记录；并行 worker 不合并成一句话。</p></div>
+    <div class="ledger">
+      <div class="ledger-row"><div class="cell time">01:03</div><div class="cell"><strong>四科做题记录同步补洞</strong><br><span class="muted">紧急修复 / 做题记录、错题、掌握度和复盘图层跨四科同步。</span></div><div class="cell">定位到同步脚本白名单过窄，补齐四科 legacy 与新站键名；账号菜单和个人页统计同步更新，相关测试与正式部署通过。<br><span class="muted">产物：同步策略、回归测试、线上脚本更新。</span></div><div class="cell status">完成</div></div>
+      <div class="ledger-row"><div class="cell time">08:02</div><div class="cell"><strong>2026-07-04 每日复盘正式发布</strong><br><span class="muted">自动化发布 / 汇总前一日 PasteMac、408 和复盘链路。</span></div><div class="cell">生成 1 个总账页、3 个主题页、2 个专题页和本地留档；修复一次 Pages 部署临时失败后用空提交重新触发成功。<br><span class="muted">产物：上一日页面与自动化记忆。</span></div><div class="cell status">完成</div></div>
+      <div class="ledger-row"><div class="cell time">08:02</div><div class="cell"><strong>每日复盘并行盘点线程</strong><br><span class="muted">发布前置 / 在 Pages 仓库中核对同日线程与可访问范围。</span></div><div class="cell">确认 7 月 5 日可见材料集中在 408 发布和日报自动化；用 live session 目录补到一个凌晨手动修复线程，避免只看 index 漏项。<br><span class="muted">结果：只做盘点，不写正式页。</span></div><div class="cell status">部分完成</div></div>
+      <div class="ledger-row"><div class="cell time">23:01</div><div class="cell"><strong>408 worker：数据结构目录入口缺失</strong><br><span class="muted">晚间发布 / 数据结构工作区启动。</span></div><div class="cell">冲突扫描与 JSON 解析通过，sync 成功；构建阶段报题库资源瞬时缺失，失败后文件实际存在。按门禁停止，未部署。<br><span class="muted">状态：记录到自动化记忆。</span></div><div class="cell status">阻断</div></div>
+      <div class="ledger-row"><div class="cell time">23:01</div><div class="cell"><strong>408 worker：树与森林图资源解析失败</strong><br><span class="muted">晚间发布 / 计算机网络工作区启动并同步四科。</span></div><div class="cell">构建报某数据结构 SVG 解析不到；源目录和同步产物都能看到文件。按规则不重试、不部署。<br><span class="muted">状态：待排查构建解析时序。</span></div><div class="cell status">阻断</div></div>
+      <div class="ledger-row"><div class="cell time">23:01</div><div class="cell"><strong>408 worker：legacy 图片瞬时缺失</strong><br><span class="muted">晚间发布 / 操作系统工作区启动。</span></div><div class="cell">sync 成功，构建报 legacy 图片缺失；随后只读确认源文件和同步产物都存在。按门禁停止。<br><span class="muted">状态：建议先重跑 check，再查并发清理。</span></div><div class="cell status">阻断</div></div>
+      <div class="ledger-row"><div class="cell time">23:01</div><div class="cell"><strong>408 worker：部署阶段 SSH 关闭</strong><br><span class="muted">晚间发布 / 组成原理工作区启动。</span></div><div class="cell">JSON、sync、check:links 全通过，本地构建完成；部署阶段远程连接关闭，未把旧线上 200 当成本轮成功。<br><span class="muted">状态：需先恢复服务器连接。</span></div><div class="cell status">部署阻断</div></div>
+      <div class="ledger-row"><div class="cell time">23:01</div><div class="cell"><strong>408 worker：章节 quiz 入口解析失败</strong><br><span class="muted">晚间发布 / 站点根目录启动。</span></div><div class="cell">预检通过，sync 成功；构建报章节 quiz 入口不存在，失败后文件实际存在。按门禁停止且未部署。<br><span class="muted">状态：记录并保留证据。</span></div><div class="cell status">阻断</div></div>
+      <div class="ledger-row"><div class="cell time">08:00</div><div class="cell"><strong>2026-07-05 每日复盘主线程启动</strong><br><span class="muted">本次自动化 / 读取规则、记忆和 Pages 仓库状态。</span></div><div class="cell">确认目标日期、Pages 工作树干净、`CODEX_HOME` 为空时使用显式记忆路径；开始抽取 JSONL。<br><span class="muted">状态：本页生成来源。</span></div><div class="cell status">进行中</div></div>
+      <div class="ledger-row"><div class="cell time">08:00</div><div class="cell"><strong>2026-07-05 每日复盘并行线程</strong><br><span class="muted">本次自动化 / Pages 仓库侧盘点。</span></div><div class="cell">确认同日无已发布目录；锁定 live session 中的凌晨修复、昨日复盘与晚间 408 worker。未写正式发布文件。<br><span class="muted">状态：并行盘点参考。</span></div><div class="cell status">只读</div></div>
+    </div>
+  </section>
+
+  <section id="sand">
+    <div class="section-head"><h2>散沙合集</h2><p>小问题不丢，按可复用流程聚合。</p></div>
+    <div class="grid two">
+      <article class="card"><h3><a href="topics/408-sync-release-gate/">408 同步与发布门禁</a></h3><p>把四科同步、构建入口、资源瞬时缺失、部署连接失败放进同一条门禁链，避免把“页面还可访问”误判为“本轮发布成功”。</p></article>
+      <article class="card"><h3><a href="topics/daily-panorama-publish/">每日复盘发布链路</a></h3><p>处理空 `CODEX_HOME`、同日并行线程、上一日发布复核、`posts.js` 首页隐藏和 Archive 可见的固定规则。</p></article>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="section-head"><h2>大石头专题</h2><p>今天的大石头是 408 学习站从内容站变成学习数据系统。</p></div>
+    <div class="grid two">
+      <article class="card"><h3><a href="projects/408-study-loop/">408 学习站闭环</a></h3><p>记录“本地教材补充 -> 站点同步 -> 构建检查 -> 部署 -> 做题数据回流”的完整链路，以及本日暴露的同步和部署薄弱点。</p></article>
+      <article class="card"><h3>未单独开页：纯并行状态</h3><p>每日复盘自动化本身先放主题页，不开大专题；它是发布机制的维护项，不是今天最重的工程闭环。</p></article>
+    </div>
+  </section>
+
+  <section id="panorama">
+    <div class="section-head"><h2>今日全景图</h2><p>从流水账上提炼 4 个方向：学习数据、发布可靠性、自动化治理、方法沉淀。</p></div>
+    <div class="grid two">
+      <article class="card"><h3>学习数据回流</h3><p><strong>昨天做了什么：</strong>把四科做题记录、错题、掌握度和复盘图层纳入同步，而不只修页面显示。</p><div class="timeline"><div class="step">静态教材</div><div class="step">题库页面</div><div class="step active">做题记录同步</div><div class="step">跨设备验收</div><div class="step">学习策略回流</div></div><p><strong>当前阶段判断：</strong>从“站点能看”进入“学习行为能回流”。</p><p><strong>下一步建议：</strong>安排一次真实账号、两端设备、四科做题记录的端到端验收。</p></article>
+      <article class="card"><h3>发布可靠性</h3><p><strong>昨天做了什么：</strong>多个 408 worker 暴露构建期文件瞬时缺失、入口解析失败和部署连接关闭。</p><div class="timeline"><div class="step">人工发布</div><div class="step">脚本发布</div><div class="step active">门禁停止</div><div class="step">单飞锁</div><div class="step">可审计流水线</div></div><p><strong>当前阶段判断：</strong>已经有门禁，但还缺并发控制和稳定构建面。</p><p><strong>下一步建议：</strong>给晚间 worker 加锁；构建前冻结或校验 public 目录。</p></article>
+      <article class="card"><h3>自动化发布总账</h3><p><strong>昨天做了什么：</strong>日报线程在空 `CODEX_HOME` 和并行运行下仍能找到显式记忆、确认 Pages 工作树并抽取 live session。</p><div class="timeline"><div class="step">手工总结</div><div class="step">本地页</div><div class="step active">自动发布</div><div class="step">同日去重</div><div class="step">长期知识库</div></div><p><strong>当前阶段判断：</strong>处在“自动发布 -> 同日去重”之间。</p><p><strong>下一步建议：</strong>把“上一日缺页但有线程痕迹”做成显式复核项。</p></article>
+      <article class="card"><h3>方法资产沉淀</h3><p><strong>昨天做了什么：</strong>408 和日报都把失败点写回 memory，避免下一轮从零定位。</p><div class="timeline"><div class="step">临时处理</div><div class="step active">记忆回写</div><div class="step">规则候选</div><div class="step">Skill 门禁</div><div class="step">知识图谱</div></div><p><strong>当前阶段判断：</strong>仍在“记忆回写 + 规则候选”阶段，暂不急着重构总知识库。</p><p><strong>下一步建议：</strong>把 408 worker 的锁和发布后验收写入项目规则或自动化脚本。</p></article>
+    </div>
+    <div class="svgbox"><svg viewBox="0 0 900 180" role="img" aria-label="今日能力坐标" width="100%"><rect width="900" height="180" fill="#fffdf8"/><line x1="70" y1="130" x2="830" y2="130" stroke="#ddd4c5" stroke-width="2"/><line x1="70" y1="30" x2="70" y2="130" stroke="#ddd4c5" stroke-width="2"/><text x="72" y="24" font-size="14" fill="#6d665d">系统化程度</text><text x="720" y="155" font-size="14" fill="#6d665d">验证强度</text><circle cx="650" cy="58" r="10" fill="#2f6f6a"/><text x="666" y="62" font-size="14">学习数据同步</text><circle cx="535" cy="88" r="10" fill="#315f86"/><text x="551" y="92" font-size="14">发布门禁</text><circle cx="490" cy="108" r="10" fill="#9b762f"/><text x="506" y="112" font-size="14">日报自动化</text><circle cx="430" cy="120" r="10" fill="#974d45"/><text x="446" y="124" font-size="14">记忆回写</text></svg></div>
+  </section>
+
+  <section id="stage">
+    <div class="section-head"><h2>阶段判断</h2><p>今天的核心不是新增内容，而是把“学习站”推向可验证数据系统。</p></div>
+    <div class="note">408 学习站已经过了“页面发布”的第一阶段。现在更重要的是：做题数据是否同步、构建目录是否稳定、部署是否可复现、失败是否能阻止误报。每日复盘也同样从“写一篇总结”进入“对并行自动化和来源覆盖负责”。</div>
+  </section>
+
+  <section id="cognition">
+    <div class="section-head"><h2>认知替换表</h2><p>只记录可从任务证据里看见的理解变化。</p></div>
+    <div class="table-wrap"><table class="cog"><thead><tr><th>主题</th><th>旧有认知</th><th>新认知</th><th>旧行为</th><th>新行为</th><th>触发证据</th><th>下一步验证</th></tr></thead><tbody>
+      <tr><td>408 学习站</td><td>页面同步和部署成功就是学习站闭环。</td><td>做题记录、错题、掌握度和复盘图层能跨四科同步，才算学习闭环。</td><td>只抽样看页面能打开。</td><td>把同步 key、账号统计、前端脚本和后端合并一起验。</td><td>四科做题记录不同步被定位为白名单过窄。</td><td>用真实账号跨设备验证四科做题记录。</td></tr>
+      <tr><td>自动化发布</td><td>worker 失败后再跑一次，最后成功即可。</td><td>失败、阻断、重试和成功都要留痕；否则无法判断是偶发还是系统问题。</td><td>用最后状态覆盖过程。</td><td>在总账和 memory 中保留每个 worker 的失败点。</td><td>同晚出现多种构建缺失、部署连接关闭和只读旧站 200。</td><td>为 408 发布 worker 增加锁和 canonical closeout。</td></tr>
+      <tr><td>每日复盘</td><td>只要有 session index 就够了。</td><td>live session 目录会包含 index 之外或还未归档的关键线程。</td><td>只读 index 并按标题汇总。</td><td>同时读 index、raw JSONL、自动化记忆和仓库状态。</td><td>凌晨 408 手动修复线程不在 tail index 的主要命名列表里，需要 raw session 补齐。</td><td>下次复盘继续用 index + raw JSONL 双入口。</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section id="flows">
+    <div class="section-head"><h2>今日高价值流程</h2><p>触发、动作、验证三件事写清楚。</p></div>
+    <div class="grid two">
+      <article class="card"><h3>四科做题记录同步补洞</h3><div class="flow"><div><strong>触发</strong><br>做题记录、错题或掌握度换科目/换端后不同步。</div><div><strong>动作</strong><br>查本地键名、同步白名单、账号菜单统计、个人页统计和后端合并。</div><div><strong>验证</strong><br>四科关键键名都被接收；线上页面引用新版同步脚本。</div></div></article>
+      <article class="card"><h3>408 发布门禁</h3><div class="flow"><div><strong>触发</strong><br>晚间 worker 要发布正式学习站。</div><div><strong>动作</strong><br>冲突扫描、JSON 解析、sync、check:links、deploy:phase4 串行执行；任一失败即停止。</div><div><strong>验证</strong><br>部署命令成功后再抽样正式入口、章节页和资源；旧线上 200 不算本轮成功。</div></div></article>
+      <article class="card"><h3>构建期瞬时缺失排查</h3><div class="flow"><div><strong>触发</strong><br>构建报资源或入口不存在，但失败后文件实际存在。</div><div><strong>动作</strong><br>检查是否并发 sync/build、是否清理 public 或 dist、是否路径生成顺序不稳定。</div><div><strong>验证</strong><br>单 worker 重跑 check:links；若复现，再加锁或冻结生成目录。</div></div></article>
+      <article class="card"><h3>每日复盘来源覆盖</h3><div class="flow"><div><strong>触发</strong><br>自动化要发布每日页。</div><div><strong>动作</strong><br>先读规则和 memory，再读 session index、raw JSONL、项目文件和仓库状态。</div><div><strong>验证</strong><br>总账写明不可访问来源，不把云端历史或未落盘内容补成事实。</div></div></article>
+    </div>
+  </section>
+
+  <section id="git"><div class="section-head"><h2>Git/GitHub/GitHub Pages</h2><p>Pages 发布仍是一个小而完整的原子单元。</p></div><div class="note">本次发布前 Pages 仓库工作树干净；当天目录尚不存在。发布单元只包含 <code>daily-digests/2026-07-05/</code>、本地留档镜像和 <code>assets/posts.js</code> 中当天元数据。每日复盘条目必须 Archive 可见、首页隐藏。</div></section>
+  <section id="skills"><div class="section-head"><h2>Skill/自动化</h2><p>本日主要回写两个自动化记忆。</p></div><div class="grid"><article class="card"><h3>408-readme</h3><p>记录每个 worker 的停止点、成功点、正式部署状态和下一轮优先项。</p></article><article class="card"><h3>daily-panorama</h3><p>继续使用显式 memory 路径，记录覆盖窗口、页面集合、验证和提交状态。</p></article><article class="card"><h3>规则候选</h3><p>把构建锁、正式站验收和 live session 补采集沉淀为后续规则。</p></article></div></section>
+  <section id="html-rules"><div class="section-head"><h2>HTML 设计规则</h2><p>轻量纸面风格，第一屏直接给总账和全景入口。</p></div><p>本页使用内嵌 CSS/SVG，不依赖外部 CDN。内容优先于装饰，移动端折叠为单列；不做营销封面，不使用外部图片，不复制聊天长文。</p></section>
+  <section id="rules"><div class="section-head"><h2>待写入规则</h2><p>先留在日报，后续再决定进入 AGENTS、项目规则或 Skill。</p></div><ul><li>408 晚间发布 worker 应增加运行锁或 single-flight，避免多个 worker 同时改写生成目录。</li><li>构建前应确认 public/quiz-data 和章节入口稳定；若失败后文件存在，要优先查并发和清理时序。</li><li>学习站发布成功必须包含数据同步验收，不能只看静态页面。</li><li>每日复盘采集必须包含 live session 目录，不只依赖 session index。</li></ul></section>
+  <section id="confirm"><div class="section-head"><h2>待 Fay 确认</h2><p>需要人工决策的事项。</p></div><ul><li>是否今天先恢复服务器 SSH/TUN，再重跑 408 <code>deploy:phase4</code>。</li><li>是否给 408 晚间 worker 加锁，避免并行构建互相清理生成目录。</li><li>是否安排一次四科做题记录真实跨设备同步验收。</li><li>是否补发缺失的 2026-07-03 每日复盘公开页。</li></ul></section>
+  <section id="coverage"><div class="section-head"><h2>资料覆盖与脱敏说明</h2><p>只使用本机可访问资料。</p></div><p>覆盖来源：本机 session index、2026-07-05/07-06 raw rollout JSONL、408 发布自动化记忆、Pages 仓库状态和使用方法优化规则文档。未访问：ChatGPT 云端历史、第三方私有后台、浏览器私有会话、未落盘语音/图片原文。公开页已去除账号、凭据、私密聊天原文、真实服务器地址、长串日志和不必要本机绝对路径。</p></section>
+  <footer>公开页已做脱敏：不包含账号、凭据、私密聊天原文、真实服务器地址和长串敏感值。资料来自本机可访问 Codex 线程、项目文件和自动化记忆；无法访问的来源已在本页说明。</footer>
+</div>
+</body>
+</html>
