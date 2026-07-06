@@ -4,7 +4,7 @@ window.LEARNING_POSTS = [
     url: "./daily-digests/2026-07-05/",
     archiveUrl: "../daily-digests/2026-07-05/",
     date: "2026-07-05",
-    minutes: 22,
+    minutes: 18,
     category: "每日复盘",
     node: "panorama",
     level: "流水总账 + 全景图",
@@ -12,7 +12,7 @@ window.LEARNING_POSTS = [
     featured: false,
     homeVisible: false,
     art: "browser",
-    excerpt: "整理 2026-07-05 到 2026-07-06 早间的 10 条可访问流水记录：四科做题记录同步、408 发布门禁、部署阻断和每日复盘发布链路。"
+    excerpt: "整理 2026-07-05 到 2026-07-06 早间的 9 条可访问流水记录：每日复盘交接、408 晚间发布阻断、SSH 部署失败、发布门禁和自动化记忆。"
   },
   {
     title: "每日全景复盘：2026-07-04",
