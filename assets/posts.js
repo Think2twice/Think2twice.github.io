@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "每日全景复盘：2026-07-06",
+    url: "./daily-digests/2026-07-06/",
+    archiveUrl: "../daily-digests/2026-07-06/",
+    date: "2026-07-06",
+    minutes: 18,
+    category: "每日复盘",
+    node: "panorama",
+    level: "流水总账 + 全景图",
+    tags: ["每日复盘", "Codex", "方法论"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "整理 2026-07-06 到 2026-07-07 早间的 10 条可访问流水记录：Mac 外设兼容与按键翻译、408 正式站发布失败恢复、每日复盘连续运行。"
+  },
+  {
     title: "每日全景复盘：2026-07-05",
     url: "./daily-digests/2026-07-05/",
     archiveUrl: "../daily-digests/2026-07-05/",
