@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>每日全景复盘：2026-07-07</title>
+  <style>
+    :root{color-scheme:light;--paper:#fbfaf6;--ink:#23211d;--muted:#6d675e;--line:#ded5c7;--card:#fffdf8;--soft:#f2eadc;--teal:#2f6f6a;--blue:#315f86;--gold:#967232;--red:#974d45;--green:#4f7f52;--violet:#61558a}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(90deg,rgba(49,95,134,.045) 1px,transparent 1px),linear-gradient(0deg,rgba(47,111,106,.04) 1px,transparent 1px),var(--paper);background-size:28px 28px;color:var(--ink);font:16px/1.72 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;letter-spacing:0}
+    a{color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(49,95,134,.32)}code{background:#f3eadb;border:1px solid var(--line);padding:1px 4px;border-radius:4px}.wrap{max-width:1180px;margin:0 auto;padding:24px 18px 68px}.top{display:grid;grid-template-columns:1.12fr .88fr;gap:18px}.hero,.panel,.card,.cell{border:1px solid var(--line);background:rgba(255,253,248,.96);box-shadow:0 16px 40px rgba(56,45,28,.06);border-radius:8px}.hero{padding:24px}.eyebrow{font-size:13px;color:var(--teal);font-weight:800}.hero h1{font-size:clamp(28px,4vw,44px);line-height:1.12;margin:8px 0 12px;letter-spacing:0}.lead{font-size:17px;color:#3f3a33;max-width:850px}.nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.nav a,.tag{border:1px solid var(--line);background:var(--soft);padding:6px 10px;border-radius:999px;font-size:13px;color:#3c3832}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:16px}.stat{border:1px solid var(--line);background:var(--card);padding:14px;border-radius:8px}.stat b{font-size:26px;display:block}.stat span{color:var(--muted);font-size:13px}section{margin-top:22px}.section-head{display:flex;justify-content:space-between;gap:16px;align-items:end;border-bottom:2px solid #2b2924;padding-bottom:8px}.section-head h2{margin:0;font-size:24px}.section-head p{margin:0;color:var(--muted);max-width:680px}.ledger{display:grid;gap:10px;margin-top:14px}.ledger-row{display:grid;grid-template-columns:82px 1.05fr 1.15fr 96px;gap:10px;align-items:stretch}.cell{padding:12px}.time{font-weight:800;color:var(--teal)}.status{font-weight:800;color:var(--blue);text-align:center}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}.grid.two{grid-template-columns:repeat(2,1fr)}.card{padding:16px}.card h3{margin:0 0 8px;font-size:18px}.timeline{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}.step{border:1px solid var(--line);background:#fdf8ef;padding:10px;border-radius:8px;text-align:center;font-size:13px;min-height:58px}.step.active{border-color:var(--teal);background:#e9f3ef;font-weight:800}.flow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}.flow div{border-left:4px solid var(--teal);background:#f8f2e8;padding:10px;border-radius:6px}.note{border-left:5px solid var(--gold);background:#fff7e4;padding:14px;border-radius:8px;margin-top:12px}.note.ok{border-left-color:var(--green);background:#eef7ef}.note.warn{border-left-color:var(--red);background:#fff0ee}.table-wrap{overflow-x:auto}.cog{width:100%;border-collapse:collapse;margin-top:14px;background:var(--card);border:1px solid var(--line)}.cog th,.cog td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top;min-width:120px}.cog th{background:#efe5d3}.svgbox{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px}ul{padding-left:22px}footer{margin-top:30px;color:var(--muted);font-size:14px}
+    @media(max-width:900px){.top,.grid,.grid.two,.flow{grid-template-columns:1fr}.ledger-row{grid-template-columns:1fr}.status{text-align:left}.section-head{display:block}.timeline{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <header class="hero">
+      <div class="eyebrow">每日全景复盘 / 2026-07-07</div>
+      <h1>每日全景复盘：2026-07-07</h1>
+      <p class="lead">覆盖 2026-07-07 00:00 到 2026-07-08 08:00 左右本机可访问的 Codex 线程、自动化记忆和项目文件。当天主线是“别再只看节点是否能连上”：服务器代理链路要分清入口、出口、分流规则和真实客户端；408 发布链路则暴露出并发 worker 与 SSH/TUN 的硬卡点。</p>
+      <nav class="nav">
+        <a href="#ledger">今日流水总账</a><a href="#sand">散沙合集</a><a href="#projects">大石头专题</a><a href="#panorama">今日全景图</a><a href="#stage">阶段判断</a><a href="#cognition">认知替换表</a><a href="#flows">今日高价值流程</a><a href="#git">Git/GitHub/GitHub Pages</a><a href="#skills">Skill/自动化</a><a href="#html-rules">HTML 设计规则</a><a href="#rules">待写入规则</a><a href="#confirm">待 Fay 确认</a><a href="#coverage">资料覆盖与脱敏说明</a>
+      </nav>
+    </header>
+    <aside class="panel stats">
+      <div class="stat"><b>12</b><span>条可访问流水</span></div>
+      <div class="stat"><b>4</b><span>散沙主题页</span></div>
+      <div class="stat"><b>4</b><span>大石头专题页</span></div>
+      <div class="stat"><b>4</b><span>全景方向</span></div>
+    </aside>
+  </div>
+
+  <section id="ledger">
+    <div class="section-head"><h2>今日流水总账</h2><p>所有可确认的 chat 和项目推进都先入账；无法安全解析的本地二进制会话只写进覆盖说明。</p></div>
+    <div class="ledger">
+      <div class="ledger-row"><div class="cell time">08:12</div><div class="cell"><strong>2026-07-06 每日复盘收口</strong><br><span class="muted">每日复盘 / Pages 发布。</span></div><div class="cell">上一日页面已发布并线上读回成功，记忆文件记录最终提交、Pages run 和首页隐藏字段。<br><span class="muted">影响：本轮从 2026-07-07 新窗口开始，不重复覆盖上一日内容。</span></div><div class="cell status">完成</div></div>
+      <div class="ledger-row"><div class="cell time">09:56</div><div class="cell"><strong>腾讯云 EdgeOne 免费权益判断</strong><br><span class="muted">散沙小问答 / CDN 与边缘网关。</span></div><div class="cell">确认 EdgeOne 可粗略理解为“国内语境下的 Cloudflare 类产品”，但不应迁走主域名 NS；适合拿非核心子域名、静态站或下载类入口做 CNAME 试点。<br><span class="muted">归属：EdgeOne 与服务器加速主题页。</span></div><div class="cell status">已解释</div></div>
+      <div class="ledger-row"><div class="cell time">10:28</div><div class="cell"><strong>代理协议选型只读研究</strong><br><span class="muted">资料调研 / VPS 加速路线。</span></div><div class="cell">按官方文档和成熟社区共识给出优先级：VLESS REALITY Vision 做直连基线，Hysteria2/TUIC 做 UDP 速度补充，WS+CDN 做兼容保底。<br><span class="muted">归属：客户端与代理路由主题页。</span></div><div class="cell status">完成</div></div>
+      <div class="ledger-row"><div class="cell time">上午</div><div class="cell"><strong>Proxy Speed Lab 本地工具与测速文档</strong><br><span class="muted">项目推进 / 代理测速实验室。</span></div><div class="cell">本地生成候选 IP 扫描脚本、测速结果、路线判断、购买档案和新 VPS 验收脚本；结论是旧服务器出口快，瓶颈在用户网络到入口这段路。<br><span class="muted">归属：Proxy Speed Lab 专题页。</span></div><div class="cell status">已沉淀</div></div>
+      <div class="ledger-row"><div class="cell time">15:35</div><div class="cell"><strong>HY2 测试节点在 Shadowrocket 超时</strong><br><span class="muted">故障排查 / 路线切换。</span></div><div class="cell">HY2/UDP 和直连 Reality 测试未成为正式方案；免费 Cloudflare/ProxyIP 候选最高只有几 Mbps，触发“不要继续一个个扫，必须换路线”的判断。<br><span class="muted">归属：Proxy Speed Lab 专题页。</span></div><div class="cell status">路线收束</div></div>
+      <div class="ledger-row"><div class="cell time">15:38</div><div class="cell"><strong>国内 App 异常：分流规则问题</strong><br><span class="muted">故障排查 / 客户端规则。</span></div><div class="cell">确认问题不是节点本体，而是手机/电脑直接导入节点订阅后缺少国内直连规则；服务端 JSON 订阅补入国内/内网直连规则，客户端需用规则/配置模式。<br><span class="muted">归属：客户端与代理路由主题页。</span></div><div class="cell status">部分修复</div></div>
+      <div class="ledger-row"><div class="cell time">16:00</div><div class="cell"><strong>用户纠偏：停止购买分支</strong><br><span class="muted">认知澄清 / 一分钱不花。</span></div><div class="cell">用户指出任务偏航，要求在现有服务器、Cloudflare、x-ui、客户端链路内做零成本优化。后续从“买什么”切回“现有链路能免费改什么”。<br><span class="muted">影响：购买建议退到备选材料，不再作为当前主线。</span></div><div class="cell status">纠偏生效</div></div>
+      <div class="ledger-row"><div class="cell time">16:21</div><div class="cell"><strong>零成本服务端优化</strong><br><span class="muted">服务器维护 / Nginx 与 TCP。</span></div><div class="cell">补回 WebSocket 长连接/高吞吐反代参数，保留 BBR，并提高 TCP 缓冲和队列上限；验证服务、订阅和节点路径健康。真实 YouTube Kbps 仍需手机/电脑端验证。<br><span class="muted">归属：Proxy Speed Lab 专题页。</span></div><div class="cell status">已执行</div></div>
+      <div class="ledger-row"><div class="cell time">23:00</div><div class="cell"><strong>408 晚间发布并发 worker</strong><br><span class="muted">自动化发布 / 发布门禁。</span></div><div class="cell">多条 worker 同时运行：本地 sync、构建和链接检查最终多次通过，但部署阶段普遍卡在 SSH banner/端口超时，正式站仍是旧版本可访问，不能算本轮成功。<br><span class="muted">归属：408 发布门禁主题页。</span></div><div class="cell status">阻断</div></div>
+      <div class="ledger-row"><div class="cell time">23:35</div><div class="cell"><strong>x-ui/Xray 入口修复</strong><br><span class="muted">故障排查 / 真实客户端链路。</span></div><div class="cell">按交接重点恢复 x-ui/Xray 节点：补兼容入口、修订阅 Host、用临时 Xray 客户端分别访问 Google 验证返回 204；最终仍需 Shadowrocket 真实重导入确认。<br><span class="muted">归属：x-ui 与 Shadowrocket 恢复专题页。</span></div><div class="cell status">已验证到链路</div></div>
+      <div class="ledger-row"><div class="cell time">全天</div><div class="cell"><strong>PasteMac 项目文档与构建痕迹</strong><br><span class="muted">项目推进 / macOS 工具。</span></div><div class="cell">本机可见 README、底部面板 UI 规格、macOS MVP 路线图、视觉复刻流程、构建脚本和构建产物变化；核心是把 Paste 复刻从感觉微调推进到像素级验收流程。<br><span class="muted">影响：作为全景方向记录，不单独搬运实现细节。</span></div><div class="cell status">推进中</div></div>
+      <div class="ledger-row"><div class="cell time">08:01</div><div class="cell"><strong>2026-07-07 每日复盘启动</strong><br><span class="muted">本轮自动化 / Pages 发布。</span></div><div class="cell">读取全局规则、项目规则、自动化说明和记忆，确认 Pages 仓库干净，生成本页与主题/专题页，更新 `posts.js`。<br><span class="muted">产物：本页、4 个 topic、4 个 project、本地留档。</span></div><div class="cell status">本页生成</div></div>
+    </div>
+  </section>
+
+  <section id="sand">
+    <div class="section-head"><h2>散沙合集</h2><p>小问题不丢，但只在有复用价值时聚合成主题页。</p></div>
+    <div class="grid">
+      <article class="card"><h3><a href="topics/edgeone-server-acceleration/">EdgeOne 与服务器加速</a></h3><p>判断 EdgeOne 的定位、适用域名、与现有边缘和反代链路的冲突边界。</p></article>
+      <article class="card"><h3><a href="topics/edgeone-cloudflare-analogy/">EdgeOne 与 Cloudflare 类比</a></h3><p>把免费边缘产品放回架构层级判断：定位、现状、试点和验证。</p></article>
+      <article class="card"><h3><a href="topics/proxy-client-routing/">客户端与代理路由</a></h3><p>把“节点能连上”和“国内 App 正常”拆开，分清节点订阅、规则配置和客户端模式。</p></article>
+      <article class="card"><h3><a href="topics/408-release-gate/">408 发布门禁</a></h3><p>汇总同一晚 worker 的 sync/check/deploy 状态，保留 SSH/TUN 阻断证据。</p></article>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="section-head"><h2>大石头专题</h2><p>当天的大石头是网络链路和正式站发布链路，不搬具体 408 小节正文。</p></div>
+    <div class="grid">
+      <article class="card"><h3><a href="projects/proxy-speed-lab/">Proxy Speed Lab 路线切换</a></h3><p>从免费候选池、协议测试、线路调研到验收脚本，沉淀“别只看能连上”的测速流程。</p></article>
+      <article class="card"><h3><a href="projects/xui-route-recovery/">x-ui 路由恢复与换路判断</a></h3><p>记录既有链路恢复、零成本调优、停止低收益扫描和客户端规则修正。</p></article>
+      <article class="card"><h3><a href="projects/xui-shadowrocket-recovery/">x-ui / Shadowrocket 恢复闭环</a></h3><p>从国内 App 异常、订阅字段、客户端分流到真实访问验证，记录节点恢复链路。</p></article>
+      <article class="card"><h3><a href="projects/408-phase4-ssh-blocker/">408 发布被 SSH/TUN 阻塞</a></h3><p>从本地门禁通过、正式部署超时到旧站 200 不能当成功，记录发布链路的边界。</p></article>
+      <article class="card"><h3>PasteMac 视觉系统</h3><p>作为全景方向记录：项目正在从原型功能推进到参考截图、尺寸表、diff 与验收脚本阶段；暂不单独开专题。</p></article>
+    </div>
+  </section>
+
+  <section id="panorama">
+    <div class="section-head"><h2>今日全景图</h2><p>4 个方向：边缘加速判断、代理链路治理、发布门禁、macOS 工具系统化。</p></div>
+    <div class="grid">
+      <article class="card"><h3>边缘加速与域名治理</h3><p><strong>昨天做了什么：</strong>判断 EdgeOne 免费权益是否值得接入。</p><div class="timeline"><div class="step">看到活动</div><div class="step active">识别产品</div><div class="step">判定冲突</div><div class="step">选子域名</div><div class="step">试点验收</div></div><p><strong>当前阶段：</strong>能把“免费产品”放回现有架构里判断，不再因为免费就迁主链路。</p><p><strong>下一步：</strong>只选一个非核心子域名试 CNAME，不动主域名 NS。</p></article>
+      <article class="card"><h3>代理链路治理</h3><p><strong>昨天做了什么：</strong>从协议选型、免费测速、国内 App 分流到服务端高吞吐优化和 x-ui 修复。</p><div class="timeline"><div class="step">能连</div><div class="step">测速</div><div class="step active">分流</div><div class="step">真实客户端</div><div class="step">稳定入口</div></div><p><strong>当前阶段：</strong>从“绿色测试”进入“客户端真实体验”阶段。</p><p><strong>下一步：</strong>让手机/电脑重导入订阅，用 YouTube Stats 和国内 App 共同验收。</p></article>
+      <article class="card"><h3>408 正式站发布</h3><p><strong>昨天做了什么：</strong>本地门禁多次通过，正式部署被 SSH/TUN 阻断。</p><div class="timeline"><div class="step">sync</div><div class="step active">check</div><div class="step">deploy</div><div class="step">线上抽验</div><div class="step">记忆回写</div></div><p><strong>当前阶段：</strong>构建门禁成熟，发布通道不稳定。</p><p><strong>下一步：</strong>先恢复 SSH/TUN，再重跑 `deploy:phase4`；同时加 single-flight 锁。</p></article>
+      <article class="card"><h3>PasteMac 工具化</h3><p><strong>昨天做了什么：</strong>可见文档把底部面板、MVP 路线和视觉复刻流程拉成体系。</p><div class="timeline"><div class="step">想法</div><div class="step">原型</div><div class="step active">规格</div><div class="step">像素验收</div><div class="step">发布包</div></div><p><strong>当前阶段：</strong>从“做一个剪贴板工具”进入“用验收合同做 macOS 工具”的阶段。</p><p><strong>下一步：</strong>优先补一个可重复截图 fixture，让视觉 diff 真正可跑。</p></article>
+    </div>
+    <div class="svgbox">
+      <svg viewBox="0 0 920 210" width="100%" role="img" aria-label="代理链路阶段图">
+        <rect width="920" height="210" fill="#fffdf8"/>
+        <text x="40" y="34" font-size="16" fill="#6d675e">代理链路判断：不要把“服务器快”直接等同于“用户端快”。</text>
+        <line x1="70" y1="104" x2="850" y2="104" stroke="#ded5c7" stroke-width="4"/>
+        <g font-size="14" fill="#23211d">
+          <circle cx="100" cy="104" r="19" fill="#2f6f6a"/><text x="72" y="154">源站出口</text>
+          <circle cx="285" cy="104" r="19" fill="#315f86"/><text x="235" y="154">边缘入口</text>
+          <circle cx="470" cy="104" r="19" fill="#967232"/><text x="432" y="154">订阅字段</text>
+          <circle cx="655" cy="104" r="19" fill="#974d45"/><text x="608" y="154">客户端规则</text>
+          <circle cx="820" cy="104" r="19" fill="#4f7f52"/><text x="764" y="154">真实体验验收</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <section id="stage">
+    <div class="section-head"><h2>阶段判断</h2><p>这一天的关键不是多做了多少命令，而是完成标准变得更严格。</p></div>
+    <div class="note ok">代理链路进入“真实客户端验收”阶段：服务端 active、订阅 200、WS 400 探针都只是中间证据；手机/电脑里的国外站点、视频测速和国内 App 才是最终证据。</div>
+    <div class="note warn">408 发布链路进入“本地门禁可过、远端传输不稳”阶段：下一步不应重写教材内容，而应先恢复 SSH/TUN 发布通道，再补 single-flight 锁。</div>
+    <div class="note">PasteMac 进入“视觉合同”阶段：参考图、运行截图、尺寸表和 diff 报告要成为 UI 调整的默认门槛。</div>
+  </section>
+
+  <section id="cognition">
+    <div class="section-head"><h2>认知替换表</h2><p>今日观察到 4 条明确认知替换。</p></div>
+    <div class="table-wrap"><table class="cog"><thead><tr><th>主题</th><th>旧有认知</th><th>新认知</th><th>旧行为</th><th>新行为</th><th>触发证据</th><th>下一步验证</th></tr></thead><tbody>
+      <tr><td>边缘平台</td><td>免费加速产品能用就尽量接上。</td><td>必须先看它在现有 DNS/CDN/源站链路中的位置。</td><td>考虑迁主域名或全站接入。</td><td>先用非核心子域名做 CNAME 试点。</td><td>EdgeOne 与现有 Cloudflare 链路重叠。</td><td>选一个低风险静态入口测试。</td></tr>
+      <tr><td>代理速度</td><td>服务器出口快，用户端应该也快。</td><td>瓶颈可能在用户网络到入口的跨境路径。</td><td>继续扫免费 IP 或调源站。</td><td>区分源站出口、边缘入口、客户端真实链路。</td><td>旧服务器出网快，免费候选仍只有几 Mbps。</td><td>手机端用 YouTube Stats 验收。</td></tr>
+      <tr><td>国内 App 异常</td><td>节点坏了，所以所有 App 都不正常。</td><td>节点和分流规则是两件事；国内 App 需要直连策略。</td><td>继续换节点、换协议。</td><td>检查客户端模式、策略组和订阅规则。</td><td>x-ui 节点订阅没有完整国内直连规则。</td><td>Shadowrocket 设为配置/规则模式，Clash 设为 Rule。</td></tr>
+      <tr><td>发布自动化</td><td>多开 worker 可以提高成功概率。</td><td>同一发布目录并发写入会制造构建/部署竞态。</td><td>并行启动后看哪个成功。</td><td>主 worker single-flight，其余只读等待。</td><td>同晚多个 worker 报瞬时缺文件与 SSH 阻断。</td><td>下一轮加锁后比较失败率。</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section id="flows">
+    <div class="section-head"><h2>今日高价值流程</h2><p>按触发、动作、验证沉淀。</p></div>
+    <div class="grid two">
+      <article class="card"><h3>边缘平台试点评估</h3><div class="flow"><div><strong>触发</strong><br>看到免费 CDN/边缘安全权益。</div><div><strong>动作</strong><br>查产品定位、DNS 接入方式、备案/区域限制和现有链路冲突。</div><div><strong>验证</strong><br>只用非核心子域名试点，不影响主域名。</div></div></article>
+      <article class="card"><h3>代理测速闭环</h3><div class="flow"><div><strong>触发</strong><br>节点可用但速度远低于目标。</div><div><strong>动作</strong><br>分开测源站出口、入口候选、客户端规则和真实 App。</div><div><strong>验证</strong><br>Google 204、下载吞吐、YouTube Stats 和国内 App 同时过。</div></div></article>
+      <article class="card"><h3>408 发布阻断处理</h3><div class="flow"><div><strong>触发</strong><br>本地构建通过但部署失败。</div><div><strong>动作</strong><br>不要把旧站 200 当成功；记录 Last-Modified 与 SSH/TUN 卡点。</div><div><strong>验证</strong><br>恢复 TUN/SSH 后重跑 phase4 并抽验代表页。</div></div></article>
+      <article class="card"><h3>PasteMac 像素验收</h3><div class="flow"><div><strong>触发</strong><br>界面“不像”或比例不对。</div><div><strong>动作</strong><br>固定参考图、运行截图、尺寸表和 diff 报告。</div><div><strong>验证</strong><br>核心尺寸误差进入 ±2pt，而不是凭感觉调。</div></div></article>
+    </div>
+  </section>
+
+  <section id="git"><div class="section-head"><h2>Git/GitHub/GitHub Pages</h2><p>发布面仍是 Think2twice Pages 仓库。</p></div><div class="note">本轮发布前 Pages 仓库工作树干净。每日复盘只更新 `daily-digests/2026-07-07/`、`assets/posts.js` 和本地留档；元数据必须保持 `featured:false`、`homeVisible:false`，让 Archive 可见但首页不展示。</div></section>
+  <section id="skills"><div class="section-head"><h2>Skill/自动化</h2><p>本轮没有新增 Skill，但有明确规则候选。</p></div><div class="grid"><article class="card"><h3>408-readme</h3><p>需要发布 single-flight 锁和 SSH/TUN 失败恢复提示。</p></article><article class="card"><h3>daily panorama</h3><p>继续用 automation memory 裁剪窗口，避免重复发布上一日内容。</p></article><article class="card"><h3>Proxy Speed Lab</h3><p>本地脚本和文档已具备项目教材雏形，后续可整理成 runbook。</p></article></div></section>
+  <section id="html-rules"><div class="section-head"><h2>HTML 设计规则</h2><p>轻量纸面风格，第一屏直接给总账和全景摘要。</p></div><p>本页为单文件静态 HTML，CSS 与 SVG 内嵌，不依赖外部 CDN。主题/专题页只沉淀方法，不写真实服务器资产、订阅 token 或具体私密命令输出。</p></section>
+  <section id="rules"><div class="section-head"><h2>待写入规则</h2><p>先列候选，等 Fay 确认后再写入全局或项目规则。</p></div><ul><li>代理故障默认先区分：源站出口、边缘入口、订阅字段、客户端分流、真实 App 验收。</li><li>用户明确说“一分钱不花”后，购买调研退到备选，不再作为当前主线。</li><li>408 发布自动化必须 single-flight，旧站 200 不能代替本轮成功。</li><li>PasteMac UI 复刻必须有参考图、运行图、尺寸表和 diff，不能只靠主观微调。</li></ul></section>
+  <section id="confirm"><div class="section-head"><h2>待 Fay 确认</h2><p>这些需要人工决策或真实设备验收。</p></div><ul><li>Shadowrocket 是否已重新导入订阅并用配置/规则模式测试国内 App 与 YouTube Stats。</li><li>是否先开 Clash Verge 的 TUN/虚拟网卡后重跑 408 `deploy:phase4`。</li><li>是否给 408 晚间发布加 single-flight 锁。</li><li>是否把 Proxy Speed Lab 整理成项目教材库 runbook。</li><li>PasteMac 下一步是否优先做截图 fixture 与像素 diff。</li></ul></section>
+  <section id="coverage"><div class="section-head"><h2>资料覆盖与脱敏说明</h2><p>只用本机可访问资料，不补不可见剧情。</p></div><p>覆盖来源：Codex 2026-07-07/08 raw rollout JSONL、自动化记忆、Pages 仓库、服务器测速项目文件、PasteMac 文档和构建痕迹、使用方法优化规则。未访问：ChatGPT 云端历史、第三方私有后台、浏览器私有会话、未落盘语音/图片原文、用户手机真实 App 当前画面。公开页已去除真实 IP、账号、订阅 token、邮箱、手机号、密钥、私密聊天原文和不必要的本机绝对路径；服务器域名统一以“个人节点域名/正式站/源站”描述。</p></section>
+  <footer>公开页已脱敏；若某条线程只有启动或中断记录，本页只写“无结论/阻断”，不推断未发生的结果。</footer>
+</div>
+</body>
+</html>

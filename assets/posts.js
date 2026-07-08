@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "每日全景复盘：2026-07-07",
+    url: "./daily-digests/2026-07-07/",
+    archiveUrl: "../daily-digests/2026-07-07/",
+    date: "2026-07-07",
+    minutes: 20,
+    category: "每日复盘",
+    node: "panorama",
+    level: "流水总账 + 全景图",
+    tags: ["每日复盘", "Codex", "方法论"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "整理 2026-07-07 到 2026-07-08 早间的 12 条可访问流水记录：服务器代理链路治理、EdgeOne 类比、408 phase4 发布 SSH 阻塞、PasteMac 视觉量测流程。"
+  },
+  {
     title: "每日全景复盘：2026-07-06",
     url: "./daily-digests/2026-07-06/",
     archiveUrl: "../daily-digests/2026-07-06/",
