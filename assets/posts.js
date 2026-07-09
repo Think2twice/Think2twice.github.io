@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "每日全景复盘：2026-07-08",
+    url: "./daily-digests/2026-07-08/",
+    archiveUrl: "../daily-digests/2026-07-08/",
+    date: "2026-07-08",
+    minutes: 22,
+    category: "每日复盘",
+    node: "panorama",
+    level: "流水总账 + 全景图",
+    tags: ["每日复盘", "Codex", "方法论"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "整理 2026-07-08 到 2026-07-09 早间的 10 条可访问流水记录：AI Notes 插件工程、WebDAV 同步策略、PasteMac 权限链路、408 发布门禁和 Skill 命名纠偏。"
+  },
+  {
     title: "每日全景复盘：2026-07-07",
     url: "./daily-digests/2026-07-07/",
     archiveUrl: "../daily-digests/2026-07-07/",
