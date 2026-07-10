@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>每日全景复盘：2026-07-09</title>
+  <style>
+    :root{color-scheme:light;--paper:#fbfaf6;--ink:#26231e;--muted:#6c655c;--line:#ddd4c5;--card:#fffdf8;--soft:#f1eadf;--teal:#2f6f6a;--blue:#315f86;--gold:#967232;--red:#974d45;--green:#4f7f52;--violet:#61558a}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:linear-gradient(90deg,rgba(49,95,134,.045) 1px,transparent 1px),linear-gradient(0deg,rgba(47,111,106,.04) 1px,transparent 1px),var(--paper);background-size:28px 28px;color:var(--ink);font:16px/1.72 ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;letter-spacing:0}
+    a{color:var(--blue);text-decoration:none;border-bottom:1px solid rgba(49,95,134,.32)}code{background:#f4eadb;border:1px solid var(--line);padding:1px 5px;border-radius:4px}.wrap{max-width:1180px;margin:0 auto;padding:24px 18px 68px}.top{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.hero,.panel,.card,.cell{border:1px solid var(--line);background:rgba(255,253,248,.96);box-shadow:0 16px 40px rgba(56,45,28,.06);border-radius:8px}.hero{padding:24px}.eyebrow{font-size:13px;color:var(--teal);font-weight:800}.hero h1{font-size:clamp(28px,4vw,44px);line-height:1.12;margin:8px 0 12px}.lead{font-size:17px;color:#3f3a33;max-width:850px}.nav{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.nav a,.tag{border:1px solid var(--line);background:var(--soft);padding:6px 10px;border-radius:999px;font-size:13px;color:#3c3832}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:16px}.stat{border:1px solid var(--line);background:var(--card);padding:14px;border-radius:8px}.stat b{font-size:26px;display:block}.stat span{color:var(--muted);font-size:13px}section{margin-top:22px}.section-head{display:flex;justify-content:space-between;gap:16px;align-items:end;border-bottom:2px solid #2b2924;padding-bottom:8px}.section-head h2{margin:0;font-size:24px}.section-head p{margin:0;color:var(--muted);max-width:690px}.ledger{display:grid;gap:10px;margin-top:14px}.ledger-row{display:grid;grid-template-columns:86px 1.05fr 1.2fr 110px;gap:10px}.cell{padding:12px}.time{font-weight:800;color:var(--teal)}.status{font-weight:800;color:var(--blue);text-align:center}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}.grid.two{grid-template-columns:repeat(2,1fr)}.card{padding:16px}.card h3{margin:0 0 8px;font-size:18px}.timeline{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}.step{border:1px solid var(--line);background:#fdf8ef;padding:10px;border-radius:8px;text-align:center;font-size:13px;min-height:58px}.step.active{border-color:var(--teal);background:#e9f3ef;font-weight:800}.flow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:10px}.flow div{border-left:4px solid var(--teal);background:#f8f2e8;padding:10px;border-radius:6px}.note{border-left:5px solid var(--gold);background:#fff7e4;padding:14px;border-radius:8px;margin-top:12px}.note.ok{border-left-color:var(--green);background:#eef7ef}.note.warn{border-left-color:var(--red);background:#fff0ee}.table-wrap{overflow-x:auto}.cog{width:100%;border-collapse:collapse;margin-top:14px;background:var(--card);border:1px solid var(--line)}.cog th,.cog td{border:1px solid var(--line);padding:10px;text-align:left;vertical-align:top;min-width:120px}.cog th{background:#efe5d3}.svgbox{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px;margin-top:12px}ul{padding-left:22px}footer{margin-top:30px;color:var(--muted);font-size:14px}
+    @media(max-width:900px){.top,.grid,.grid.two,.flow{grid-template-columns:1fr}.ledger-row{grid-template-columns:1fr}.status{text-align:left}.section-head{display:block}.timeline{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <header class="hero">
+      <div class="eyebrow">每日全景复盘 / 2026-07-09</div>
+      <h1>每日全景复盘：2026-07-09</h1>
+      <p class="lead">覆盖 2026-07-09 00:00 到 2026-07-10 08:00 左右本机可访问的 Codex 线程、自动化记忆和项目文件。今天的主线是：PasteMac 从 Mac 工具推进到跨端产品雏形，AI Notes 从功能原型推进到 Chrome 发布包，OpenWebUI/RAG 运行态继续修稳定性，408 学习站在并发失败中跑出一条成功发布链路。</p>
+      <nav class="nav">
+        <a href="#ledger">今日流水总账</a><a href="#sand">散沙合集</a><a href="#projects">大石头专题</a><a href="#panorama">今日全景图</a><a href="#stage">阶段判断</a><a href="#cognition">认知替换表</a><a href="#flows">今日高价值流程</a><a href="#git">Git/GitHub/GitHub Pages</a><a href="#skills">Skill/自动化</a><a href="#html-rules">HTML 设计规则</a><a href="#rules">待写入规则</a><a href="#confirm">待 Fay 确认</a><a href="#coverage">资料覆盖与脱敏说明</a>
+      </nav>
+    </header>
+    <aside class="panel stats">
+      <div class="stat"><b>11</b><span>条可访问流水</span></div>
+      <div class="stat"><b>4</b><span>散沙主题页</span></div>
+      <div class="stat"><b>3</b><span>大石头专题页</span></div>
+      <div class="stat"><b>4</b><span>全景方向</span></div>
+    </aside>
+  </div>
+
+  <section id="ledger">
+    <div class="section-head"><h2>今日流水总账</h2><p>每条小记录都入账；专题页只展开能复用的方法和阶段判断。</p></div>
+    <div class="ledger">
+      <div class="ledger-row"><div class="cell time">08:12</div><div class="cell"><strong>2026-07-08 复盘发布收口</strong><br><span class="muted">每日复盘 / Pages 发布。</span></div><div class="cell">上一期总账、4 个主题页、3 个专题页已发布，Archive 可见、首页隐藏；本轮从 7 月 9 日窗口继续。</div><div class="cell status">完成</div></div>
+      <div class="ledger-row"><div class="cell time">11:09</div><div class="cell"><strong>麦克风无法录音诊断</strong><br><span class="muted">macOS 支持 / 权限链。</span></div><div class="cell">系统仍识别内置麦克风且为默认输入；底层录音调用卡住，更像录音权限或虚拟音频链路问题。已重置 Codex 麦克风权限并打开权限设置页。</div><div class="cell status">已处理待手验</div></div>
+      <div class="ledger-row"><div class="cell time">15:17</div><div class="cell"><strong>PasteMac 固定安装版与真实粘贴链路</strong><br><span class="muted">macOS App / 系统交互。</span></div><div class="cell">接手包确认固定安装版已到 `trusted=true`；文字、图片、中间光标插入 E2E 通过。后续完成标准转为 Fay 在真实输入框亲测。</div><div class="cell status">脚本通过</div></div>
+      <div class="ledger-row"><div class="cell time">15:17-21:19</div><div class="cell"><strong>PasteMac Mini 与底部面板修整</strong><br><span class="muted">UI 修复 / 视觉合同。</span></div><div class="cell">补横向拖出、空白取消多选、pin 命中修复、链接卡片重排、多选焦点保留、Mini 同步卡片色彩，并用构建和多条视觉/交互验证命令收口。</div><div class="cell status">多轮通过</div></div>
+      <div class="ledger-row"><div class="cell time">20:54</div><div class="cell"><strong>软著、App Store 与去相似化边界</strong><br><span class="muted">产品保护 / 上架风险。</span></div><div class="cell">明确软著不等于保护“剪贴板工具想法”；发布前要保护代码、品牌、素材和证据链，同时把底部面板从“像竞品”调整成自己的管理台表达。</div><div class="cell status">结论形成</div></div>
+      <div class="ledger-row"><div class="cell time">23:31</div><div class="cell"><strong>PasteMac v0/v1 版本协议</strong><br><span class="muted">Git 基线 / 视觉实验。</span></div><div class="cell">保存原始成熟面板为 `v0-original-panel`，创建 `codex/v1-desimilarize-panel` 分支用于去相似化实验；避免把未定稿视觉污染基线。</div><div class="cell status">基线建立</div></div>
+      <div class="ledger-row"><div class="cell time">23:17-02:06</div><div class="cell"><strong>Paste iOS/iPadOS 入口与原型</strong><br><span class="muted">移动端产品 / Xcode 验收。</span></div><div class="cell">确认移动端不能承诺后台自动捕获全部剪贴板；新增 iOS/iPadOS 工程骨架、键盘扩展、Share 入口和 iPad 管理面板式界面，完成多项模拟器截图与合同验证。</div><div class="cell status">原型推进</div></div>
+      <div class="ledger-row"><div class="cell time">全天</div><div class="cell"><strong>AI Notes Chrome 发布包准备</strong><br><span class="muted">Chrome 插件 / 商店化。</span></div><div class="cell">项目状态显示 release 链路已覆盖 build、三站 fixture、长文、附件、导出、备份恢复、工作台布局、选区工具条、大纲结构和真实扩展来源，产出 0.1.0 zip；仍需 Fay 可视 Chrome 三站手验和正式隐私政策 URL。</div><div class="cell status">发布包就绪待审</div></div>
+      <div class="ledger-row"><div class="cell time">12:07-15:18</div><div class="cell"><strong>OpenWebUI RAG/Embedding 运行态修复</strong><br><span class="muted">服务器运行态 / 源码回补。</span></div><div class="cell">长 PDF 已抽取正文但 embedding 失败的问题被改为“正文可用 + 后台补索引”；另修正 Sub2API 技术账号旧 base URL，直测 embedding 返回 3072 维。</div><div class="cell status">已上线验证</div></div>
+      <div class="ledger-row"><div class="cell time">23:02</div><div class="cell"><strong>408 晚间发布并发结果</strong><br><span class="muted">自动化发布 / 正式站。</span></div><div class="cell">并行 worker 有构建失败、rsync exit 23 和成功发布三种结果。最终可确认至少一条链路完成 sync、check、deploy，并抽验代表页面 200；但 single-flight 仍是发布系统风险。</div><div class="cell status">成功但需治理</div></div>
+      <div class="ledger-row"><div class="cell time">08:01</div><div class="cell"><strong>2026-07-09 每日复盘启动</strong><br><span class="muted">本轮自动化 / Pages 发布。</span></div><div class="cell">读取规则、自动化记忆、Codex JSONL、项目状态、408 记忆和 Pages 结构，生成本页、主题页、专题页与本地留档。</div><div class="cell status">本页生成</div></div>
+    </div>
+  </section>
+
+  <section id="sand">
+    <div class="section-head"><h2>散沙合集</h2><p>小问题按主题收口，不丢失，也不过度包装。</p></div>
+    <div class="grid two">
+      <article class="card"><h3><a href="topics/paste-mobile-platform/">Paste 移动端系统边界</a></h3><p>iOS/iPadOS 不能按 Mac 式后台监听承诺设计，入口要换成显式保存、键盘、Share Sheet 和同步投影。</p></article>
+      <article class="card"><h3><a href="topics/pastemac-visual-desimilarization/">PasteMac 去相似化</a></h3><p>保留高价值底部面板和 Mini 面板，同时用版本基线、主题实验和视觉合同降低 copycat 观感。</p></article>
+      <article class="card"><h3><a href="topics/ai-notes-release-readiness/">AI Notes 发布准备</a></h3><p>把商业级插件准备拆成可重复 release 命令、商店材料、隐私政策、手验清单和真实三站验收。</p></article>
+      <article class="card"><h3><a href="topics/408-release-concurrency/">408 发布并发门禁</a></h3><p>同一晚多个 worker 给出相互冲突的结果，必须把最终成功、失败证据和 single-flight 风险分开记录。</p></article>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="section-head"><h2>大石头专题</h2><p>今天的大石头都进入“可验收系统”阶段。</p></div>
+    <div class="grid">
+      <article class="card"><h3><a href="projects/pastemac-cross-platform/">PasteMac 跨端产品化</a></h3><p>Mac 版真实系统交互、iPad 管理面板、iPhone 快速入口、键盘扩展和同步诚实边界。</p></article>
+      <article class="card"><h3><a href="projects/ai-notes-commercial-base/">AI Notes 商业级基线</a></h3><p>从 OpenWebUI 笔记能力抽成 Chrome 插件，进入 0.1.0 发布包和商店材料审稿阶段。</p></article>
+      <article class="card"><h3><a href="projects/openwebui-rag-runtime/">OpenWebUI RAG 运行态</a></h3><p>长文档解析不再被 embedding 失败拖死，Sub2API 和 OpenWebUI RAG 配置边界被重新对齐。</p></article>
+    </div>
+  </section>
+
+  <section id="panorama">
+    <div class="section-head"><h2>今日全景图</h2><p>4 个方向：系统权限、产品去相似化、发布包、自动化发布治理。</p></div>
+    <div class="grid">
+      <article class="card"><h3>Paste 系统产品化</h3><p><strong>昨天做了什么：</strong>从 macOS 权限/E2E 修复推进到 iOS/iPadOS 原型。</p><div class="timeline"><div class="step">Mac 脚本验证</div><div class="step active">真实手验前夜</div><div class="step">移动端原型</div><div class="step">跨端同步</div><div class="step">上架准备</div></div><p><strong>当前阶段：</strong>能力已经多，关键是把平台边界写诚实、把验证从脚本推进到设备手验。</p><p><strong>下一步：</strong>先让 Fay 真实输入框和 iOS/iPad 模拟器截图做一轮验收记录。</p></article>
+      <article class="card"><h3>AI Notes 商店化</h3><p><strong>昨天做了什么：</strong>release 命令串起 0.1.0 zip、图标、截图、权限审计和真实扩展来源。</p><div class="timeline"><div class="step">MVP</div><div class="step">活文档</div><div class="step active">发布包</div><div class="step">手验审稿</div><div class="step">商店提交</div></div><p><strong>当前阶段：</strong>自动化证据很强，但缺 Fay 可视 Chrome 真页面手验和正式公开材料。</p><p><strong>下一步：</strong>补隐私政策公开 URL、支持邮箱和三站手验报告。</p></article>
+      <article class="card"><h3>OpenWebUI 运行态</h3><p><strong>昨天做了什么：</strong>把长 PDF 失败从“整个文件处理失败”改成“正文先可用，索引后台补”。</p><div class="timeline"><div class="step">报错定位</div><div class="step active">止血上线</div><div class="step">自动补索引</div><div class="step">真实 PDF 验收</div><div class="step">规则沉淀</div></div><p><strong>当前阶段：</strong>服务器链路已验证，仍要做真实 UI 上传/提问验收。</p><p><strong>下一步：</strong>用大 PDF 在真实前端确认“可读正文”和补索引状态。</p></article>
+      <article class="card"><h3>408 发布治理</h3><p><strong>昨天做了什么：</strong>同晚并发 worker 同时出现失败和成功。</p><div class="timeline"><div class="step">sync</div><div class="step">check</div><div class="step active">deploy</div><div class="step">线上抽验</div><div class="step">single-flight</div></div><p><strong>当前阶段：</strong>发布链路能成功，但并发控制还没制度化。</p><p><strong>下一步：</strong>给 worker 增加排除自匹配的 single-flight 锁和最终唯一判定。</p></article>
+    </div>
+    <div class="svgbox">
+      <svg viewBox="0 0 920 220" width="100%" role="img" aria-label="今日能力阶段图">
+        <rect width="920" height="220" fill="#fffdf8"/>
+        <text x="42" y="34" font-size="16" fill="#6d675e">从“能做功能”到“能交付产品”：今天的关键不是新增按钮，而是边界、证据、版本和发布链路。</text>
+        <line x1="70" y1="112" x2="850" y2="112" stroke="#ded5c7" stroke-width="4"/>
+        <g font-size="14" fill="#23211d">
+          <circle cx="110" cy="112" r="19" fill="#2f6f6a"/><text x="70" y="164">功能可跑</text>
+          <circle cx="285" cy="112" r="19" fill="#315f86"/><text x="240" y="164">脚本可验</text>
+          <circle cx="470" cy="112" r="19" fill="#967232"/><text x="428" y="164">设备手验</text>
+          <circle cx="655" cy="112" r="19" fill="#974d45"/><text x="604" y="164">版本分支</text>
+          <circle cx="820" cy="112" r="19" fill="#4f7f52"/><text x="767" y="164">发布治理</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+  <section id="stage">
+    <div class="section-head"><h2>阶段判断</h2><p>今天多条主线都在从“实现”转向“产品交付系统”。</p></div>
+    <div class="note ok">PasteMac 已从 Mac MVP 进入跨端产品化前期：Mac 真实粘贴链路脚本已过，iOS/iPadOS 原型已起，但移动端必须遵守系统权限边界。</div>
+    <div class="note ok">AI Notes 已进入 0.1.0 发布包阶段：自动化覆盖很完整，真正的缺口是公开材料、支持邮箱、Fay 可视 Chrome 和三站真页面手验。</div>
+    <div class="note">OpenWebUI 运行态从“单点修 bug”进入“失败可降级、可补偿、可回写进度表”的阶段。</div>
+    <div class="note warn">408 发布系统还没有完成 single-flight 治理：有成功发布，也有并发失败；日报应同时记录最终可用和系统风险。</div>
+  </section>
+
+  <section id="cognition">
+    <div class="section-head"><h2>认知替换表</h2><p>今日观察到 4 条明确认知替换。</p></div>
+    <div class="table-wrap"><table class="cog"><thead><tr><th>主题</th><th>旧有认知</th><th>新认知</th><th>旧行为</th><th>新行为</th><th>触发证据</th><th>下一步验证</th></tr></thead><tbody>
+      <tr><td>iOS 剪贴板</td><td>移动端也许能像 Mac 一样自动记录全部复制。</td><td>iOS/iPadOS 必须以显式入口和同步投影为主，不能承诺后台全局监听。</td><td>先想完整复制 Mac 体验。</td><td>先做 Share Sheet、键盘、App 内粘贴和 iCloud/CloudKit 同步边界。</td><td>Paste 移动端讨论与官方能力校准。</td><td>用 iPhone/iPad 原型确认入口是否够顺手。</td></tr>
+      <tr><td>去相似化</td><td>相似产品只要功能更强就可以发布。</td><td>功能差异和视觉识别要同时成立；发布前要保留基线再做实验。</td><td>直接在当前工作树大改视觉。</td><td>先 tag v0，再在 v1 分支做去相似化。</td><td>软著/App Store 与竞品相似讨论。</td><td>比较 v0/v1 截图，确认用户能一眼看出自有表达。</td></tr>
+      <tr><td>AI Notes</td><td>功能跑通就是可以上架。</td><td>Chrome 插件上架还需要隐私政策、支持邮箱、权限解释、商店截图、真实扩展来源和人工审稿。</td><td>只盯编辑器和三站按钮。</td><td>把 release、store materials、audit 和 Fay 手验拆成发布门禁。</td><td>0.1.0 发布包与 store 草稿材料。</td><td>Fay 审稿并在真 Chrome 三站复制验收报告。</td></tr>
+      <tr><td>408 自动化</td><td>某个 worker 成功或失败可以代表整晚结果。</td><td>并发 worker 会产生互相冲突的证据；最终状态要看唯一成功链路和残余风险。</td><td>只记录最后看到的一条消息。</td><td>同时记录成功、失败、并发迹象和 single-flight 需求。</td><td>同晚多个 408 worker 输出不同停止点。</td><td>下轮先加锁，再观察是否还出现 rsync/dist 并发扰动。</td></tr>
+    </tbody></table></div>
+  </section>
+
+  <section id="flows">
+    <div class="section-head"><h2>今日高价值流程</h2><p>按触发、动作、验证沉淀。</p></div>
+    <div class="grid two">
+      <article class="card"><h3>跨端产品先画权限边界</h3><div class="flow"><div><strong>触发</strong><br>Mac 工具准备做 iOS/iPadOS。</div><div><strong>动作</strong><br>先问系统能不能做，再决定入口。</div><div><strong>验证</strong><br>官方能力校准 + 模拟器原型 + 文案不承诺后台监听。</div></div></article>
+      <article class="card"><h3>视觉实验先存基线</h3><div class="flow"><div><strong>触发</strong><br>参考竞品后需要去相似化。</div><div><strong>动作</strong><br>tag 原始成熟版本，新分支大改。</div><div><strong>验证</strong><br>v0 可回滚，v1 单独跑构建和视觉合同。</div></div></article>
+      <article class="card"><h3>RAG 外部失败要降级</h3><div class="flow"><div><strong>触发</strong><br>正文已抽出但 embedding/provider 失败。</div><div><strong>动作</strong><br>先让当前对话可读，再后台补索引。</div><div><strong>验证</strong><br>函数 smoke、运行容器健康、真实 UI 提问。</div></div></article>
+      <article class="card"><h3>发布自动化要单飞</h3><div class="flow"><div><strong>触发</strong><br>同一站点多 worker 同时构建/rsync。</div><div><strong>动作</strong><br>部署前检查真实活跃进程并加锁。</div><div><strong>验证</strong><br>sync、check、deploy、线上代表页和唯一状态记忆。</div></div></article>
+    </div>
+  </section>
+
+  <section id="git"><div class="section-head"><h2>Git/GitHub/GitHub Pages</h2><p>本轮只发布每日复盘相关文件。</p></div><div class="note">Pages 仓库开工前工作树干净。本轮应只暂存 `daily-digests/2026-07-09/`、`assets/posts.js` 和使用方法优化本地留档；每日复盘元数据保持 `featured:false`、`homeVisible:false`，Archive 可见但首页隐藏。</div></section>
+  <section id="skills"><div class="section-head"><h2>Skill/自动化</h2><p>今天最值得沉淀的是跨端平台边界和发布 single-flight。</p></div><div class="grid"><article class="card"><h3>Paste 跨端 Skill</h3><p>Mac、iPad、iPhone 共享数据模型，但入口和交互外壳不能共享。</p></article><article class="card"><h3>AI Notes Skill</h3><p>新 chat 应先选泳道：NOTE、WEBDAV、SITE、CHROME、QA，不要横跨多个方向。</p></article><article class="card"><h3>408 发布 Skill</h3><p>把 worker single-flight、rsync/dist 稳定性和最终唯一判定写成硬门禁。</p></article></div></section>
+  <section id="html-rules"><div class="section-head"><h2>HTML 设计规则</h2><p>继续使用轻量纸面风格。</p></div><p>本页为单文件静态 HTML，CSS 与 SVG 内嵌，不依赖外部 CDN。第一屏直接给流水总账入口和全景图，不做营销式封面；主题/专题页只沉淀方法，不复制私密聊天原文。</p></section>
+  <section id="rules"><div class="section-head"><h2>待写入规则</h2><p>先列候选，后续再按 Fay 确认写入稳定规则或 Skill。</p></div><ul><li>做跨端 App 时，先写平台权限边界，再写 UI 原型。</li><li>参考竞品后进入发布阶段前，必须做一次去相似化审查和自有品牌/素材检查。</li><li>视觉大改前先 tag/commit 成熟基线，再开实验分支。</li><li>RAG/embedding/provider 外部失败时，若正文已抽取，应先保证当前对话可读，再补索引。</li><li>408 发布 worker 必须 single-flight；并发成功和失败要同时入账，不只看最后一条。</li></ul></section>
+  <section id="confirm"><div class="section-head"><h2>待 Fay 确认</h2><p>这些需要真实设备、真实浏览器或产品决策。</p></div><ul><li>PasteMac 固定安装版在真实输入框里的文字、图片、光标位置粘贴是否通过。</li><li>Paste iPhone/iPad 原型的双列、Pinboard、键盘扩展和 iPad 管理面板是否符合预期。</li><li>Paste 去相似化 v1 要保留哪些 v0 元素、哪些必须换脸。</li><li>AI Notes 是否用可视 Chrome 重新加载 0.1.0 dist，并在 ChatGPT/Gemini/Claude 真页面手验。</li><li>OpenWebUI 长 PDF 上传后，真实 UI 是否能先读正文并随后补索引。</li><li>408 发布是否下轮先加 single-flight 锁再执行。</li></ul></section>
+  <section id="coverage"><div class="section-head"><h2>资料覆盖与脱敏说明</h2><p>只用本机可访问资料，不补不可见剧情。</p></div><p>覆盖来源：Codex 2026-07-09/07-10 raw JSONL、每日复盘自动化记忆、408-readme 自动化记忆、AI Notes 项目状态与商店材料、Paste/PasteMac 项目文档和 Git 状态、OpenWebUI 项目进度文件、Pages 仓库。未访问：ChatGPT 云端历史、第三方私有后台、浏览器私有会话、用户手机当前画面、Chrome Web Store 后台、未落盘语音/图片原文。公开页已去除真实服务器资产、账号、Token、密钥、私密聊天原文、临时截图路径和不必要的本机绝对路径；只保留可复用工程语义、阶段和验证口径。</p></section>
+  <footer>公开页已脱敏；如果某条线程只有计划或中途状态，本页只写可确认结果，不把计划当完成。</footer>
+</div>
+</body>
+</html>

@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "每日全景复盘：2026-07-09",
+    url: "./daily-digests/2026-07-09/",
+    archiveUrl: "../daily-digests/2026-07-09/",
+    date: "2026-07-09",
+    minutes: 26,
+    category: "每日复盘",
+    node: "panorama",
+    level: "流水总账 + 全景图",
+    tags: ["每日复盘", "Codex", "方法论"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "整理 2026-07-09 到 2026-07-10 早间的 11 条可访问流水记录：PasteMac 跨端产品化、AI Notes 发布包、OpenWebUI RAG 运行态、麦克风排查和 408 发布并发门禁。"
+  },
+  {
     title: "每日全景复盘：2026-07-08",
     url: "./daily-digests/2026-07-08/",
     archiveUrl: "../daily-digests/2026-07-08/",
