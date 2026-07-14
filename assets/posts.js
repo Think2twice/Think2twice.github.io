@@ -1,5 +1,20 @@
 window.LEARNING_POSTS = [
   {
+    title: "每日全景复盘：2026-07-13",
+    url: "./daily-digests/2026-07-13/",
+    archiveUrl: "../daily-digests/2026-07-13/",
+    date: "2026-07-13",
+    minutes: 24,
+    category: "每日复盘",
+    node: "panorama",
+    level: "流水总账 + 全景图",
+    tags: ["每日复盘", "Codex", "方法论"],
+    featured: false,
+    homeVisible: false,
+    art: "browser",
+    excerpt: "整理 2026-07-13 到 2026-07-14 早间的 12 条可访问流水记录：PasteMac CloudKit 跨端、共享卡片规格、408 SSH/TUN 发布阻塞和 Codex 话术纠偏。"
+  },
+  {
     title: "每日全景复盘：2026-07-09",
     url: "./daily-digests/2026-07-09/",
     archiveUrl: "../daily-digests/2026-07-09/",
